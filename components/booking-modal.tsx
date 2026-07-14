@@ -168,10 +168,19 @@ function Calendar({
     ...Array.from({ length: daysInMonth }, (_, i) => toISO(year, month, i + 1)),
   ]
 
-  // Is this the first day of any busy range (checkout-morning / checkin-evening)?
-  function isBusyStart(iso: string | null): boolean {
+  /**
+   * Is this day a "checkout-only" transition day?
+   * True only when it is the start of a busy range AND is NOT inside any other
+   * busy range. If two bookings are back-to-back with no gap the end of one
+   * range equals the start of the next, so that day stays fully blocked.
+   */
+  function isCheckoutOnlyTransition(iso: string | null): boolean {
     if (!iso) return false
-    return busyRanges.some((r) => iso === r.start)
+    const isStart = busyRanges.some((r) => iso === r.start)
+    if (!isStart) return false
+    // Make sure this day is not inside another busy range
+    const insideAnotherRange = busyRanges.some((r) => iso > r.start && iso < r.end)
+    return !insideAnotherRange
   }
 
   function getDayStyle(iso: string | null): string {
@@ -181,7 +190,7 @@ function Calendar({
     const isToday = iso === todayIso
     const isPast = iso < todayIso
     const busy = isBusy(iso, busyRanges)
-    const busyStart = isBusyStart(iso)
+    const checkoutOnly = isCheckoutOnlyTransition(iso)
     const isArrival = iso === arrival
     const isDeparture = iso === departure
     const inRange = arrival && departure && iso > arrival && iso < departure
@@ -198,8 +207,8 @@ function Calendar({
     if (inRange) {
       return base + " cursor-pointer bg-primary/20 text-foreground rounded-none"
     }
-    // busyStart days get the half-pink treatment (rendered separately below)
-    if (busyStart) {
+    // Only genuine transition days get the half-pink treatment
+    if (checkoutOnly) {
       return base + " cursor-pointer text-foreground"
     }
     return (
@@ -253,15 +262,15 @@ function Calendar({
               !iso ||
               iso < todayIso ||
               (isBusyForCheckout(iso, busyRanges) &&
-                !(selecting === "departure" && arrival !== "" && iso > arrival && busyRanges.some((r) => iso === r.start)))
+                !(selecting === "departure" && arrival !== "" && iso > arrival && isCheckoutOnlyTransition(iso)))
             }
             onClick={() => iso && onDayClick(iso)}
             aria-label={iso ?? undefined}
             aria-pressed={iso === arrival || iso === departure}
             className={getDayStyle(iso)}
           >
-            {/* Half-pink overlay for the first day of a busy range */}
-            {iso && isBusyStart(iso) && (
+            {/* Half-pink overlay only for genuine checkout/checkin transition days */}
+            {iso && isCheckoutOnlyTransition(iso) && (
               <span
                 aria-hidden
                 className="pointer-events-none absolute inset-0 rounded-full"
