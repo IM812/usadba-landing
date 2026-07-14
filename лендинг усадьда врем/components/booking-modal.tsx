@@ -1,18 +1,34 @@
 "use client"
 
 import type React from "react"
-import { useEffect, useState } from "react"
-import { X, CalendarDays, LogOut, Users, User, Phone, Mail, Check, ArrowRight, ArrowLeft } from "lucide-react"
-// LogOut is used as the departure icon passed to DateField
+import { useEffect, useState, useCallback } from "react"
+import {
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Users,
+  User,
+  Phone,
+  Mail,
+  Check,
+  ArrowRight,
+  ArrowLeft,
+  Loader2,
+  AlertTriangle,
+} from "lucide-react"
+import type { BusyRange } from "@/app/api/availability/route"
 
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 type Props = {
   open: boolean
   onClose: () => void
 }
 
 type FormState = {
-  arrival: string
-  departure: string
+  arrival: string   // YYYY-MM-DD
+  departure: string // YYYY-MM-DD
   guests: string
   name: string
   phone: string
@@ -28,16 +44,175 @@ const emptyForm: FormState = {
   email: "",
 }
 
-// Format YYYY-MM-DD (native date value) to DD.MM.YYYY for display.
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 function formatDate(iso: string) {
   if (!iso) return ""
   const [y, m, d] = iso.split("-")
   return `${d}.${m}.${y}`
 }
 
-// Today in YYYY-MM-DD for the min attribute.
-const today = new Date().toISOString().split("T")[0]
+function toISO(year: number, month: number, day: number): string {
+  return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
+}
 
+function today(): string {
+  return new Date().toISOString().split("T")[0]
+}
+
+/** Is the YYYY-MM-DD date covered by any busy range? */
+function isBusy(date: string, ranges: BusyRange[]): boolean {
+  return ranges.some((r) => date >= r.start && date < r.end)
+}
+
+/** Does [arrival, departure) overlap any busy range? */
+function selectionOverlapsBusy(arrival: string, departure: string, ranges: BusyRange[]): boolean {
+  return ranges.some((r) => arrival < r.end && departure > r.start)
+}
+
+const MONTH_NAMES_RU = [
+  "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+  "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь",
+]
+const DAY_NAMES_RU = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
+
+// ---------------------------------------------------------------------------
+// Mini inline calendar
+// ---------------------------------------------------------------------------
+interface CalendarProps {
+  year: number
+  month: number
+  arrival: string
+  departure: string
+  busyRanges: BusyRange[]
+  selecting: "arrival" | "departure"
+  onDayClick: (iso: string) => void
+  onPrev: () => void
+  onNext: () => void
+}
+
+function Calendar({
+  year,
+  month,
+  arrival,
+  departure,
+  busyRanges,
+  selecting,
+  onDayClick,
+  onPrev,
+  onNext,
+}: CalendarProps) {
+  const todayIso = today()
+  const firstDay = new Date(year, month, 1).getDay() // 0=Sun..6=Sat → convert to Mon-based
+  const offset = (firstDay + 6) % 7 // days to pad before 1st
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+
+  const cells: (string | null)[] = [
+    ...Array(offset).fill(null),
+    ...Array.from({ length: daysInMonth }, (_, i) => toISO(year, month, i + 1)),
+  ]
+
+  function getDayStyle(iso: string | null): string {
+    const base =
+      "relative flex h-8 w-8 items-center justify-center rounded-full text-sm transition select-none"
+    if (!iso) return base + " invisible"
+    const isToday = iso === todayIso
+    const isPast = iso < todayIso
+    const busy = isBusy(iso, busyRanges)
+    const isArrival = iso === arrival
+    const isDeparture = iso === departure
+    const inRange = arrival && departure && iso > arrival && iso < departure
+
+    if (isPast || busy) {
+      return (
+        base +
+        " cursor-not-allowed text-muted-foreground/40" +
+        (busy ? " bg-destructive/10 line-through" : "")
+      )
+    }
+    if (isArrival || isDeparture) {
+      return base + " cursor-pointer bg-primary text-primary-foreground font-semibold"
+    }
+    if (inRange) {
+      return base + " cursor-pointer bg-primary/20 text-foreground rounded-none"
+    }
+    return (
+      base +
+      " cursor-pointer hover:bg-secondary text-foreground" +
+      (isToday ? " ring-1 ring-primary/50 font-medium" : "")
+    )
+  }
+
+  return (
+    <div className="rounded-xl border border-border bg-background p-3">
+      {/* Month navigation */}
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <button
+          type="button"
+          onClick={onPrev}
+          aria-label="Предыдущий месяц"
+          className="flex size-7 items-center justify-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+        >
+          <ChevronLeft className="size-4" />
+        </button>
+        <span className="text-sm font-medium text-foreground">
+          {MONTH_NAMES_RU[month]} {year}
+        </span>
+        <button
+          type="button"
+          onClick={onNext}
+          aria-label="Следующий месяц"
+          className="flex size-7 items-center justify-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+        >
+          <ChevronRight className="size-4" />
+        </button>
+      </div>
+
+      {/* Day-of-week headers */}
+      <div className="mb-1 grid grid-cols-7 gap-0.5">
+        {DAY_NAMES_RU.map((d) => (
+          <div key={d} className="flex h-7 items-center justify-center text-xs font-medium text-muted-foreground">
+            {d}
+          </div>
+        ))}
+      </div>
+
+      {/* Day cells */}
+      <div className="grid grid-cols-7 gap-0.5">
+        {cells.map((iso, i) => (
+          <button
+            key={i}
+            type="button"
+            disabled={!iso || iso < todayIso || isBusy(iso, busyRanges)}
+            onClick={() => iso && onDayClick(iso)}
+            aria-label={iso ?? undefined}
+            aria-pressed={iso === arrival || iso === departure}
+            className={getDayStyle(iso)}
+          >
+            {iso ? parseInt(iso.slice(8), 10) : ""}
+          </button>
+        ))}
+      </div>
+
+      {/* Legend */}
+      <div className="mt-2 flex items-center gap-3 border-t border-border pt-2 text-xs text-muted-foreground">
+        <span className="flex items-center gap-1">
+          <span className="inline-block size-3 rounded-full bg-destructive/20" />
+          Занято
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="inline-block size-3 rounded-full bg-primary/20" />
+          Ваши даты
+        </span>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Main modal
+// ---------------------------------------------------------------------------
 export function BookingModal({ open, onClose }: Props) {
   const [step, setStep] = useState<1 | 2>(1)
   const [form, setForm] = useState<FormState>(emptyForm)
@@ -45,16 +220,47 @@ export function BookingModal({ open, onClose }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Calendar state
+  const now = new Date()
+  const [calYear, setCalYear] = useState(now.getFullYear())
+  const [calMonth, setCalMonth] = useState(now.getMonth())
+  const [selecting, setSelecting] = useState<"arrival" | "departure">("arrival")
+
+  // Availability
+  const [busyRanges, setBusyRanges] = useState<BusyRange[]>([])
+  const [availLoading, setAvailLoading] = useState(false)
+  const [availError, setAvailError] = useState<string | null>(null)
+
+  // Fetch availability when the modal opens
+  const fetchAvailability = useCallback(async () => {
+    setAvailLoading(true)
+    setAvailError(null)
+    try {
+      const res = await fetch("/api/availability")
+      const data = await res.json()
+      if (data.ok) {
+        setBusyRanges(data.ranges)
+      } else {
+        setAvailError("Временно не удалось проверить доступность дат.")
+      }
+    } catch {
+      setAvailError("Временно не удалось проверить доступность дат.")
+    } finally {
+      setAvailLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden"
+      fetchAvailability()
     } else {
       document.body.style.overflow = ""
     }
     return () => {
       document.body.style.overflow = ""
     }
-  }, [open])
+  }, [open, fetchAvailability])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -68,7 +274,37 @@ export function BookingModal({ open, onClose }: Props) {
 
   const update = (key: keyof FormState, value: string) => setForm((f) => ({ ...f, [key]: value }))
 
-  const step1Valid = form.arrival !== "" && form.departure !== "" && form.departure > form.arrival && form.guests !== ""
+  const handleDayClick = (iso: string) => {
+    if (selecting === "arrival") {
+      update("arrival", iso)
+      update("departure", "")
+      setSelecting("departure")
+    } else {
+      // departure must be after arrival
+      if (!form.arrival || iso <= form.arrival) {
+        // clicked before arrival — restart
+        update("arrival", iso)
+        update("departure", "")
+        return
+      }
+      // check that the range doesn't overlap any busy period
+      if (selectionOverlapsBusy(form.arrival, iso, busyRanges)) {
+        // find the latest boundary before first busy date after arrival
+        update("departure", "")
+        return
+      }
+      update("departure", iso)
+      setSelecting("arrival") // ready for next booking cycle
+    }
+  }
+
+  const step1Valid =
+    form.arrival !== "" &&
+    form.departure !== "" &&
+    form.departure > form.arrival &&
+    form.guests !== "" &&
+    !selectionOverlapsBusy(form.arrival, form.departure, busyRanges)
+
   const step2Valid = form.name.trim() !== "" && form.phone.trim().length >= 6
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,6 +322,17 @@ export function BookingModal({ open, onClose }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       })
+      if (res.status === 503) {
+        setError(
+          "Не удалось проверить актуальность дат. Пожалуйста, свяжитесь с нами по тел. +7 (995) 155-88-42."
+        )
+        return
+      }
+      if (res.status === 409) {
+        setError("Выбранные даты уже заняты. Пожалуйста, выберите другой период.")
+        setStep(1)
+        return
+      }
       if (!res.ok) throw new Error("server_error")
       setSubmitted(true)
     } catch {
@@ -99,12 +346,30 @@ export function BookingModal({ open, onClose }: Props) {
     setStep(1)
     setForm(emptyForm)
     setSubmitted(false)
+    setSelecting("arrival")
   }
 
   const close = () => {
     onClose()
-    // Reset shortly after so the closing animation isn't jarring.
     setTimeout(reset, 200)
+  }
+
+  const prevMonth = () => {
+    if (calMonth === 0) {
+      setCalMonth(11)
+      setCalYear((y) => y - 1)
+    } else {
+      setCalMonth((m) => m - 1)
+    }
+  }
+
+  const nextMonth = () => {
+    if (calMonth === 11) {
+      setCalMonth(0)
+      setCalYear((y) => y + 1)
+    } else {
+      setCalMonth((m) => m + 1)
+    }
   }
 
   return (
@@ -145,8 +410,9 @@ export function BookingModal({ open, onClose }: Props) {
             </div>
             <h3 className="font-serif text-2xl text-foreground">Заявка отправлена!</h3>
             <p className="max-w-sm text-pretty text-muted-foreground leading-relaxed">
-              Спасибо, {form.name.trim() || "гость"}! Мы свяжемся с вами по номеру {form.phone} для подтверждения
-              бронирования с {formatDate(form.arrival)} по {formatDate(form.departure)}.
+              Спасибо, {form.name.trim() || "гость"}! Мы свяжемся с вами по номеру {form.phone}{" "}
+              для подтверждения бронирования с {formatDate(form.arrival)} по{" "}
+              {formatDate(form.departure)}.
             </p>
             <button
               type="button"
@@ -168,29 +434,65 @@ export function BookingModal({ open, onClose }: Props) {
             <form onSubmit={handleSubmit} className="px-6 pb-6 pt-5">
               {step === 1 ? (
                 <div className="flex flex-col gap-4">
-                  <div className="grid grid-cols-1 gap-3 xs:grid-cols-2 sm:grid-cols-2">
-                    <DateField
-                      icon={<CalendarDays className="size-4" />}
-                      label="Дата заезда"
-                      id="arrival"
-                      value={form.arrival}
-                      min={today}
-                      onChange={(v) => {
-                        update("arrival", v)
-                        // Reset departure if it's now before arrival
-                        if (form.departure && form.departure <= v) update("departure", "")
-                      }}
-                    />
-                    <DateField
-                      icon={<LogOut className="size-4" />}
-                      label="Дата выезда"
-                      id="departure"
-                      value={form.departure}
-                      min={form.arrival || today}
-                      onChange={(v) => update("departure", v)}
-                    />
+                  {/* Availability status */}
+                  {availLoading && (
+                    <div className="flex items-center gap-2 rounded-lg bg-secondary px-4 py-2.5 text-sm text-muted-foreground">
+                      <Loader2 className="size-4 animate-spin" />
+                      Загружаем доступность дат…
+                    </div>
+                  )}
+                  {availError && !availLoading && (
+                    <div className="flex items-start gap-2 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                      <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+                      <span>{availError} Выбор дат недоступен — позвоните нам напрямую.</span>
+                    </div>
+                  )}
+
+                  {/* Prompt label */}
+                  <div className="text-sm font-medium text-foreground">
+                    {selecting === "arrival"
+                      ? "Выберите дату заезда"
+                      : form.arrival
+                      ? `Заезд: ${formatDate(form.arrival)} — выберите дату выезда`
+                      : "Выберите дату заезда"}
                   </div>
 
+                  {/* Inline calendar */}
+                  <Calendar
+                    year={calYear}
+                    month={calMonth}
+                    arrival={form.arrival}
+                    departure={form.departure}
+                    busyRanges={busyRanges}
+                    selecting={selecting}
+                    onDayClick={handleDayClick}
+                    onPrev={prevMonth}
+                    onNext={nextMonth}
+                  />
+
+                  {/* Selected range summary */}
+                  {form.arrival && (
+                    <div className="flex items-center justify-between rounded-lg bg-secondary px-4 py-2.5 text-sm text-secondary-foreground">
+                      <span>
+                        {form.departure
+                          ? `${formatDate(form.arrival)} — ${formatDate(form.departure)}`
+                          : `С ${formatDate(form.arrival)}`}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          update("arrival", "")
+                          update("departure", "")
+                          setSelecting("arrival")
+                        }}
+                        className="text-xs text-muted-foreground underline-offset-2 hover:underline"
+                      >
+                        Сбросить
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Guests */}
                   <div className="flex flex-col gap-1.5">
                     <label htmlFor="guests" className="text-sm font-medium text-foreground">
                       Количество гостей
@@ -219,7 +521,7 @@ export function BookingModal({ open, onClose }: Props) {
 
                   <button
                     type="submit"
-                    disabled={!step1Valid}
+                    disabled={!step1Valid || availLoading || !!availError}
                     className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Далее
@@ -256,12 +558,15 @@ export function BookingModal({ open, onClose }: Props) {
                   />
 
                   <div className="mt-1 rounded-lg bg-secondary px-4 py-3 text-sm text-secondary-foreground">
-                    Заезд <strong>{formatDate(form.arrival)}</strong> · Выезд <strong>{formatDate(form.departure)}</strong> · Гостей{" "}
+                    Заезд <strong>{formatDate(form.arrival)}</strong> · Выезд{" "}
+                    <strong>{formatDate(form.departure)}</strong> · Гостей{" "}
                     <strong>{form.guests}</strong>
                   </div>
 
                   {error && (
-                    <p className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p>
+                    <p className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                      {error}
+                    </p>
                   )}
 
                   <div className="mt-1 flex items-center gap-3">
@@ -292,6 +597,9 @@ export function BookingModal({ open, onClose }: Props) {
   )
 }
 
+// ---------------------------------------------------------------------------
+// Sub-components
+// ---------------------------------------------------------------------------
 function StepDot({
   index,
   label,
@@ -315,44 +623,6 @@ function StepDot({
       <span className={`text-sm font-medium ${active || done ? "text-foreground" : "text-muted-foreground"}`}>
         {label}
       </span>
-    </div>
-  )
-}
-
-function DateField({
-  icon,
-  label,
-  id,
-  value,
-  min,
-  onChange,
-}: {
-  icon: React.ReactNode
-  label: string
-  id: string
-  value: string
-  min?: string
-  onChange: (value: string) => void
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium text-foreground">
-        {label}
-      </label>
-      <div className="relative">
-        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-          {icon}
-        </span>
-        <input
-          type="date"
-          id={id}
-          lang="ru"
-          value={value}
-          min={min}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full cursor-pointer rounded-lg border border-input bg-background py-3 pl-9 pr-3 text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100"
-        />
-      </div>
     </div>
   )
 }

@@ -1,9 +1,36 @@
 import { NextResponse } from "next/server"
+import { fetchBusyRanges } from "../availability/route"
+
+/** Returns true if [a, b) overlaps [c, d) using string comparison (YYYY-MM-DD). */
+function rangesOverlap(a: string, b: string, c: string, d: string) {
+  return a < d && b > c
+}
 
 export async function POST(req: Request) {
   try {
     const body = await req.json()
     const { arrival, departure, guests, name, phone, email } = body
+
+    // -----------------------------------------------------------------------
+    // Server-side availability re-check before accepting the booking
+    // -----------------------------------------------------------------------
+    const { ranges, error: icsError } = await fetchBusyRanges()
+
+    if (icsError && ranges.length === 0) {
+      // ICS is completely unreachable — refuse to confirm so we don't double-book
+      return NextResponse.json(
+        { ok: false, error: "availability_unknown" },
+        { status: 503 }
+      )
+    }
+
+    const conflict = ranges.some((r) => rangesOverlap(arrival, departure, r.start, r.end))
+    if (conflict) {
+      return NextResponse.json(
+        { ok: false, error: "dates_unavailable" },
+        { status: 409 }
+      )
+    }
 
     const token = "8817599417:AAGtfqsyuuVkBtbAUgaIxqLmqm7yIne-Pnk"
     const chatId = "-5572001909"
