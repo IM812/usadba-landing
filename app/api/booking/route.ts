@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server"
 import { fetchBusyRanges } from "../availability/route"
 
-/** Returns true if [a, b) overlaps [c, d) using string comparison (YYYY-MM-DD). */
+/**
+ * Returns true if stay [arrival, departure) conflicts with busy range [c, d).
+ * departure === c is allowed: guest checks out in the morning before the next
+ * guest checks in that evening.
+ */
 function rangesOverlap(a: string, b: string, c: string, d: string) {
-  return a < d && b > c
+  return a < d && b > c && b !== c
 }
 
 export async function POST(req: Request) {

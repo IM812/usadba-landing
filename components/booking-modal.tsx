@@ -61,14 +61,28 @@ function today(): string {
   return new Date().toISOString().split("T")[0]
 }
 
-/** Is the YYYY-MM-DD date covered by any busy range? */
+/**
+ * Is the YYYY-MM-DD date blocked for *arrival*?
+ * The start date of a busy range is excluded — it's the next guest's check-in
+ * day, but since they arrive in the evening we can check out that morning.
+ */
 function isBusy(date: string, ranges: BusyRange[]): boolean {
-  return ranges.some((r) => date >= r.start && date < r.end)
+  return ranges.some((r) => date > r.start && date < r.end)
+}
+
+/**
+ * Is the date blocked even as a checkout day?
+ * Only dates strictly inside a busy range are hard-blocked.
+ * r.start days are allowed as departure (checkout before evening check-in).
+ */
+function isBusyForCheckout(date: string, ranges: BusyRange[]): boolean {
+  return ranges.some((r) => date > r.start && date < r.end)
 }
 
 /** Does [arrival, departure) overlap any busy range? */
 function selectionOverlapsBusy(arrival: string, departure: string, ranges: BusyRange[]): boolean {
-  return ranges.some((r) => arrival < r.end && departure > r.start)
+  // departure can land on r.start (checkout morning, checkin evening — no overlap)
+  return ranges.some((r) => arrival < r.end && departure > r.start && departure !== r.start)
 }
 
 // ---------------------------------------------------------------------------
@@ -161,22 +175,33 @@ function Calendar({
     const isToday = iso === todayIso
     const isPast = iso < todayIso
     const busy = isBusy(iso, busyRanges)
+    // A day that is the *start* of a busy range is available as checkout only
+    const isCheckoutOnlyDay =
+      selecting === "departure" &&
+      arrival !== "" &&
+      iso > arrival &&
+      busyRanges.some((r) => iso === r.start)
     const isArrival = iso === arrival
     const isDeparture = iso === departure
     const inRange = arrival && departure && iso > arrival && iso < departure
 
-    if (isPast || busy) {
-      return (
-        base +
-        " cursor-not-allowed text-muted-foreground/40" +
-        (busy ? " bg-destructive/10 line-through" : "")
-      )
+    if (isPast) {
+      return base + " cursor-not-allowed text-muted-foreground/40"
+    }
+    if (busy && !isCheckoutOnlyDay) {
+      return base + " cursor-not-allowed text-muted-foreground/40 bg-destructive/10 line-through"
     }
     if (isArrival || isDeparture) {
       return base + " cursor-pointer bg-primary text-primary-foreground font-semibold"
     }
     if (inRange) {
       return base + " cursor-pointer bg-primary/20 text-foreground rounded-none"
+    }
+    if (isCheckoutOnlyDay) {
+      return (
+        base +
+        " cursor-pointer border border-dashed border-primary/50 text-foreground hover:bg-primary/10"
+      )
     }
     return (
       base +
@@ -225,7 +250,12 @@ function Calendar({
           <button
             key={i}
             type="button"
-            disabled={!iso || iso < todayIso || isBusy(iso, busyRanges)}
+            disabled={
+              !iso ||
+              iso < todayIso ||
+              (isBusyForCheckout(iso, busyRanges) &&
+                !(selecting === "departure" && arrival !== "" && iso > arrival && busyRanges.some((r) => iso === r.start)))
+            }
             onClick={() => iso && onDayClick(iso)}
             aria-label={iso ?? undefined}
             aria-pressed={iso === arrival || iso === departure}
