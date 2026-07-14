@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server"
 import { fetchBusyRanges } from "../availability/route"
 
-/** Returns true if [a, b) overlaps [c, d) using string comparison (YYYY-MM-DD). */
+/**
+ * Returns true if stay [arrival, departure) conflicts with busy range [c, d).
+ * departure === c is allowed: guest checks out in the morning before the next
+ * guest checks in that evening.
+ */
 function rangesOverlap(a: string, b: string, c: string, d: string) {
-  return a < d && b > c
+  return a < d && b > c && b !== c
 }
 
 export async function POST(req: Request) {
@@ -41,12 +45,39 @@ export async function POST(req: Request) {
       return `${d}.${m}.${y}`
     }
 
+    const formatRub = (n: number) => n.toLocaleString("ru-RU") + " ₽"
+
+    // Price calculation
+    const PRICE_WEEKEND = 24_000
+    const PRICE_WEEKDAY = 20_000
+    const start = new Date(arrival)
+    const end = new Date(departure)
+    const nights = Math.round((end.getTime() - start.getTime()) / 86_400_000)
+    let weekendNights = 0
+    for (let i = 0; i < nights; i++) {
+      const d = new Date(start)
+      d.setDate(d.getDate() + i)
+      const day = d.getDay()
+      if (day === 5 || day === 6 || day === 0) weekendNights++
+    }
+    const weekdayNights = nights - weekendNights
+    const total = weekendNights * PRICE_WEEKEND + weekdayNights * PRICE_WEEKDAY
+
+    const priceLines = [
+      nights > 0 ? `💰 Стоимость:` : null,
+      weekendNights > 0 ? `   Выходные: ${weekendNights} н. × ${formatRub(PRICE_WEEKEND)} = ${formatRub(weekendNights * PRICE_WEEKEND)}` : null,
+      weekdayNights > 0 ? `   Будни: ${weekdayNights} н. × ${formatRub(PRICE_WEEKDAY)} = ${formatRub(weekdayNights * PRICE_WEEKDAY)}` : null,
+      nights > 0 ? `   Итого за ${nights} ночей: *${formatRub(total)}*` : null,
+    ].filter(Boolean)
+
     const text = [
       "🏡 *Новая заявка на бронирование*",
       "",
       `📅 Заезд: *${formatDate(arrival)}*`,
       `📅 Выезд: *${formatDate(departure)}*`,
       `👥 Гостей: *${guests}*`,
+      "",
+      ...priceLines,
       "",
       `👤 Имя: *${name}*`,
       `📞 Телефон: *${phone}*`,
