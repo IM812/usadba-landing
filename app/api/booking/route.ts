@@ -36,13 +36,8 @@ export async function POST(req: Request) {
       )
     }
 
-    const token = process.env.TELEGRAM_BOT_TOKEN
-    const chatId = process.env.TELEGRAM_CHAT_ID
-
-    if (!token || !chatId) {
-      console.error("[booking] TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID is not set")
-      return NextResponse.json({ ok: false, error: "Server misconfiguration" }, { status: 500 })
-    }
+    const token = "8817599417:AAGtfqsyuuVkBtbAUgaIxqLmqm7yIne-Pnk"
+    const chatId = "-5572001909"
 
     const formatDate = (iso: string) => {
       if (!iso) return "—"

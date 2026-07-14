@@ -30,10 +30,7 @@ export async function fetchBusyRanges(): Promise<{ ranges: BusyRange[]; error: s
     return { ranges: cache.ranges, error: null }
   }
 
-  const icsUrl = process.env.AVITO_ICAL_URL
-  if (!icsUrl) {
-    return { ranges: [], error: "AVITO_ICAL_URL is not set" }
-  }
+  const icsUrl = "https://www.avito.ru/calendars-export/25/35/2506377235.ics"
 
   try {
     const res = await fetch(icsUrl, {
