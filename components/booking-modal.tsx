@@ -586,7 +586,12 @@ export function BookingModal({ open, onClose }: Props) {
                     if (!price) return null
                     return (
                       <div className="rounded-lg border border-border bg-secondary/50 px-4 py-3 text-sm">
-                        <div className="mb-2 font-medium text-foreground">Стоимость проживания</div>
+                        <div className="mb-2 font-medium text-foreground">
+                          Стоимость проживания
+                          <span className="ml-1.5 text-xs font-normal text-muted-foreground">
+                            до 8 человек, дополнительные места по запросу
+                          </span>
+                        </div>
                         <div className="flex flex-col gap-1 text-muted-foreground">
                           {price.weekendNights > 0 && (
                             <div className="flex justify-between">
