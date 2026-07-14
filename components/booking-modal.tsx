@@ -207,9 +207,12 @@ function Calendar({
     if (inRange) {
       return base + " cursor-pointer bg-primary/20 text-foreground rounded-none"
     }
-    // Only genuine transition days get the half-pink treatment
+    // Transition days: clickable only as departure, blocked as arrival
     if (checkoutOnly) {
-      return base + " cursor-pointer text-foreground"
+      if (selecting === "departure" && arrival !== "" && iso > arrival) {
+        return base + " cursor-pointer text-foreground"
+      }
+      return base + " cursor-not-allowed text-muted-foreground/40"
     }
     return (
       base +
@@ -261,8 +264,10 @@ function Calendar({
             disabled={
               !iso ||
               iso < todayIso ||
-              (isBusyForCheckout(iso, busyRanges) &&
-                !(selecting === "departure" && arrival !== "" && iso > arrival && isCheckoutOnlyTransition(iso)))
+              isBusy(iso, busyRanges) ||
+              // Transition days (r.start): blocked as arrival, allowed only as departure
+              (isCheckoutOnlyTransition(iso) &&
+                !(selecting === "departure" && arrival !== "" && iso > arrival))
             }
             onClick={() => iso && onDayClick(iso)}
             aria-label={iso ?? undefined}
