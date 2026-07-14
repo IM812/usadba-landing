@@ -168,19 +168,20 @@ function Calendar({
     ...Array.from({ length: daysInMonth }, (_, i) => toISO(year, month, i + 1)),
   ]
 
+  // Is this the first day of any busy range (checkout-morning / checkin-evening)?
+  function isBusyStart(iso: string | null): boolean {
+    if (!iso) return false
+    return busyRanges.some((r) => iso === r.start)
+  }
+
   function getDayStyle(iso: string | null): string {
     const base =
-      "relative flex h-8 w-8 items-center justify-center rounded-full text-sm transition select-none"
+      "relative flex h-8 w-8 items-center justify-center rounded-full text-sm transition select-none overflow-hidden"
     if (!iso) return base + " invisible"
     const isToday = iso === todayIso
     const isPast = iso < todayIso
     const busy = isBusy(iso, busyRanges)
-    // A day that is the *start* of a busy range is available as checkout only
-    const isCheckoutOnlyDay =
-      selecting === "departure" &&
-      arrival !== "" &&
-      iso > arrival &&
-      busyRanges.some((r) => iso === r.start)
+    const busyStart = isBusyStart(iso)
     const isArrival = iso === arrival
     const isDeparture = iso === departure
     const inRange = arrival && departure && iso > arrival && iso < departure
@@ -188,7 +189,7 @@ function Calendar({
     if (isPast) {
       return base + " cursor-not-allowed text-muted-foreground/40"
     }
-    if (busy && !isCheckoutOnlyDay) {
+    if (busy) {
       return base + " cursor-not-allowed text-muted-foreground/40 bg-destructive/10 line-through"
     }
     if (isArrival || isDeparture) {
@@ -197,11 +198,9 @@ function Calendar({
     if (inRange) {
       return base + " cursor-pointer bg-primary/20 text-foreground rounded-none"
     }
-    if (isCheckoutOnlyDay) {
-      return (
-        base +
-        " cursor-pointer border border-dashed border-primary/50 text-foreground hover:bg-primary/10"
-      )
+    // busyStart days get the half-pink treatment (rendered separately below)
+    if (busyStart) {
+      return base + " cursor-pointer text-foreground"
     }
     return (
       base +
@@ -261,16 +260,34 @@ function Calendar({
             aria-pressed={iso === arrival || iso === departure}
             className={getDayStyle(iso)}
           >
-            {iso ? parseInt(iso.slice(8), 10) : ""}
+            {/* Half-pink overlay for the first day of a busy range */}
+            {iso && isBusyStart(iso) && (
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 rounded-full"
+                style={{
+                  background:
+                    "linear-gradient(to right, transparent 50%, color-mix(in srgb, #f87171 25%, transparent) 50%)",
+                }}
+              />
+            )}
+            <span className="relative z-10">{iso ? parseInt(iso.slice(8), 10) : ""}</span>
           </button>
         ))}
       </div>
 
       {/* Legend */}
-      <div className="mt-2 flex items-center gap-3 border-t border-border pt-2 text-xs text-muted-foreground">
+      <div className="mt-2 flex flex-wrap items-center gap-3 border-t border-border pt-2 text-xs text-muted-foreground">
         <span className="flex items-center gap-1">
-          <span className="inline-block size-3 rounded-full bg-destructive/20" />
+          <span className="inline-block size-3 rounded-full bg-destructive/10" />
           Занято
+        </span>
+        <span className="flex items-center gap-1">
+          <span
+            className="inline-block size-3 rounded-full"
+            style={{ background: "linear-gradient(to right, transparent 50%, color-mix(in srgb, #f87171 25%, transparent) 50%)" }}
+          />
+          Выезд до 12:00
         </span>
         <span className="flex items-center gap-1">
           <span className="inline-block size-3 rounded-full bg-primary/20" />
