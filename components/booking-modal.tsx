@@ -71,6 +71,47 @@ function selectionOverlapsBusy(arrival: string, departure: string, ranges: BusyR
   return ranges.some((r) => arrival < r.end && departure > r.start)
 }
 
+// ---------------------------------------------------------------------------
+// Pricing
+// ---------------------------------------------------------------------------
+const PRICE_WEEKEND = 24_000 // пт, сб, вс
+const PRICE_WEEKDAY = 20_000 // пн–чт
+
+/** Returns true if the given YYYY-MM-DD is Fri/Sat/Sun (weekend pricing). */
+function isWeekendNight(iso: string): boolean {
+  const day = new Date(iso).getDay() // 0=Sun,1=Mon...5=Fri,6=Sat
+  return day === 5 || day === 6 || day === 0
+}
+
+interface PriceBreakdown {
+  nights: number
+  weekendNights: number
+  weekdayNights: number
+  total: number
+}
+
+/** Calculate total price for the stay [arrival, departure). */
+function calculatePrice(arrival: string, departure: string): PriceBreakdown | null {
+  if (!arrival || !departure || departure <= arrival) return null
+  const start = new Date(arrival)
+  const end = new Date(departure)
+  const nights = Math.round((end.getTime() - start.getTime()) / 86_400_000)
+  let weekendNights = 0
+  for (let i = 0; i < nights; i++) {
+    const d = new Date(start)
+    d.setDate(d.getDate() + i)
+    const iso = d.toISOString().split("T")[0]
+    if (isWeekendNight(iso)) weekendNights++
+  }
+  const weekdayNights = nights - weekendNights
+  const total = weekendNights * PRICE_WEEKEND + weekdayNights * PRICE_WEEKDAY
+  return { nights, weekendNights, weekdayNights, total }
+}
+
+function formatRub(n: number): string {
+  return n.toLocaleString("ru-RU") + " ₽"
+}
+
 const MONTH_NAMES_RU = [
   "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
   "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь",
@@ -492,6 +533,35 @@ export function BookingModal({ open, onClose }: Props) {
                     </div>
                   )}
 
+                  {/* Price breakdown */}
+                  {(() => {
+                    const price = calculatePrice(form.arrival, form.departure)
+                    if (!price) return null
+                    return (
+                      <div className="rounded-lg border border-border bg-secondary/50 px-4 py-3 text-sm">
+                        <div className="mb-2 font-medium text-foreground">Стоимость проживания</div>
+                        <div className="flex flex-col gap-1 text-muted-foreground">
+                          {price.weekendNights > 0 && (
+                            <div className="flex justify-between">
+                              <span>Выходные · {price.weekendNights} ночь/и × {formatRub(PRICE_WEEKEND)}</span>
+                              <span className="text-foreground">{formatRub(price.weekendNights * PRICE_WEEKEND)}</span>
+                            </div>
+                          )}
+                          {price.weekdayNights > 0 && (
+                            <div className="flex justify-between">
+                              <span>Будни · {price.weekdayNights} ночь/и × {formatRub(PRICE_WEEKDAY)}</span>
+                              <span className="text-foreground">{formatRub(price.weekdayNights * PRICE_WEEKDAY)}</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="mt-2 flex justify-between border-t border-border pt-2 font-semibold text-foreground">
+                          <span>Итого за {price.nights} {price.nights === 1 ? "ночь" : price.nights < 5 ? "ночи" : "ночей"}</span>
+                          <span className="text-primary">{formatRub(price.total)}</span>
+                        </div>
+                      </div>
+                    )
+                  })()}
+
                   {/* Guests */}
                   <div className="flex flex-col gap-1.5">
                     <label htmlFor="guests" className="text-sm font-medium text-foreground">
@@ -558,9 +628,23 @@ export function BookingModal({ open, onClose }: Props) {
                   />
 
                   <div className="mt-1 rounded-lg bg-secondary px-4 py-3 text-sm text-secondary-foreground">
-                    Заезд <strong>{formatDate(form.arrival)}</strong> · Выезд{" "}
-                    <strong>{formatDate(form.departure)}</strong> · Гостей{" "}
-                    <strong>{form.guests}</strong>
+                    <div>
+                      Заезд <strong>{formatDate(form.arrival)}</strong> · Выезд{" "}
+                      <strong>{formatDate(form.departure)}</strong> · Гостей{" "}
+                      <strong>{form.guests}</strong>
+                    </div>
+                    {(() => {
+                      const price = calculatePrice(form.arrival, form.departure)
+                      if (!price) return null
+                      return (
+                        <div className="mt-1 border-t border-border/50 pt-1 font-medium text-foreground">
+                          Итого: <span className="text-primary">{formatRub(price.total)}</span>
+                          <span className="ml-1 font-normal text-muted-foreground">
+                            ({price.nights} {price.nights === 1 ? "ночь" : price.nights < 5 ? "ночи" : "ночей"})
+                          </span>
+                        </div>
+                      )
+                    })()}
                   </div>
 
                   {error && (
