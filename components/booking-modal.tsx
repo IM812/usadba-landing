@@ -334,9 +334,8 @@ export function BookingModal({ open, onClose }: Props) {
       .then((r) => r.json())
       .then((d) => {
         if (d?.data) {
-          // Values are stored in kopecks (×100) — divide to get roubles
-          if (d.data.base_price)    setPriceWeekday(Math.round(Number(d.data.base_price) / 100))
-          if (d.data.weekend_price) setPriceWeekend(Math.round(Number(d.data.weekend_price) / 100))
+          if (d.data.base_price)    setPriceWeekday(Number(d.data.base_price))
+          if (d.data.weekend_price) setPriceWeekend(Number(d.data.weekend_price))
         }
       })
       .catch(() => {})

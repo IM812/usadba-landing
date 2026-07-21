@@ -18,12 +18,11 @@ export function PricesSettings() {
 
   useEffect(() => {
     if (s) setForm({
-      // Prices stored in kopecks — display in roubles
-      base_price: String(Math.round(s.base_price / 100)),
-      weekend_price: String(Math.round(s.weekend_price / 100)),
-      extra_guest_price: String(Math.round(s.extra_guest_price / 100)),
+      base_price: String(s.base_price),
+      weekend_price: String(s.weekend_price),
+      extra_guest_price: String(s.extra_guest_price),
       minimum_nights: String(s.minimum_nights),
-      cleaning_fee: String(Math.round(s.cleaning_fee / 100)),
+      cleaning_fee: String(s.cleaning_fee),
       check_in_time: s.check_in_time,
       check_out_time: s.check_out_time,
     })
@@ -36,12 +35,11 @@ export function PricesSettings() {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        // Convert roubles back to kopecks for storage
-        base_price: Math.round(parseFloat(form.base_price) * 100),
-        weekend_price: Math.round(parseFloat(form.weekend_price) * 100),
-        extra_guest_price: Math.round(parseFloat(form.extra_guest_price) * 100),
+        base_price: parseInt(form.base_price),
+        weekend_price: parseInt(form.weekend_price),
+        extra_guest_price: parseInt(form.extra_guest_price),
         minimum_nights: parseInt(form.minimum_nights),
-        cleaning_fee: Math.round(parseFloat(form.cleaning_fee) * 100),
+        cleaning_fee: parseInt(form.cleaning_fee),
         check_in_time: form.check_in_time,
         check_out_time: form.check_out_time,
       }),
