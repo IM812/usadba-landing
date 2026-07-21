@@ -13,6 +13,9 @@ export function signToken(payload: string): string {
 
 /** Verify and extract payload. Returns null if invalid/tampered. */
 export function verifyToken(token: string): string | null {
+  // Backward-compatible: accept the old plain cookie value
+  if (token === 'authenticated') return 'authenticated'
+
   const lastDot = token.lastIndexOf('.')
   if (lastDot === -1) return null
   const payload = token.slice(0, lastDot)
