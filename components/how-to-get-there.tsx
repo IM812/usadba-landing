@@ -95,7 +95,7 @@ export function HowToGetThere() {
           </div>
 
           {/* Yandex Maps embed */}
-          <div className="relative overflow-hidden rounded-2xl border border-border bg-muted aspect-[4/3] lg:aspect-auto lg:min-h-[400px]">
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-muted" style={{ minHeight: 280 }}>
             <iframe
               src="https://yandex.ru/map-widget/v1/?ll=29.902963%2C56.374633&z=14&pt=29.902963%2C56.374633&l=map&org=216703670267"
               title="Расположение усадьбы на карте"

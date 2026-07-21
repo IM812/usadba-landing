@@ -89,31 +89,33 @@ export function Reviews() {
       <div data-reveal className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
-        <div className="mb-10 flex flex-col gap-4 sm:mb-14 sm:flex-row sm:items-end sm:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-widest text-primary">Отзывы</p>
-            <h2 className="mt-3 text-balance font-serif text-3xl leading-tight text-foreground sm:text-5xl">
-              Что говорят гости
-            </h2>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex w-fit items-center gap-2 rounded-xl border border-border bg-card px-4 py-3">
-              <div className="flex gap-0.5 text-accent">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="size-4 fill-current" />
-                ))}
-              </div>
-              <span className="font-serif text-xl font-medium text-foreground">5,0</span>
-              <span className="text-sm text-muted-foreground">· 41 отзыв</span>
+        <div className="mb-8 sm:mb-14">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-widest text-primary">Отзывы</p>
+              <h2 className="mt-3 text-balance font-serif text-3xl leading-tight text-foreground sm:text-5xl">
+                Что говорят гости
+              </h2>
             </div>
-            <a
-              href={YANDEX_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted"
-            >
-              Читать на Яндексе <ExternalLink className="size-3.5 text-muted-foreground" />
-            </a>
+            <div className="flex items-center gap-2.5">
+              <div className="flex w-fit items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 sm:px-4 sm:py-3">
+                <div className="flex gap-0.5 text-accent">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="size-3.5 fill-current sm:size-4" />
+                  ))}
+                </div>
+                <span className="font-serif text-lg font-medium text-foreground sm:text-xl">5,0</span>
+                <span className="text-xs text-muted-foreground sm:text-sm">· 41</span>
+              </div>
+              <a
+                href={YANDEX_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2.5 text-sm font-medium text-foreground transition hover:bg-muted sm:px-4 sm:py-3"
+              >
+                Яндекс <ExternalLink className="size-3.5 text-muted-foreground" />
+              </a>
+            </div>
           </div>
         </div>
 
@@ -192,16 +194,16 @@ export function Reviews() {
         </div>
 
         {/* CTA banner */}
-        <div className="mt-10 flex flex-col items-center gap-3 rounded-2xl border border-border bg-card px-6 py-6 sm:flex-row sm:justify-between">
+        <div className="mt-8 flex flex-col gap-4 rounded-2xl border border-border bg-card px-5 py-5 sm:mt-10 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-6">
           <div>
-            <p className="font-serif text-lg text-foreground">Были у нас? Оставьте отзыв!</p>
+            <p className="font-serif text-base text-foreground sm:text-lg">Были у нас? Оставьте отзыв!</p>
             <p className="mt-0.5 text-sm text-muted-foreground">Ваш опыт поможет другим гостям принять решение</p>
           </div>
           <a
             href={YANDEX_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex shrink-0 items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90 sm:w-auto"
           >
             Написать на Яндексе <ExternalLink className="size-4" />
           </a>

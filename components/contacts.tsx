@@ -26,7 +26,7 @@ export function Contacts({ onBook }: { onBook: () => void }) {
             <button
               type="button"
               onClick={onBook}
-              className="mt-8 w-full rounded-xl bg-accent px-8 py-4 text-base font-semibold text-accent-foreground transition hover:opacity-90 active:scale-95 sm:w-auto sm:py-3.5"
+              className="mt-6 w-full rounded-xl bg-accent px-8 py-4 text-base font-semibold text-accent-foreground transition hover:opacity-90 active:scale-95 sm:mt-8 sm:w-auto sm:py-3.5"
             >
               Забронировать
             </button>

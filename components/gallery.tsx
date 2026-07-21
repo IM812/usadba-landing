@@ -60,8 +60,8 @@ export function Gallery() {
           </p>
         </div>
 
-        {/* Mobile: 2-col grid. Desktop: bento 3-col */}
-        <div className="grid grid-cols-2 gap-3 sm:auto-rows-[200px] sm:grid-cols-3 sm:gap-4 [&>*:first-child]:col-span-2 [&>*:first-child]:aspect-video sm:[&>*:first-child]:col-span-2 sm:[&>*:first-child]:row-span-2 sm:[&>*:first-child]:aspect-auto">
+        {/* Mobile: 1 big + 2-col grid. Desktop: bento 3-col */}
+        <div className="grid grid-cols-2 gap-2 sm:auto-rows-[200px] sm:grid-cols-3 sm:gap-4 [&>*:first-child]:col-span-2 [&>*:first-child]:aspect-[16/9] sm:[&>*:first-child]:col-span-2 sm:[&>*:first-child]:row-span-2 sm:[&>*:first-child]:aspect-auto">
           {photos.map((p, i) => (
             <button
               key={p.src}
