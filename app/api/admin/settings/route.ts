@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
+import { requireAdminAuth } from '@/lib/admin-auth'
 
+// GET is intentionally public — the public site reads settings (title, phone, etc.)
 export async function GET() {
   const supabase = createServiceClient()
   const { data, error } = await supabase.from('settings').select('*').eq('id', 1).single()
@@ -9,6 +11,9 @@ export async function GET() {
 }
 
 export async function PATCH(req: NextRequest) {
+  const authError = requireAdminAuth(req)
+  if (authError) return authError
+
   const supabase = createServiceClient()
   const body = await req.json()
 

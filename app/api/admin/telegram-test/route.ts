@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
+import { requireAdminAuth } from '@/lib/admin-auth'
 
 export async function POST() {
   const supabase = createServiceClient()

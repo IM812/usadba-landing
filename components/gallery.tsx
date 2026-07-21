@@ -3,20 +3,38 @@
 import Image from "next/image"
 import { useCallback, useEffect, useState } from "react"
 import { X, ChevronLeft, ChevronRight, Expand } from "lucide-react"
+import useSWR from "swr"
 
-const photos = [
-  { src: "/images/real/photo2.jpg",  alt: "Ночная подсветка соснового леса зимой" },
-  { src: "/images/real/photo3.jpg",  alt: "Сибирский чан с дымом осенью" },
-  { src: "/images/real/photo4.jpg",  alt: "Баня весной на фоне соснового леса" },
-  { src: "/images/real/photo5.jpg",  alt: "Чан с видом на озеро" },
-  { src: "/images/real/photo6.jpg",  alt: "Вид на озеро через сосны" },
-  { src: "/images/real/photo1.jpg",  alt: "Терраса с подвесным креслом осенью" },
-  { src: "/images/real/photo12.jpg", alt: "Дорожка к озеру летом" },
-  { src: "/images/real/photo9.jpg",  alt: "Камин в гостиной" },
-  { src: "/images/real/photo7.jpg",  alt: "Уютная спальня с бревенчатыми стенами" },
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
+
+const fallbackPhotos = [
+  { id: "1", src: "/images/real/photo2.jpg",  alt: "Ночная подсветка соснового леса зимой" },
+  { id: "2", src: "/images/real/photo3.jpg",  alt: "Сибирский чан с дымом осенью" },
+  { id: "3", src: "/images/real/photo4.jpg",  alt: "Баня весной на фоне соснового леса" },
+  { id: "4", src: "/images/real/photo5.jpg",  alt: "Чан с видом на озеро" },
+  { id: "5", src: "/images/real/photo6.jpg",  alt: "Вид на озеро через сосны" },
+  { id: "6", src: "/images/real/photo1.jpg",  alt: "Терраса с подвесным креслом осенью" },
+  { id: "7", src: "/images/real/photo12.jpg", alt: "Дорожка к озеру летом" },
+  { id: "8", src: "/images/real/photo9.jpg",  alt: "Камин в гостиной" },
+  { id: "9", src: "/images/real/photo7.jpg",  alt: "Уютная спальня с бревенчатыми стенами" },
 ]
 
+interface GalleryPhoto {
+  id: string
+  url?: string
+  src?: string
+  alt?: string
+  caption?: string
+}
+
 export function Gallery() {
+  const { data } = useSWR<{ ok: boolean; data: GalleryPhoto[] }>("/api/admin/gallery", fetcher)
+
+  const photos =
+    data?.ok && data.data?.length
+      ? data.data.map((p) => ({ id: p.id, src: p.url ?? p.src ?? "", alt: p.caption ?? p.alt ?? "" }))
+      : fallbackPhotos
+
   const [lightbox, setLightbox] = useState<number | null>(null)
 
   const close = useCallback(() => setLightbox(null), [])
