@@ -88,8 +88,6 @@ function selectionOverlapsBusy(arrival: string, departure: string, ranges: BusyR
 // ---------------------------------------------------------------------------
 // Pricing
 // ---------------------------------------------------------------------------
-const PRICE_WEEKEND = 24_000 // пт, сб, вс
-const PRICE_WEEKDAY = 20_000 // пн–чт
 
 /** Returns true if the given YYYY-MM-DD is Fri/Sat/Sun (weekend pricing). */
 function isWeekendNight(iso: string): boolean {
@@ -105,7 +103,12 @@ interface PriceBreakdown {
 }
 
 /** Calculate total price for the stay [arrival, departure). */
-function calculatePrice(arrival: string, departure: string): PriceBreakdown | null {
+function calculatePrice(
+  arrival: string,
+  departure: string,
+  priceWeekday: number,
+  priceWeekend: number,
+): PriceBreakdown | null {
   if (!arrival || !departure || departure <= arrival) return null
   const start = new Date(arrival)
   const end = new Date(departure)
@@ -118,7 +121,7 @@ function calculatePrice(arrival: string, departure: string): PriceBreakdown | nu
     if (isWeekendNight(iso)) weekendNights++
   }
   const weekdayNights = nights - weekendNights
-  const total = weekendNights * PRICE_WEEKEND + weekdayNights * PRICE_WEEKDAY
+  const total = weekendNights * priceWeekend + weekdayNights * priceWeekday
   return { nights, weekendNights, weekdayNights, total }
 }
 
@@ -321,6 +324,21 @@ export function BookingModal({ open, onClose }: Props) {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Prices from settings (fallback to safe defaults while loading)
+  const [priceWeekday, setPriceWeekday] = useState(20_000)
+  const [priceWeekend, setPriceWeekend] = useState(24_000)
+  useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.data) {
+          if (d.data.base_price) setPriceWeekday(Number(d.data.base_price))
+          if (d.data.weekend_price) setPriceWeekend(Number(d.data.weekend_price))
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   // Calendar state
   const now = new Date()
@@ -596,7 +614,7 @@ export function BookingModal({ open, onClose }: Props) {
 
                   {/* Price breakdown */}
                   {(() => {
-                    const price = calculatePrice(form.arrival, form.departure)
+                    const price = calculatePrice(form.arrival, form.departure, priceWeekday, priceWeekend)
                     if (!price) return null
                     return (
                       <div className="rounded-lg border border-border bg-secondary/50 px-4 py-3 text-sm">
@@ -609,14 +627,14 @@ export function BookingModal({ open, onClose }: Props) {
                         <div className="flex flex-col gap-1 text-muted-foreground">
                           {price.weekendNights > 0 && (
                             <div className="flex justify-between">
-                              <span>Выходные · {price.weekendNights} ночь/и × {formatRub(PRICE_WEEKEND)}</span>
-                              <span className="text-foreground">{formatRub(price.weekendNights * PRICE_WEEKEND)}</span>
+                              <span>Выходные · {price.weekendNights} ночь/и × {formatRub(priceWeekend)}</span>
+                              <span className="text-foreground">{formatRub(price.weekendNights * priceWeekend)}</span>
                             </div>
                           )}
                           {price.weekdayNights > 0 && (
                             <div className="flex justify-between">
-                              <span>Будни · {price.weekdayNights} ночь/и × {formatRub(PRICE_WEEKDAY)}</span>
-                              <span className="text-foreground">{formatRub(price.weekdayNights * PRICE_WEEKDAY)}</span>
+                              <span>Будни · {price.weekdayNights} ночь/и × {formatRub(priceWeekday)}</span>
+                              <span className="text-foreground">{formatRub(price.weekdayNights * priceWeekday)}</span>
                             </div>
                           )}
                         </div>
@@ -700,7 +718,7 @@ export function BookingModal({ open, onClose }: Props) {
                       <strong>{form.guests}</strong>
                     </div>
                     {(() => {
-                      const price = calculatePrice(form.arrival, form.departure)
+                      const price = calculatePrice(form.arrival, form.departure, priceWeekday, priceWeekend)
                       if (!price) return null
                       return (
                         <div className="mt-1 border-t border-border/50 pt-1 font-medium text-foreground">
