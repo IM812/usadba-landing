@@ -359,13 +359,16 @@ export function BookingModal({ open, onClose }: Props) {
     try {
       const res = await fetch("/api/availability")
       const data = await res.json()
-      if (data.ok) {
+      // Always show calendar — if ok, load busy ranges; if not, show warning but keep calendar open
+      if (data.ok && Array.isArray(data.ranges)) {
         setBusyRanges(data.ranges)
       } else {
-        setAvailError("Временно не удалось проверить доступность дат.")
+        setBusyRanges([])
+        setAvailError("Занятые даты временно недоступны — уточните у нас перед бронированием.")
       }
     } catch {
-      setAvailError("Временно не удалось проверить доступность дат.")
+      setBusyRanges([])
+      setAvailError("Занятые даты временно недоступны — уточните у нас перед бронированием.")
     } finally {
       setAvailLoading(false)
     }
@@ -563,9 +566,18 @@ export function BookingModal({ open, onClose }: Props) {
                     </div>
                   )}
                   {availError && !availLoading && (
-                    <div className="flex items-start gap-2 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                      <AlertTriangle className="mt-0.5 size-4 shrink-0" />
-                      <span>{availError} Выбор дат недоступен — позвоните нам напрямую.</span>
+                    <div className="flex items-start justify-between gap-2 rounded-lg bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400">
+                      <div className="flex items-start gap-2">
+                        <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+                        <span>{availError}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={fetchAvailability}
+                        className="shrink-0 text-xs underline underline-offset-2 hover:no-underline"
+                      >
+                        Повторить
+                      </button>
                     </div>
                   )}
 
