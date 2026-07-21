@@ -5,7 +5,6 @@ import { SiteHeader } from "@/components/site-header"
 import { Hero } from "@/components/hero"
 import { StatsStrip } from "@/components/stats-strip"
 import { About } from "@/components/about"
-import { Seasons } from "@/components/seasons"
 import { Gallery } from "@/components/gallery"
 import { Reviews } from "@/components/reviews"
 import { FaqSection } from "@/components/faq-section"
@@ -26,7 +25,6 @@ export default function Page() {
       <Hero onBook={openBooking} />
       <StatsStrip />
       <About />
-      <Seasons />
       <Gallery />
       <Reviews />
       <FaqSection />
