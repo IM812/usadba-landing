@@ -49,7 +49,6 @@ export function Reviews() {
   const [current, setCurrent] = useState(0)
   const [visibleCount, setVisibleCount] = useState(3)
 
-  // Calculate how many cards fit depending on viewport
   useEffect(() => {
     function measure() {
       const w = window.innerWidth
@@ -68,7 +67,6 @@ export function Reviews() {
   const prev = useCallback(() => setCurrent((c) => Math.max(0, c - 1)), [])
   const next = useCallback(() => setCurrent((c) => Math.min(maxIndex, c + 1)), [maxIndex])
 
-  // Scroll the track on index change
   useEffect(() => {
     const track = trackRef.current
     if (!track) return
@@ -78,11 +76,20 @@ export function Reviews() {
     }
   }, [current])
 
+  // card width as fraction of container minus gaps
+  const cardWidth =
+    visibleCount === 1
+      ? "100%"
+      : visibleCount === 2
+      ? "calc(50% - 8px)"
+      : "calc(33.333% - 11px)"
+
   return (
     <section id="reviews" className="bg-background py-16 sm:py-28 overflow-hidden">
       <div data-reveal className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
         {/* Header */}
-        <div className="mb-8 flex flex-col gap-4 sm:mb-12 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-10 flex flex-col gap-4 sm:mb-14 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-2xl">
             <p className="text-sm font-semibold uppercase tracking-widest text-primary">Отзывы</p>
             <h2 className="mt-3 text-balance font-serif text-3xl leading-tight text-foreground sm:text-5xl">
@@ -105,53 +112,57 @@ export function Reviews() {
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted"
             >
-              Читать на Яндексе
-              <ExternalLink className="size-3.5 text-muted-foreground" />
+              Читать на Яндексе <ExternalLink className="size-3.5 text-muted-foreground" />
             </a>
           </div>
         </div>
 
-        {/* Slider */}
+        {/* Slider track */}
         <div className="relative">
           <div
             ref={trackRef}
-            className="flex gap-4 overflow-x-auto scroll-smooth pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex gap-4 overflow-x-hidden pb-2"
           >
             {staticReviews.map((r, idx) => (
-              <figure
+              <article
                 key={idx}
-                style={{ minWidth: visibleCount === 1 ? "calc(100% - 0px)" : visibleCount === 2 ? "calc(50% - 8px)" : "calc(33.333% - 11px)" }}
-                className="shrink-0 flex flex-col rounded-2xl border border-border bg-card p-5 sm:p-6 transition-opacity duration-300"
+                style={{ minWidth: cardWidth, maxWidth: cardWidth }}
+                className="shrink-0 flex flex-col rounded-2xl border border-border bg-card p-6 sm:p-7"
               >
-                <Quote className="size-8 text-accent" />
+                <Quote className="size-7 shrink-0 text-accent" />
+
                 <div className="mt-3 flex gap-0.5 text-accent">
                   {Array.from({ length: r.rating }).map((_, i) => (
-                    <Star key={i} className="size-4 fill-current" />
+                    <Star key={i} className="size-3.5 fill-current" />
                   ))}
                 </div>
-                <blockquote className="mt-4 flex-1 text-pretty leading-relaxed text-muted-foreground line-clamp-6">
+
+                {/* Text — no clamp, natural height */}
+                <blockquote className="mt-4 text-pretty text-[15px] leading-relaxed text-muted-foreground">
                   {r.text}
                 </blockquote>
-                <figcaption className="mt-6 border-t border-border pt-4">
-                  <p className="font-serif text-lg text-foreground">{r.name}</p>
+
+                <footer className="mt-6 border-t border-border pt-4">
+                  <p className="font-serif text-base font-medium text-foreground">{r.name}</p>
                   <p className="text-sm text-muted-foreground">{r.date}</p>
-                </figcaption>
-              </figure>
+                </footer>
+              </article>
             ))}
           </div>
 
-          {/* Nav buttons */}
+          {/* Controls */}
           <div className="mt-6 flex items-center justify-between">
-            {/* Dots */}
             <div className="flex gap-1.5">
               {Array.from({ length: maxIndex + 1 }).map((_, i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => setCurrent(i)}
-                  aria-label={`Перейти к отзыву ${i + 1}`}
+                  aria-label={`Отзыв ${i + 1}`}
                   className={`rounded-full transition-all duration-200 ${
-                    i === current ? "w-6 h-2 bg-primary" : "w-2 h-2 bg-border hover:bg-muted-foreground"
+                    i === current
+                      ? "w-6 h-2 bg-primary"
+                      : "w-2 h-2 bg-border hover:bg-muted-foreground"
                   }`}
                 />
               ))}
@@ -180,7 +191,7 @@ export function Reviews() {
           </div>
         </div>
 
-        {/* Yandex CTA */}
+        {/* CTA banner */}
         <div className="mt-10 flex flex-col items-center gap-3 rounded-2xl border border-border bg-card px-6 py-6 sm:flex-row sm:justify-between">
           <div>
             <p className="font-serif text-lg text-foreground">Были у нас? Оставьте отзыв!</p>
@@ -192,8 +203,7 @@ export function Reviews() {
             rel="noopener noreferrer"
             className="flex shrink-0 items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
           >
-            Написать на Яндексе
-            <ExternalLink className="size-4" />
+            Написать на Яндексе <ExternalLink className="size-4" />
           </a>
         </div>
       </div>

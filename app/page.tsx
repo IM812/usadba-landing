@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { SiteHeader } from "@/components/site-header"
 import { Hero } from "@/components/hero"
-import { StatsStrip } from "@/components/stats-strip"
 import { About } from "@/components/about"
 import { Gallery } from "@/components/gallery"
+import { QuoteBanner } from "@/components/quote-banner"
 import { Reviews } from "@/components/reviews"
 import { FaqSection } from "@/components/faq-section"
 import { HowToGetThere } from "@/components/how-to-get-there"
@@ -23,9 +23,9 @@ export default function Page() {
       <ScrollReveal />
       <SiteHeader onBook={openBooking} />
       <Hero onBook={openBooking} />
-      <StatsStrip />
       <About />
       <Gallery />
+      <QuoteBanner />
       <Reviews />
       <FaqSection />
       <HowToGetThere />
