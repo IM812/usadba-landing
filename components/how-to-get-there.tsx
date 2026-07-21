@@ -3,9 +3,8 @@
 import { Car, Train, Clock, MapPin, ExternalLink } from "lucide-react"
 
 const YANDEX_MAPS_ORG = "https://yandex.ru/maps/org/usadba_v_antropkovo/216703670267/"
-const YANDEX_MAPS_EMBED = "https://api-maps.yandex.ru/services/constructor/1.0/static/?sid=tXVCT1BO1R2JBQN2vG7e3kkV-P_9Tl9i&width=800&height=450&lang=ru_RU"
-const YANDEX_ROUTE_FROM_MSK = "https://yandex.ru/maps/?rtext=~57.069%2C31.077&rtt=auto"
-const YANDEX_ROUTE_FROM_SPB = "https://yandex.ru/maps/?rtext=~57.069%2C31.077&rtt=auto"
+const YANDEX_ROUTE_FROM_MSK = "https://yandex.ru/maps/?rtext=~56.374633%2C29.902963&rtt=auto"
+const YANDEX_ROUTE_FROM_SPB = "https://yandex.ru/maps/?rtext=~56.374633%2C29.902963&rtt=auto"
 
 const routes = [
   {
@@ -98,7 +97,7 @@ export function HowToGetThere() {
           {/* Yandex Maps embed */}
           <div className="relative overflow-hidden rounded-2xl border border-border bg-muted aspect-[4/3] lg:aspect-auto lg:min-h-[400px]">
             <iframe
-              src="https://yandex.ru/map-widget/v1/?ll=31.077%2C57.069&z=12&pt=31.077%2C57.069&l=map"
+              src="https://yandex.ru/map-widget/v1/?ll=29.902963%2C56.374633&z=14&pt=29.902963%2C56.374633&l=map&org=216703670267"
               title="Расположение усадьбы на карте"
               width="100%"
               height="100%"
