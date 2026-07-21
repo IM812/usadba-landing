@@ -7,7 +7,6 @@ import { AvailableDates } from "@/components/available-dates"
 import { About } from "@/components/about"
 import { Gallery } from "@/components/gallery"
 import { QuoteBanner } from "@/components/quote-banner"
-import { PriceCalculator } from "@/components/price-calculator"
 import { Reviews } from "@/components/reviews"
 import { FaqSection } from "@/components/faq-section"
 import { HowToGetThere } from "@/components/how-to-get-there"
@@ -29,7 +28,6 @@ export default function Page() {
       <About />
       <Gallery />
       <QuoteBanner />
-      <PriceCalculator onBook={openBooking} />
       <Reviews />
       <FaqSection />
       <HowToGetThere />
