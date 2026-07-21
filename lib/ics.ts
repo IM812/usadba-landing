@@ -27,8 +27,13 @@ export async function fetchAvitoRanges(
 
   try {
     const res = await fetch(icsUrl, {
-      headers: { 'User-Agent': 'Mozilla/5.0' },
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'text/calendar, text/plain, */*',
+        'Accept-Language': 'ru-RU,ru;q=0.9,en;q=0.8',
+      },
       next: { revalidate: 0 },
+      cache: 'no-store',
     })
     if (!res.ok) {
       return { ranges: [], error: `ICS fetch failed: ${res.status}`, fetchedAt: null }

@@ -31,7 +31,8 @@ export async function GET() {
       .eq('id', 1)
       .single()
 
-    const avitoUrl = settings?.avito_ics_url ?? ''
+    // fallback to env var if DB is empty
+    const avitoUrl = settings?.avito_ics_url || process.env.AVITO_ICS_URL || ''
     const { ranges: avitoRanges, error: icsError } = await fetchAvitoRanges(avitoUrl)
 
     if (icsError) {
