@@ -58,27 +58,28 @@ export function FaqSection() {
   return (
     <section id="faq" className="bg-muted/40 py-16 sm:py-28">
       <div data-reveal className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-10 lg:grid-cols-3 lg:gap-16">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-widest text-primary">FAQ</p>
-            <h2 className="mt-3 text-balance font-serif text-3xl leading-tight text-foreground sm:text-4xl">
+        {/* Header — stacked on mobile, side-by-side on desktop */}
+        <div className="mb-8 sm:mb-12">
+          <p className="text-sm font-semibold uppercase tracking-widest text-primary">FAQ</p>
+          <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <h2 className="text-balance font-serif text-3xl leading-tight text-foreground sm:text-4xl">
               Частые вопросы
             </h2>
-            <p className="mt-4 text-pretty leading-relaxed text-muted-foreground">
-              Не нашли ответ? Напишите нам — ответим в течение нескольких часов.
-            </p>
             <a
               href="tel:+79951558842"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+              className="inline-flex w-fit items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
             >
               Позвонить нам
             </a>
           </div>
-          <div className="lg:col-span-2 bg-card rounded-2xl border border-border px-6">
-            {items.map((item: { question: string; answer: string }, idx: number) => (
-              <FaqItem key={idx} q={item.question} a={item.answer} />
-            ))}
-          </div>
+          <p className="mt-3 max-w-xl text-pretty leading-relaxed text-muted-foreground">
+            Не нашли ответ? Напишите нам — ответим в течение нескольких часов.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-border bg-card px-5 sm:px-6">
+          {items.map((item: { question: string; answer: string }, idx: number) => (
+            <FaqItem key={idx} q={item.question} a={item.answer} />
+          ))}
         </div>
       </div>
     </section>

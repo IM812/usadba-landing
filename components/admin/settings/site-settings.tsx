@@ -18,9 +18,14 @@ export function SiteSettings() {
 
   useEffect(() => {
     if (s) setForm({
-      title: s.title, subtitle: s.subtitle, description: s.description,
-      phone: s.phone, email: s.email, address: s.address,
-      telegram: s.telegram, whatsapp: s.whatsapp,
+      title: s.title ?? '',
+      subtitle: s.subtitle ?? '',
+      description: s.description ?? '',
+      phone: s.phone ?? '',
+      email: s.email ?? '',
+      address: s.address ?? '',
+      telegram: s.telegram ?? '',
+      whatsapp: s.whatsapp ?? '',
     })
   }, [s])
 

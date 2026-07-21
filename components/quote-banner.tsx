@@ -11,7 +11,11 @@ const quotes = [
 export function QuoteBanner() {
   const ref = useRef<HTMLDivElement>(null)
   const [offset, setOffset] = useState(0)
-  const [quoteIdx] = useState(() => Math.floor(Math.random() * quotes.length))
+  const [quoteIdx, setQuoteIdx] = useState(0)
+
+  useEffect(() => {
+    setQuoteIdx(Math.floor(Math.random() * quotes.length))
+  }, [])
 
   useEffect(() => {
     function onScroll() {

@@ -56,14 +56,16 @@ export function About() {
           </div>
         </div>
 
-        <div className="mt-12 grid grid-cols-2 gap-4 sm:mt-16 lg:grid-cols-4">
+        <div className="mt-12 grid grid-cols-1 gap-4 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((f) => (
-            <div key={f.title} className="rounded-2xl border border-border bg-card p-5 sm:p-6">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary sm:size-11">
+            <div key={f.title} className="flex items-start gap-4 rounded-2xl border border-border bg-card p-5 sm:flex-col sm:gap-0 sm:p-6">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:size-11">
                 <f.icon className="size-5" />
               </div>
-              <h3 className="mt-4 font-serif text-lg text-foreground sm:text-xl">{f.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.text}</p>
+              <div className="sm:mt-4">
+                <h3 className="font-serif text-lg text-foreground sm:text-xl">{f.title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground sm:mt-2">{f.text}</p>
+              </div>
             </div>
           ))}
         </div>

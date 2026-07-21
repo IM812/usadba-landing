@@ -1,7 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
+import { requireAdminAuth } from '@/lib/admin-auth'
 
 export async function GET(req: NextRequest) {
+  const authError = requireAdminAuth(req)
+  if (authError) return authError
+
   const supabase = createServiceClient()
   const { searchParams } = req.nextUrl
 
@@ -23,6 +27,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const authError = requireAdminAuth(req)
+  if (authError) return authError
+
   const supabase = createServiceClient()
   const body = await req.json()
 

@@ -1,15 +1,51 @@
 "use client"
 
 import { Phone, Mail, MapPin, Clock } from "lucide-react"
+import useSWR from "swr"
 
-const items = [
-  { icon: Phone, label: "Телефон", value: "+7 (995) 155-88-42", href: "tel:+79951558842" },
-  { icon: Mail, label: "WhatsApp / Telegram", value: "+7 (995) 155-88-42", href: "tel:+79951558842" },
-  { icon: MapPin, label: "Адрес", value: "Псковская обл., Новосокольнический р-н, Маевская волость", href: "https://yandex.ru/maps/org/usadba_v_antropkovo/216703670267/" },
-  { icon: Clock, label: "Скидка", value: "−10% от 5 ночей", href: null },
-]
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 export function Contacts({ onBook }: { onBook: () => void }) {
+  const { data } = useSWR("/api/admin/settings", fetcher)
+  const s = data?.data
+
+  const phone = s?.phone || "+7 (995) 155-88-42"
+  const phoneRaw = phone.replace(/\D/g, "").replace(/^8/, "7")
+  const address = s?.address || "Псковская обл., Новосокольнический р-н, Маевская волость"
+  const telegram = s?.telegram || ""
+  const whatsapp = s?.whatsapp || phone
+
+  const items = [
+    {
+      icon: Phone,
+      label: "Телефон",
+      value: phone,
+      href: `tel:+${phoneRaw}`,
+    },
+    {
+      icon: Mail,
+      label: "WhatsApp / Telegram",
+      value: whatsapp || phone,
+      href: whatsapp
+        ? `https://wa.me/${whatsapp.replace(/\D/g, "")}`
+        : telegram
+        ? `https://t.me/${telegram.replace("@", "")}`
+        : `tel:+${phoneRaw}`,
+    },
+    {
+      icon: MapPin,
+      label: "Адрес",
+      value: address,
+      href: "https://yandex.ru/maps/org/usadba_v_antropkovo/216703670267/",
+    },
+    {
+      icon: Clock,
+      label: "Скидка",
+      value: "−10% от 5 ночей",
+      href: null,
+    },
+  ]
+
   return (
     <section id="contacts" className="bg-primary py-16 text-primary-foreground sm:py-28">
       <div data-reveal className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -26,7 +62,7 @@ export function Contacts({ onBook }: { onBook: () => void }) {
             <button
               type="button"
               onClick={onBook}
-              className="mt-8 w-full rounded-xl bg-accent px-8 py-4 text-base font-semibold text-accent-foreground transition hover:opacity-90 active:scale-95 sm:w-auto sm:py-3.5"
+              className="mt-6 w-full rounded-xl bg-accent px-8 py-4 text-base font-semibold text-accent-foreground transition hover:opacity-90 active:scale-95 sm:mt-8 sm:w-auto sm:py-3.5"
             >
               Забронировать
             </button>
@@ -54,10 +90,7 @@ export function Contacts({ onBook }: { onBook: () => void }) {
                   {content}
                 </a>
               ) : (
-                <div
-                  key={item.label}
-                  className="rounded-2xl border border-primary-foreground/15 bg-primary-foreground/5 p-5"
-                >
+                <div key={item.label} className="rounded-2xl border border-primary-foreground/15 bg-primary-foreground/5 p-5">
                   {content}
                 </div>
               )
