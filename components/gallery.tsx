@@ -15,7 +15,7 @@ const photos = [
 export function Gallery() {
   return (
     <section id="gallery" className="bg-secondary py-16 sm:py-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div data-reveal className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 max-w-2xl">
           <p className="text-sm font-semibold uppercase tracking-widest text-primary">Галерея</p>
           <h2 className="mt-3 text-balance font-serif text-4xl leading-tight text-foreground sm:text-5xl">

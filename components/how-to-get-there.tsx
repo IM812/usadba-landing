@@ -34,7 +34,7 @@ const routes = [
 export function HowToGetThere() {
   return (
     <section id="location" className="bg-background py-16 sm:py-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div data-reveal className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 flex flex-col gap-2 sm:mb-14">
           <p className="text-sm font-semibold uppercase tracking-widest text-primary">Как добраться</p>
           <h2 className="text-balance font-serif text-3xl leading-tight text-foreground sm:text-5xl">

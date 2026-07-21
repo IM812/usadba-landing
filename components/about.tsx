@@ -11,7 +11,7 @@ const features = [
 export function About() {
   return (
     <section id="about" className="bg-background py-16 sm:py-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div data-reveal className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           {/* Image — shown first on mobile */}
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-xl lg:order-last">

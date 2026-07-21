@@ -3,7 +3,9 @@
 import { useState } from "react"
 import { SiteHeader } from "@/components/site-header"
 import { Hero } from "@/components/hero"
+import { StatsStrip } from "@/components/stats-strip"
 import { About } from "@/components/about"
+import { Seasons } from "@/components/seasons"
 import { Gallery } from "@/components/gallery"
 import { Reviews } from "@/components/reviews"
 import { FaqSection } from "@/components/faq-section"
@@ -11,6 +13,7 @@ import { HowToGetThere } from "@/components/how-to-get-there"
 import { Contacts } from "@/components/contacts"
 import { SiteFooter } from "@/components/site-footer"
 import { BookingModal } from "@/components/booking-modal"
+import { ScrollReveal } from "@/components/scroll-reveal"
 
 export default function Page() {
   const [bookingOpen, setBookingOpen] = useState(false)
@@ -18,9 +21,12 @@ export default function Page() {
 
   return (
     <main>
+      <ScrollReveal />
       <SiteHeader onBook={openBooking} />
       <Hero onBook={openBooking} />
+      <StatsStrip />
       <About />
+      <Seasons />
       <Gallery />
       <Reviews />
       <FaqSection />

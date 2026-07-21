@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { ArrowRight } from "lucide-react"
+import { WeatherBadge } from "@/components/weather-badge"
 
 export function Hero({ onBook }: { onBook: () => void }) {
   return (
@@ -33,9 +34,12 @@ export function Hero({ onBook }: { onBook: () => void }) {
 
       <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-8 pt-24 sm:gap-10 sm:pb-16 sm:pt-32 sm:px-6 lg:px-8">
         <div className="max-w-2xl">
-          <p className="mb-3 inline-flex items-center rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-3 py-1 text-xs font-medium text-primary-foreground backdrop-blur sm:mb-4 sm:px-4 sm:py-1.5 sm:text-sm">
-            Псковская область · Рейтинг 5,0 · 41 отзыв
-          </p>
+          <div className="mb-3 flex flex-wrap items-center gap-2 sm:mb-4">
+            <span className="inline-flex items-center rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-3 py-1 text-xs font-medium text-primary-foreground backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm">
+              Псковская область · Рейтинг 5,0 · 41 отзыв
+            </span>
+            <WeatherBadge />
+          </div>
           <h1 className="text-balance font-serif text-[2.4rem] font-medium leading-[1.05] text-primary-foreground sm:text-6xl lg:text-7xl">
             Усадьба в Антропково
           </h1>
