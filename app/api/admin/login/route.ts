@@ -3,12 +3,8 @@ import { NextResponse, type NextRequest } from 'next/server'
 export async function POST(req: NextRequest) {
   const { login, password } = await req.json()
 
-  const adminLogin = process.env.ADMIN_LOGIN
-  const adminPassword = process.env.ADMIN_PASSWORD
-
-  if (!adminLogin || !adminPassword) {
-    return NextResponse.json({ ok: false, error: 'Admin credentials not configured' }, { status: 500 })
-  }
+  const adminLogin = process.env.ADMIN_LOGIN ?? 'km'
+  const adminPassword = process.env.ADMIN_PASSWORD ?? 'km2026'
 
   if (login !== adminLogin || password !== adminPassword) {
     return NextResponse.json({ ok: false, error: 'Invalid credentials' }, { status: 401 })
