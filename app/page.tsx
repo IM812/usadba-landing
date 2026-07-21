@@ -6,6 +6,8 @@ import { Hero } from "@/components/hero"
 import { About } from "@/components/about"
 import { Gallery } from "@/components/gallery"
 import { Reviews } from "@/components/reviews"
+import { FaqSection } from "@/components/faq-section"
+import { HowToGetThere } from "@/components/how-to-get-there"
 import { Contacts } from "@/components/contacts"
 import { SiteFooter } from "@/components/site-footer"
 import { BookingModal } from "@/components/booking-modal"
@@ -21,6 +23,8 @@ export default function Page() {
       <About />
       <Gallery />
       <Reviews />
+      <FaqSection />
+      <HowToGetThere />
       <Contacts onBook={openBooking} />
       <SiteFooter />
       <BookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} />

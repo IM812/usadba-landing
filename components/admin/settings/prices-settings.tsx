@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import { SettingsForm, FieldRow, TextInput } from './settings-form'
+import { SeasonalPricesSettings } from './seasonal-prices-settings'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -55,7 +56,7 @@ export function PricesSettings() {
         <p className="text-sm text-muted-foreground mt-0.5">Ценообразование и условия бронирования</p>
       </div>
 
-      <SettingsForm title="Стоимость проживания" onSubmit={handleSubmit}>
+      <SettingsForm title="Базовые цены" onSubmit={handleSubmit}>
         <FieldRow label="Цена (будни)" hint="Пн–Чт за ночь, ₽">
           <TextInput type="number" value={form.base_price} onChange={(v) => update('base_price', v)} />
         </FieldRow>
@@ -78,6 +79,8 @@ export function PricesSettings() {
           <TextInput type="time" value={form.check_out_time} onChange={(v) => update('check_out_time', v)} />
         </FieldRow>
       </SettingsForm>
+
+      <SeasonalPricesSettings />
     </div>
   )
 }
