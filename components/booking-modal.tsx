@@ -325,20 +325,22 @@ export function BookingModal({ open, onClose }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Prices from settings (fallback to safe defaults while loading)
+  // Prices from settings — reload every time the modal opens
   const [priceWeekday, setPriceWeekday] = useState(20_000)
   const [priceWeekend, setPriceWeekend] = useState(24_000)
   useEffect(() => {
+    if (!open) return
     fetch("/api/admin/settings")
       .then((r) => r.json())
       .then((d) => {
         if (d?.data) {
-          if (d.data.base_price) setPriceWeekday(Number(d.data.base_price))
-          if (d.data.weekend_price) setPriceWeekend(Number(d.data.weekend_price))
+          // Values are stored in kopecks (×100) — divide to get roubles
+          if (d.data.base_price)    setPriceWeekday(Math.round(Number(d.data.base_price) / 100))
+          if (d.data.weekend_price) setPriceWeekend(Math.round(Number(d.data.weekend_price) / 100))
         }
       })
       .catch(() => {})
-  }, [])
+  }, [open])
 
   // Calendar state
   const now = new Date()
@@ -456,7 +458,7 @@ export function BookingModal({ open, onClose }: Props) {
       if (!res.ok) throw new Error("server_error")
       setSubmitted(true)
     } catch {
-      setError("Не удалось отправить заявку. Позвоните нам: +7 (995) 155-88-42")
+      setError("Не удалось ��тправить заявку. Позвоните нам: +7 (995) 155-88-42")
     } finally {
       setLoading(false)
     }
