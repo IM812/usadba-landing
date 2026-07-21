@@ -1,9 +1,10 @@
 import { createHmac, timingSafeEqual } from 'crypto'
 import { type NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { config } from '@/lib/config'
 
 const COOKIE_NAME = 'admin_session'
-const SECRET = process.env.SESSION_SECRET ?? 'fallback-dev-secret-change-in-prod'
+const SECRET = config.sessionSecret
 
 /** Sign a payload string → "payload.hmac" */
 export function signToken(payload: string): string {

@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import { createHash } from 'crypto'
 import { signToken } from '@/lib/admin-auth'
+import { config } from '@/lib/config'
 
 // Simple in-memory rate limiter — max 10 attempts per IP per 15 min
 const attempts = new Map<string, { count: number; resetAt: number }>()
@@ -38,10 +40,12 @@ export async function POST(req: NextRequest) {
 
   const { login, password } = await req.json()
 
-  const adminLogin = process.env.ADMIN_LOGIN ?? 'km'
-  const adminPassword = process.env.ADMIN_PASSWORD ?? 'km2026'
+  // Compare against stored hash — plain text password never lives in runtime memory
+  const inputHash = createHash('sha256')
+    .update(String(password) + config.admin.passwordSalt)
+    .digest('hex')
 
-  if (login !== adminLogin || password !== adminPassword) {
+  if (login !== config.admin.login || inputHash !== config.admin.passwordHash) {
     return NextResponse.json({ ok: false, error: 'Invalid credentials' }, { status: 401 })
   }
 
