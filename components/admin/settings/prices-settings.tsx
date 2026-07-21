@@ -18,13 +18,13 @@ export function PricesSettings() {
 
   useEffect(() => {
     if (s) setForm({
-      base_price: String(s.base_price),
-      weekend_price: String(s.weekend_price),
-      extra_guest_price: String(s.extra_guest_price),
-      minimum_nights: String(s.minimum_nights),
-      cleaning_fee: String(s.cleaning_fee),
-      check_in_time: s.check_in_time,
-      check_out_time: s.check_out_time,
+      base_price: String(s.base_price ?? ''),
+      weekend_price: String(s.weekend_price ?? ''),
+      extra_guest_price: String(s.extra_guest_price ?? ''),
+      minimum_nights: String(s.minimum_nights ?? '1'),
+      cleaning_fee: String(s.cleaning_fee ?? ''),
+      check_in_time: s.check_in_time ?? '14:00',
+      check_out_time: s.check_out_time ?? '12:00',
     })
   }, [s])
 
