@@ -106,6 +106,19 @@ export function HowToGetThere() {
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
+            {/* Overlay button — like native Yandex Maps widget */}
+            <a
+              href={YANDEX_MAPS_ORG}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute bottom-3 left-3 flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-lg transition hover:bg-gray-50 active:scale-95"
+              style={{ zIndex: 10 }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#F1433F"/>
+              </svg>
+              <span className="text-sm font-semibold text-gray-900">Открыть в Яндекс Картах</span>
+            </a>
           </div>
         </div>
       </div>
