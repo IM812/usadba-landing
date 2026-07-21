@@ -8,6 +8,8 @@ const navLinks = [
   { label: "О нас", href: "#about" },
   { label: "Галерея", href: "#gallery" },
   { label: "Отзывы", href: "#reviews" },
+  { label: "FAQ", href: "#faq" },
+  { label: "Как добраться", href: "#location" },
   { label: "Контакты", href: "#contacts" },
 ]
 

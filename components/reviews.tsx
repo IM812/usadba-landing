@@ -1,6 +1,11 @@
-import { Star, Quote } from "lucide-react"
+"use client"
 
-const reviews = [
+import { useRef, useState, useEffect, useCallback } from "react"
+import { Star, Quote, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
+
+const YANDEX_URL = "https://yandex.ru/maps/org/usadba_v_antropkovo/216703670267/reviews/"
+
+const staticReviews = [
   {
     name: "Гость усадьбы",
     date: "Ноябрь 2024",
@@ -40,46 +45,166 @@ const reviews = [
 ]
 
 export function Reviews() {
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [current, setCurrent] = useState(0)
+  const [visibleCount, setVisibleCount] = useState(3)
+
+  useEffect(() => {
+    function measure() {
+      const w = window.innerWidth
+      if (w >= 1280) setVisibleCount(3)
+      else if (w >= 768) setVisibleCount(2)
+      else setVisibleCount(1)
+    }
+    measure()
+    window.addEventListener("resize", measure)
+    return () => window.removeEventListener("resize", measure)
+  }, [])
+
+  const total = staticReviews.length
+  const maxIndex = Math.max(0, total - visibleCount)
+
+  const prev = useCallback(() => setCurrent((c) => Math.max(0, c - 1)), [])
+  const next = useCallback(() => setCurrent((c) => Math.min(maxIndex, c + 1)), [maxIndex])
+
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+    const card = track.children[current] as HTMLElement | undefined
+    if (card) {
+      track.scrollTo({ left: card.offsetLeft - 16, behavior: "smooth" })
+    }
+  }, [current])
+
+  // card width as fraction of container minus gaps
+  const cardWidth =
+    visibleCount === 1
+      ? "100%"
+      : visibleCount === 2
+      ? "calc(50% - 8px)"
+      : "calc(33.333% - 11px)"
+
   return (
-    <section id="reviews" className="bg-background py-16 sm:py-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex flex-col gap-4 sm:mb-12 sm:flex-row sm:items-end sm:justify-between">
+    <section id="reviews" className="bg-background py-16 sm:py-28 overflow-hidden">
+      <div data-reveal className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+        {/* Header */}
+        <div className="mb-10 flex flex-col gap-4 sm:mb-14 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-2xl">
             <p className="text-sm font-semibold uppercase tracking-widest text-primary">Отзывы</p>
             <h2 className="mt-3 text-balance font-serif text-3xl leading-tight text-foreground sm:text-5xl">
               Что говорят гости
             </h2>
           </div>
-          <div className="flex w-fit items-center gap-2 rounded-xl border border-border bg-card px-4 py-3">
-            <div className="flex gap-0.5 text-accent">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="size-4 fill-current" />
-              ))}
-            </div>
-            <span className="font-serif text-xl font-medium text-foreground">5,0</span>
-            <span className="text-sm text-muted-foreground">· 41 отзыв</span>
-          </div>
-        </div>
-
-        {/* Mobile: horizontal scroll. Desktop: grid */}
-        <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-3 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
-          {reviews.map((r, idx) => (
-            <figure key={idx} className="flex w-[82vw] shrink-0 flex-col rounded-2xl border border-border bg-card p-5 sm:w-auto sm:p-6">
-              <Quote className="size-8 text-accent" />
-              <div className="mt-3 flex gap-0.5 text-accent">
-                {Array.from({ length: r.rating }).map((_, i) => (
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex w-fit items-center gap-2 rounded-xl border border-border bg-card px-4 py-3">
+              <div className="flex gap-0.5 text-accent">
+                {Array.from({ length: 5 }).map((_, i) => (
                   <Star key={i} className="size-4 fill-current" />
                 ))}
               </div>
-              <blockquote className="mt-4 flex-1 text-pretty leading-relaxed text-muted-foreground">
-                {r.text}
-              </blockquote>
-              <figcaption className="mt-6 border-t border-border pt-4">
-                <p className="font-serif text-lg text-foreground">{r.name}</p>
-                <p className="text-sm text-muted-foreground">{r.date}</p>
-              </figcaption>
-            </figure>
-          ))}
+              <span className="font-serif text-xl font-medium text-foreground">5,0</span>
+              <span className="text-sm text-muted-foreground">· 41 отзыв</span>
+            </div>
+            <a
+              href={YANDEX_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted"
+            >
+              Читать на Яндексе <ExternalLink className="size-3.5 text-muted-foreground" />
+            </a>
+          </div>
+        </div>
+
+        {/* Slider track */}
+        <div className="relative">
+          <div
+            ref={trackRef}
+            className="flex gap-4 overflow-x-hidden pb-2"
+          >
+            {staticReviews.map((r, idx) => (
+              <article
+                key={idx}
+                style={{ minWidth: cardWidth, maxWidth: cardWidth }}
+                className="shrink-0 flex flex-col rounded-2xl border border-border bg-card p-6 sm:p-7"
+              >
+                <Quote className="size-7 shrink-0 text-accent" />
+
+                <div className="mt-3 flex gap-0.5 text-accent">
+                  {Array.from({ length: r.rating }).map((_, i) => (
+                    <Star key={i} className="size-3.5 fill-current" />
+                  ))}
+                </div>
+
+                {/* Text — no clamp, natural height */}
+                <blockquote className="mt-4 text-pretty text-[15px] leading-relaxed text-muted-foreground">
+                  {r.text}
+                </blockquote>
+
+                <footer className="mt-6 border-t border-border pt-4">
+                  <p className="font-serif text-base font-medium text-foreground">{r.name}</p>
+                  <p className="text-sm text-muted-foreground">{r.date}</p>
+                </footer>
+              </article>
+            ))}
+          </div>
+
+          {/* Controls */}
+          <div className="mt-6 flex items-center justify-between">
+            <div className="flex gap-1.5">
+              {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setCurrent(i)}
+                  aria-label={`Отзыв ${i + 1}`}
+                  className={`rounded-full transition-all duration-200 ${
+                    i === current
+                      ? "w-6 h-2 bg-primary"
+                      : "w-2 h-2 bg-border hover:bg-muted-foreground"
+                  }`}
+                />
+              ))}
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={prev}
+                disabled={current === 0}
+                aria-label="Предыдущий отзыв"
+                className="flex size-10 items-center justify-center rounded-full border border-border bg-card text-foreground transition hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="size-5" />
+              </button>
+              <button
+                type="button"
+                onClick={next}
+                disabled={current >= maxIndex}
+                aria-label="Следующий отзыв"
+                className="flex size-10 items-center justify-center rounded-full border border-border bg-card text-foreground transition hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="size-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* CTA banner */}
+        <div className="mt-10 flex flex-col items-center gap-3 rounded-2xl border border-border bg-card px-6 py-6 sm:flex-row sm:justify-between">
+          <div>
+            <p className="font-serif text-lg text-foreground">Были у нас? Оставьте отзыв!</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">Ваш опыт поможет другим гостям принять решение</p>
+          </div>
+          <a
+            href={YANDEX_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex shrink-0 items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+          >
+            Написать на Яндексе <ExternalLink className="size-4" />
+          </a>
         </div>
       </div>
     </section>

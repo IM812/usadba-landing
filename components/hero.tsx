@@ -1,25 +1,45 @@
 import Image from "next/image"
 import { ArrowRight } from "lucide-react"
+import { WeatherBadge } from "@/components/weather-badge"
 
 export function Hero({ onBook }: { onBook: () => void }) {
   return (
     <section id="hero" className="relative flex min-h-screen items-center overflow-hidden">
+      {/* Video background — plays silently, falls back to image */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        poster="/images/real/photo11.jpg"
+        className="absolute inset-0 size-full object-cover"
+        aria-hidden="true"
+      >
+        {/* Add /videos/hero.mp4 to public/videos/ to activate the video background */}
+        <source src="/videos/hero.mp4" type="video/mp4" />
+      </video>
+
+      {/* Fallback image shown while video loads or if no video file exists */}
       <Image
         src="/images/real/photo11.jpg"
         alt="Усадьба в Антропково — бревенчатый дом в сосновом лесу"
         fill
         priority
         sizes="100vw"
-        className="object-cover"
+        className="object-cover -z-10"
       />
+
       <div className="absolute inset-0 bg-gradient-to-r from-primary/80 via-primary/40 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 via-transparent to-transparent" />
 
       <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-8 pt-24 sm:gap-10 sm:pb-16 sm:pt-32 sm:px-6 lg:px-8">
         <div className="max-w-2xl">
-          <p className="mb-3 inline-flex items-center rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-3 py-1 text-xs font-medium text-primary-foreground backdrop-blur sm:mb-4 sm:px-4 sm:py-1.5 sm:text-sm">
-            Псковская область · Рейтинг 5,0 · 41 отзыв
-          </p>
+          <div className="mb-3 flex flex-wrap items-center gap-2 sm:mb-4">
+            <span className="inline-flex items-center rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-3 py-1 text-xs font-medium text-primary-foreground backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm">
+              Псковская область · Рейтинг 5,0 · 41 отзыв
+            </span>
+            <WeatherBadge />
+          </div>
           <h1 className="text-balance font-serif text-[2.4rem] font-medium leading-[1.05] text-primary-foreground sm:text-6xl lg:text-7xl">
             Усадьба в Антропково
           </h1>
