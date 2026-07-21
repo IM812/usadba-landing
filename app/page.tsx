@@ -15,7 +15,6 @@ import { Contacts } from "@/components/contacts"
 import { SiteFooter } from "@/components/site-footer"
 import { BookingModal } from "@/components/booking-modal"
 import { ScrollReveal } from "@/components/scroll-reveal"
-import { WhatsAppButton } from "@/components/whatsapp-button"
 
 export default function Page() {
   const [bookingOpen, setBookingOpen] = useState(false)
@@ -37,7 +36,6 @@ export default function Page() {
       <Contacts onBook={openBooking} />
       <SiteFooter />
       <BookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} />
-      <WhatsAppButton />
     </main>
   )
 }
