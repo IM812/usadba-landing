@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import type { Booking } from '@/lib/types'
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
-  RadialBarChart, RadialBar, Legend,
+  PieChart, Pie, Cell,
 } from 'recharts'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -186,42 +186,55 @@ export function AdminDashboard() {
         </div>
 
         {/* Season occupancy chart */}
-        <div className="bg-card border border-border rounded-xl p-5">
+        <div className="bg-card border border-border rounded-xl p-5 flex flex-col">
           <h2 className="text-sm font-semibold text-foreground mb-4">Загруженность по сезонам</h2>
           {seasonData.every((d: any) => d.nights === 0) ? (
-            <div className="h-[220px] flex items-center justify-center text-sm text-muted-foreground">
+            <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
               Нет данных
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height={220}>
-              <RadialBarChart
-                cx="50%"
-                cy="50%"
-                innerRadius="20%"
-                outerRadius="80%"
-                data={seasonData}
-                startAngle={180}
-                endAngle={-180}
-              >
-                <RadialBar dataKey="nights" label={false} background={{ fill: 'hsl(var(--secondary))' }} />
-                <Legend
-                  iconSize={10}
-                  layout="vertical"
-                  verticalAlign="middle"
-                  align="right"
-                  formatter={(value) => <span className="text-xs text-muted-foreground">{value}</span>}
-                />
-                <Tooltip
-                  formatter={(v) => [`${v} ночей`, '']}
-                  contentStyle={{
-                    background: 'hsl(var(--popover))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px',
-                    fontSize: '12px',
-                  }}
-                />
-              </RadialBarChart>
-            </ResponsiveContainer>
+            <div className="flex flex-col gap-4">
+              <ResponsiveContainer width="100%" height={170}>
+                <PieChart>
+                  <Pie
+                    data={seasonData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={52}
+                    outerRadius={78}
+                    paddingAngle={3}
+                    dataKey="nights"
+                    strokeWidth={0}
+                  >
+                    {seasonData.map((entry: any, index: number) => (
+                      <Cell key={index} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(v: any) => [`${v} ночей`, '']}
+                    contentStyle={{
+                      background: 'hsl(var(--popover))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                      fontSize: '12px',
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+                {seasonData.map((d: any) => {
+                  const total = seasonData.reduce((s: number, x: any) => s + x.nights, 0)
+                  const pct = total > 0 ? Math.round((d.nights / total) * 100) : 0
+                  return (
+                    <div key={d.name} className="flex items-center gap-2">
+                      <span className="size-2.5 rounded-full shrink-0" style={{ background: d.fill }} />
+                      <span className="text-xs text-muted-foreground truncate">{d.name}</span>
+                      <span className="text-xs font-medium text-foreground ml-auto">{pct}%</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
           )}
         </div>
       </div>
