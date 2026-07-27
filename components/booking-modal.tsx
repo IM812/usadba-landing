@@ -38,7 +38,7 @@ type FormState = {
 const emptyForm: FormState = {
   arrival: "",
   departure: "",
-  guests: "",
+  guests: "2",
   name: "",
   phone: "",
   email: "",
@@ -139,16 +139,21 @@ interface PriceBreakdown {
   nights: number
   lines: NightLine[]
   subtotal: number
+  extraGuestFee: number
   cleaningFee: number
   total: number
 }
 
-/** Calculate total price for the stay [arrival, departure) with seasons. */
+const BASE_GUESTS_FREE = 6
+const MAX_GUESTS = 14
+
+/** Calculate total price for the stay [arrival, departure) with seasons and guests. */
 function calculatePrice(
   arrival: string,
   departure: string,
   settings: AppSettings,
   seasons: SeasonalPrice[],
+  guests = 1,
 ): PriceBreakdown | null {
   if (!arrival || !departure || departure <= arrival) return null
   const start = new Date(arrival)
@@ -181,10 +186,12 @@ function calculatePrice(
   })
 
   const subtotal = nightPrices.reduce((s, p) => s + p, 0)
+  const extraGuests = Math.max(0, guests - BASE_GUESTS_FREE)
+  const extraGuestFee = extraGuests * nights * (settings.extra_guest_price ?? 0)
   const cleaningFee = settings.cleaning_fee ?? 0
-  const total = subtotal + cleaningFee
+  const total = subtotal + extraGuestFee + cleaningFee
 
-  return { nights, lines, subtotal, cleaningFee, total }
+  return { nights, lines, subtotal, extraGuestFee, cleaningFee, total }
 }
 
 function formatRub(n: number): string {
@@ -686,14 +693,15 @@ export function BookingModal({ open, onClose }: Props) {
 
                   {/* Price breakdown */}
                   {(() => {
-                    const price = calculatePrice(form.arrival, form.departure, appSettings, seasonalPrices)
+                    const guestsNum = Number(form.guests) || 1
+                    const price = calculatePrice(form.arrival, form.departure, appSettings, seasonalPrices, guestsNum)
                     if (!price) return null
                     return (
                       <div className="rounded-lg border border-border bg-secondary/50 px-4 py-3 text-sm">
                         <div className="mb-2 font-medium text-foreground">
                           Стоимость проживания
                           <span className="ml-1.5 text-xs font-normal text-muted-foreground">
-                            до 8 человек, дополнительные места по запросу
+                            до {BASE_GUESTS_FREE} без доплаты, макс. {MAX_GUESTS}
                           </span>
                         </div>
                         <div className="flex flex-col gap-1 text-muted-foreground">
@@ -703,6 +711,12 @@ export function BookingModal({ open, onClose }: Props) {
                               <span className="text-foreground">{formatRub(line.price * line.count)}</span>
                             </div>
                           ))}
+                          {price.extraGuestFee > 0 && (
+                            <div className="flex justify-between text-amber-600 dark:text-amber-400">
+                              <span>Доп. гости ({guestsNum - BASE_GUESTS_FREE} чел.)</span>
+                              <span>{formatRub(price.extraGuestFee)}</span>
+                            </div>
+                          )}
                           {price.cleaningFee > 0 && (
                             <div className="flex justify-between">
                               <span>Уборка</span>
@@ -720,29 +734,43 @@ export function BookingModal({ open, onClose }: Props) {
 
                   {/* Guests */}
                   <div className="flex flex-col gap-1.5">
-                    <label htmlFor="guests" className="text-sm font-medium text-foreground">
+                    <label className="text-sm font-medium text-foreground">
                       Количество гостей
                     </label>
-                    <div className="relative">
-                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                        <Users className="size-4" />
-                      </span>
-                      <select
-                        id="guests"
-                        value={form.guests}
-                        onChange={(e) => update("guests", e.target.value)}
-                        className="w-full appearance-none rounded-lg border border-input bg-background py-3 pl-9 pr-3 text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30"
-                      >
-                        <option value="" disabled>
-                          Выберите количество
-                        </option>
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                          <option key={n} value={n}>
-                            {n} {n === 1 ? "гость" : n < 5 ? "гостя" : "гостей"}
-                          </option>
-                        ))}
-                      </select>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => update("guests", String(Math.max(1, Number(form.guests || 1) - 1)))}
+                        className="flex size-10 shrink-0 items-center justify-center rounded-full border border-input bg-background text-lg font-bold hover:bg-muted transition-colors"
+                        aria-label="Уменьшить"
+                      >−</button>
+                      <input
+                        type="number"
+                        min={1}
+                        max={14}
+                        value={form.guests === "" ? "" : form.guests}
+                        placeholder="2"
+                        onChange={(e) => {
+                          const v = e.target.value
+                          if (v === "") { update("guests", ""); return }
+                          const n = Math.min(14, Math.max(1, Number(v) || 1))
+                          update("guests", String(n))
+                        }}
+                        className="w-16 rounded-lg border border-input bg-background py-2 text-center text-lg font-medium text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => update("guests", String(Math.min(14, Number(form.guests || 1) + 1)))}
+                        className="flex size-10 shrink-0 items-center justify-center rounded-full border border-input bg-background text-lg font-bold hover:bg-muted transition-colors"
+                        aria-label="Увеличить"
+                      >+</button>
+                      <span className="text-xs text-muted-foreground">макс. 14</span>
                     </div>
+                    {Number(form.guests) > 6 && appSettings.extra_guest_price > 0 && (
+                      <p className="text-xs text-amber-600 dark:text-amber-400">
+                        + {appSettings.extra_guest_price.toLocaleString("ru-RU")} ₽/гость/ночь за {Number(form.guests) - 6} доп. {Number(form.guests) - 6 === 1 ? "гостя" : "гостей"}
+                      </p>
+                    )}
                   </div>
 
                   <button
@@ -790,7 +818,7 @@ export function BookingModal({ open, onClose }: Props) {
                       <strong>{form.guests}</strong>
                     </div>
                     {(() => {
-                      const price = calculatePrice(form.arrival, form.departure, appSettings, seasonalPrices)
+                      const price = calculatePrice(form.arrival, form.departure, appSettings, seasonalPrices, Number(form.guests) || 1)
                       if (!price) return null
                       return (
                         <div className="mt-1 border-t border-border/50 pt-1 font-medium text-foreground">

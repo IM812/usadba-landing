@@ -107,6 +107,9 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
     }
   }
 
+  const BASE_GUESTS = 6
+  const MAX_GUESTS = 14
+
   const calcPrice = () => {
     if (!checkIn || !checkOut) return null
     const nights = daysBetween(checkIn, checkOut)
@@ -115,7 +118,6 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
       const d = addDays(checkIn, i)
       subtotal += getSeasonalPrice(d, seasonalPrices, settings.base_price, settings.weekend_price)
     }
-    const BASE_GUESTS = 8
     const extraGuests = Math.max(0, guests - BASE_GUESTS)
     const extraGuestFee = extraGuests * nights * (settings.extra_guest_price ?? 0)
     const cleaningFee = settings.cleaning_fee ?? 0
@@ -232,10 +234,38 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
                 <Users className="size-4" /> Гостей
               </div>
               <div className="flex items-center gap-3">
-                <button onClick={() => setGuests(g => Math.max(1, g - 1))} className="flex size-9 items-center justify-center rounded-full border border-border hover:bg-muted transition-colors text-lg font-bold">−</button>
-                <span className="w-8 text-center text-xl font-serif text-foreground">{guests}</span>
-                <button onClick={() => setGuests(g => Math.min(12, g + 1))} className="flex size-9 items-center justify-center rounded-full border border-border hover:bg-muted transition-colors text-lg font-bold">+</button>
+                <button
+                  type="button"
+                  onClick={() => setGuests(g => Math.max(1, g - 1))}
+                  className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border hover:bg-muted transition-colors text-lg font-bold"
+                  aria-label="Уменьшить"
+                >−</button>
+                <input
+                  type="number"
+                  min={1}
+                  max={MAX_GUESTS}
+                  value={guests}
+                  onChange={e => {
+                    const v = Math.min(MAX_GUESTS, Math.max(1, Number(e.target.value) || 1))
+                    setGuests(v)
+                  }}
+                  className="w-14 rounded-lg border border-input bg-background py-1.5 text-center text-xl font-serif text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setGuests(g => Math.min(MAX_GUESTS, g + 1))}
+                  className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border hover:bg-muted transition-colors text-lg font-bold"
+                  aria-label="Увеличить"
+                >+</button>
+                <span className="text-xs text-muted-foreground leading-tight">
+                  макс.{" "}{MAX_GUESTS}
+                </span>
               </div>
+              {guests > BASE_GUESTS && settings.extra_guest_price > 0 && (
+                <p className="mt-2 text-xs text-amber-600 dark:text-amber-400">
+                  + {settings.extra_guest_price.toLocaleString("ru-RU")} ₽/гость/ночь за {guests - BASE_GUESTS} доп. {guests - BASE_GUESTS === 1 ? "гостя" : "гостей"}
+                </p>
+              )}
             </div>
 
             {/* Price breakdown */}
@@ -246,16 +276,19 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
                   <p className="mt-1 font-serif text-4xl text-foreground">
                     {price.total.toLocaleString("ru-RU")} ₽
                   </p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {price.nights} {price.nights === 1 ? "ночь" : price.nights < 5 ? "ночи" : "ночей"}
-                    {" · "}{price.subtotal.toLocaleString("ru-RU")} ₽ за проживание
-                  </p>
-                  {price.cleaningFee > 0 && (
-                    <p className="mt-0.5 text-xs text-muted-foreground">+ уборка {price.cleaningFee.toLocaleString("ru-RU")} ₽</p>
-                  )}
-                  {price.extraGuestFee > 0 && (
-                    <p className="mt-0.5 text-xs text-muted-foreground">+ доп. гости {price.extraGuestFee.toLocaleString("ru-RU")} ₽</p>
-                  )}
+                  <div className="mt-2 flex flex-col gap-0.5 text-xs text-muted-foreground">
+                    <span>
+                      {price.nights} {price.nights === 1 ? "ночь" : price.nights < 5 ? "ночи" : "ночей"} — {price.subtotal.toLocaleString("ru-RU")} ₽
+                    </span>
+                    {price.extraGuestFee > 0 && (
+                      <span className="text-amber-600 dark:text-amber-400">
+                        + доп. гости — {price.extraGuestFee.toLocaleString("ru-RU")} ₽
+                      </span>
+                    )}
+                    {price.cleaningFee > 0 && (
+                      <span>+ уборка — {price.cleaningFee.toLocaleString("ru-RU")} ₽</span>
+                    )}
+                  </div>
                 </>
               ) : (
                 <p className="text-sm text-muted-foreground">
