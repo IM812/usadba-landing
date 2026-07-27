@@ -24,12 +24,19 @@ export async function GET() {
       end: b.check_out,
     }))
 
-    // 2. Fetch Avito ICS (settings table holds the URL)
-    const { data: settings } = await supabase
-      .from('settings')
-      .select('avito_ics_url')
-      .eq('id', 1)
-      .single()
+    // 2. Fetch settings + seasonal prices
+    const [{ data: settings }, { data: seasonalPrices }] = await Promise.all([
+      supabase
+        .from('settings')
+        .select('avito_ics_url, base_price, weekend_price, extra_guest_price, cleaning_fee, minimum_nights')
+        .eq('id', 1)
+        .single(),
+      supabase
+        .from('seasonal_prices')
+        .select('*')
+        .eq('active', true)
+        .order('sort_order'),
+    ])
 
     // fallback to env var if DB is empty
     const avitoUrl = settings?.avito_ics_url || process.env.AVITO_ICS_URL || ''
@@ -41,7 +48,20 @@ export async function GET() {
 
     const ranges: BusyRange[] = [...supabaseRanges, ...avitoRanges]
 
-    return NextResponse.json({ ok: true, ranges })
+    return NextResponse.json({
+      ok: true,
+      ranges,
+      // Keep legacy field name for backwards compat
+      blockedRanges: ranges,
+      settings: {
+        base_price: settings?.base_price ?? 20000,
+        weekend_price: settings?.weekend_price ?? 24000,
+        extra_guest_price: settings?.extra_guest_price ?? 0,
+        cleaning_fee: settings?.cleaning_fee ?? 0,
+        minimum_nights: settings?.minimum_nights ?? 1,
+      },
+      seasonalPrices: seasonalPrices ?? [],
+    })
   } catch (err) {
     console.error('[availability] Unexpected error:', err)
     return NextResponse.json({ ok: false, error: 'Internal error', ranges: [] }, { status: 500 })

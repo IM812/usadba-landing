@@ -25,6 +25,39 @@ function isWeekend(d: Date) {
   return day === 5 || day === 6 // пт-сб как "выходные" для цены
 }
 
+type SeasonalPrice = {
+  id: string
+  name: string
+  date_from: string // MM-DD
+  date_to: string   // MM-DD
+  base_price: number
+  weekend_price: number
+  active: boolean
+}
+
+function getSeasonalPrice(
+  d: Date,
+  seasons: SeasonalPrice[],
+  fallbackBase: number,
+  fallbackWeekend: number,
+): number {
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  const key = `${mm}-${dd}`
+
+  for (const s of seasons) {
+    const from = s.date_from
+    const to = s.date_to
+    // Handle year wrap-around (e.g. Зима: 12-01 — 02-28)
+    const inRange = from <= to ? key >= from && key <= to : key >= from || key <= to
+    if (inRange) {
+      return isWeekend(d) ? s.weekend_price : s.base_price
+    }
+  }
+
+  return isWeekend(d) ? fallbackWeekend : fallbackBase
+}
+
 export function PriceCalculator({ onBook }: { onBook: () => void }) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -36,13 +69,16 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
   const [guests, setGuests] = useState(2)
   const [bookedRanges, setBookedRanges] = useState<{ start: string; end: string }[]>([])
   const [settings, setSettings] = useState({ base_price: 20000, weekend_price: 24000, extra_guest_price: 0, cleaning_fee: 0, minimum_nights: 1 })
+  const [seasonalPrices, setSeasonalPrices] = useState<SeasonalPrice[]>([])
 
   useEffect(() => {
     fetch("/api/availability")
       .then(r => r.json())
       .then(d => {
         if (d.blockedRanges) setBookedRanges(d.blockedRanges)
+        else if (d.ranges) setBookedRanges(d.ranges)
         if (d.settings) setSettings(d.settings)
+        if (d.seasonalPrices) setSeasonalPrices(d.seasonalPrices)
       })
       .catch(() => {})
   }, [])
@@ -77,7 +113,7 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
     let total = 0
     for (let i = 0; i < nights; i++) {
       const d = addDays(checkIn, i)
-      total += isWeekend(d) ? settings.weekend_price : settings.base_price
+      total += getSeasonalPrice(d, seasonalPrices, settings.base_price, settings.weekend_price)
     }
     total += settings.cleaning_fee
     return { nights, total }

@@ -12,24 +12,56 @@ function formatRub(n: number) {
   return n.toLocaleString('ru-RU') + ' ₽'
 }
 
+type SeasonalPrice = {
+  date_from: string
+  date_to: string
+  base_price: number
+  weekend_price: number
+}
+
+function isWeekend(d: Date) {
+  const day = d.getDay()
+  return day === 5 || day === 6
+}
+
+function getSeasonalPrice(
+  d: Date,
+  seasons: SeasonalPrice[],
+  fallbackBase: number,
+  fallbackWeekend: number,
+): number {
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  const key = `${mm}-${dd}`
+  for (const s of seasons) {
+    const from = s.date_from
+    const to = s.date_to
+    const inRange = from <= to ? key >= from && key <= to : key >= from || key <= to
+    if (inRange) return isWeekend(d) ? s.weekend_price : s.base_price
+  }
+  return isWeekend(d) ? fallbackWeekend : fallbackBase
+}
+
 function calcPrice(
   arrival: string,
   departure: string,
   basePrice: number,
   weekendPrice: number,
+  seasons: SeasonalPrice[] = [],
 ): { total: number; nights: number; weekendNights: number; weekdayNights: number } {
   const start = new Date(arrival)
   const end = new Date(departure)
   const nights = Math.round((end.getTime() - start.getTime()) / 86_400_000)
+  let total = 0
   let weekendNights = 0
   for (let i = 0; i < nights; i++) {
     const d = new Date(start)
     d.setDate(d.getDate() + i)
     const day = d.getDay()
     if (day === 5 || day === 6 || day === 0) weekendNights++
+    total += getSeasonalPrice(d, seasons, basePrice, weekendPrice)
   }
   const weekdayNights = nights - weekendNights
-  const total = weekendNights * weekendPrice + weekdayNights * basePrice
   return { total, nights, weekendNights, weekdayNights }
 }
 
@@ -63,12 +95,19 @@ export async function POST(req: Request) {
 
     const supabase = createServiceClient()
 
-    // --- Load settings ---
-    const { data: settings } = await supabase
-      .from('settings')
-      .select('base_price, weekend_price, telegram_bot_token, telegram_chat_id, avito_ics_url, site_url')
-      .eq('id', 1)
-      .single()
+    // --- Load settings + seasonal prices ---
+    const [{ data: settings }, { data: seasons }] = await Promise.all([
+      supabase
+        .from('settings')
+        .select('base_price, weekend_price, telegram_bot_token, telegram_chat_id, avito_ics_url, site_url')
+        .eq('id', 1)
+        .single(),
+      supabase
+        .from('seasonal_prices')
+        .select('date_from, date_to, base_price, weekend_price')
+        .eq('active', true)
+        .order('sort_order'),
+    ])
 
     const basePrice = settings?.base_price ?? 20000
     const weekendPrice = settings?.weekend_price ?? 24000
@@ -107,6 +146,7 @@ export async function POST(req: Request) {
       departure,
       basePrice,
       weekendPrice,
+      seasons ?? [],
     )
 
     // --- Save to Supabase ---
