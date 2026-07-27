@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
 
   const { data: bookings, error } = await supabase
     .from('bookings')
-    .select('status, total_price, total_nights, guests_count, check_in, check_out, created_at')
+    .select('status, total_price, guests_count, check_in, check_out, created_at')
 
   if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 })
 
@@ -37,8 +37,11 @@ export async function GET(req: NextRequest) {
     ? Math.round(confirmed.reduce((s, b) => s + (b.total_price ?? 0), 0) / confirmedCount)
     : 0
 
+  const nightsOf = (b: { check_in: string; check_out: string }) =>
+    Math.round((new Date(b.check_out).getTime() - new Date(b.check_in).getTime()) / 86400000)
+
   const avgNights = confirmedCount > 0
-    ? +(confirmed.reduce((s, b) => s + (b.total_nights ?? 0), 0) / confirmedCount).toFixed(1)
+    ? +(confirmed.reduce((s, b) => s + nightsOf(b), 0) / confirmedCount).toFixed(1)
     : 0
 
   // Monthly chart — bookings and revenue for the last 12 months
@@ -68,7 +71,7 @@ export async function GET(req: NextRequest) {
   }
   for (const b of confirmed) {
     const m = new Date(b.check_in).getMonth() + 1
-    seasons[seasonOf(m)] += b.total_nights ?? 0
+    seasons[seasonOf(m)] += nightsOf(b)
   }
   const seasonOccupancy = Object.entries(seasons).map(([name, nights]) => ({ name, nights }))
 
