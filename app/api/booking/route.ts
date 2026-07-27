@@ -24,6 +24,14 @@ function isWeekend(d: Date) {
   return day === 5 || day === 6
 }
 
+function seasonWidth(from: string, to: string): number {
+  const [fm, fd] = from.split('-').map(Number)
+  const [tm, td] = to.split('-').map(Number)
+  const fromDay = fm * 31 + fd
+  const toDay = tm * 31 + td
+  return toDay >= fromDay ? toDay - fromDay : (12 * 31 + 31) - fromDay + toDay
+}
+
 function getSeasonalPrice(
   d: Date,
   seasons: SeasonalPrice[],
@@ -33,7 +41,10 @@ function getSeasonalPrice(
   const mm = String(d.getMonth() + 1).padStart(2, '0')
   const dd = String(d.getDate()).padStart(2, '0')
   const key = `${mm}-${dd}`
-  for (const s of seasons) {
+  const sorted = [...seasons].sort(
+    (a, b) => seasonWidth(a.date_from, a.date_to) - seasonWidth(b.date_from, b.date_to)
+  )
+  for (const s of sorted) {
     const from = s.date_from
     const to = s.date_to
     const inRange = from <= to ? key >= from && key <= to : key >= from || key <= to

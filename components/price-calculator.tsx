@@ -35,6 +35,15 @@ type SeasonalPrice = {
   active: boolean
 }
 
+/** Width of a season in approximate days — used to sort narrowest-first */
+function seasonWidth(from: string, to: string): number {
+  const [fm, fd] = from.split('-').map(Number)
+  const [tm, td] = to.split('-').map(Number)
+  const fromDay = fm * 31 + fd
+  const toDay = tm * 31 + td
+  return toDay >= fromDay ? toDay - fromDay : (12 * 31 + 31) - fromDay + toDay
+}
+
 function getSeasonalPrice(
   d: Date,
   seasons: SeasonalPrice[],
@@ -45,14 +54,16 @@ function getSeasonalPrice(
   const dd = String(d.getDate()).padStart(2, '0')
   const key = `${mm}-${dd}`
 
-  for (const s of seasons) {
+  // Narrowest season wins — sort ascending by width so specific overrides broad
+  const sorted = [...seasons].sort(
+    (a, b) => seasonWidth(a.date_from, a.date_to) - seasonWidth(b.date_from, b.date_to)
+  )
+
+  for (const s of sorted) {
     const from = s.date_from
     const to = s.date_to
-    // Handle year wrap-around (e.g. Зима: 12-01 — 02-28)
     const inRange = from <= to ? key >= from && key <= to : key >= from || key <= to
-    if (inRange) {
-      return isWeekend(d) ? s.weekend_price : s.base_price
-    }
+    if (inRange) return isWeekend(d) ? s.weekend_price : s.base_price
   }
 
   return isWeekend(d) ? fallbackWeekend : fallbackBase
