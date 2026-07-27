@@ -28,7 +28,7 @@ export async function GET() {
     const [{ data: settings }, { data: seasonalPrices }] = await Promise.all([
       supabase
         .from('settings')
-        .select('avito_ics_url, base_price, weekend_price, extra_guest_price, cleaning_fee, minimum_nights')
+        .select('avito_ics_url, base_price, weekend_price, extra_guest_price, cleaning_fee, minimum_nights, base_guests, max_guests, price_mode')
         .eq('id', 1)
         .single(),
       supabase
@@ -59,6 +59,9 @@ export async function GET() {
         extra_guest_price: settings?.extra_guest_price ?? 0,
         cleaning_fee: settings?.cleaning_fee ?? 0,
         minimum_nights: settings?.minimum_nights ?? 1,
+        base_guests: settings?.base_guests ?? 8,
+        max_guests: settings?.max_guests ?? 15,
+        price_mode: settings?.price_mode ?? 'base',
       },
       seasonalPrices: seasonalPrices ?? [],
     })

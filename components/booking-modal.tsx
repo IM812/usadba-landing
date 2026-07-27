@@ -103,6 +103,9 @@ type AppSettings = {
   extra_guest_price: number
   cleaning_fee: number
   minimum_nights: number
+  base_guests: number
+  max_guests: number
+  price_mode: string
 }
 
 /** Returns true if the given Date is Fri/Sat (weekend pricing). */
@@ -159,9 +162,6 @@ interface PriceBreakdown {
   total: number
 }
 
-const BASE_GUESTS_FREE = 6
-const MAX_GUESTS = 14
-
 /** Calculate total price for the stay [arrival, departure) with seasons and guests. */
 function calculatePrice(
   arrival: string,
@@ -201,7 +201,7 @@ function calculatePrice(
   })
 
   const subtotal = nightPrices.reduce((s, p) => s + p, 0)
-  const extraGuests = Math.max(0, guests - BASE_GUESTS_FREE)
+  const extraGuests = Math.max(0, guests - (settings.base_guests ?? 8))
   const extraGuestFee = extraGuests * nights * (settings.extra_guest_price ?? 0)
   const cleaningFee = settings.cleaning_fee ?? 0
   const total = subtotal + extraGuestFee + cleaningFee
@@ -416,6 +416,9 @@ export function BookingModal({ open, onClose }: Props) {
     extra_guest_price: 0,
     cleaning_fee: 0,
     minimum_nights: 1,
+    base_guests: 8,
+    max_guests: 15,
+    price_mode: 'base',
   })
   const [seasonalPrices, setSeasonalPrices] = useState<SeasonalPrice[]>([])
 
@@ -709,14 +712,14 @@ export function BookingModal({ open, onClose }: Props) {
                   {/* Price breakdown */}
                   {(() => {
                     const guestsNum = Number(form.guests) || 1
-                    const price = calculatePrice(form.arrival, form.departure, appSettings, seasonalPrices, guestsNum)
+                    const price = calculatePrice(form.arrival, form.departure, appSettings, appSettings.price_mode === 'seasonal' ? seasonalPrices : [], guestsNum)
                     if (!price) return null
                     return (
                       <div className="rounded-lg border border-border bg-secondary/50 px-4 py-3 text-sm">
                         <div className="mb-2 font-medium text-foreground">
                           Стоимость проживания
                           <span className="ml-1.5 text-xs font-normal text-muted-foreground">
-                            до {BASE_GUESTS_FREE} без доплаты, макс. {MAX_GUESTS}
+                            до {appSettings.base_guests} без доплаты, макс. {appSettings.max_guests}
                           </span>
                         </div>
                         <div className="flex flex-col gap-1 text-muted-foreground">
@@ -728,7 +731,7 @@ export function BookingModal({ open, onClose }: Props) {
                           ))}
                           {price.extraGuestFee > 0 && (
                             <div className="flex justify-between text-amber-600 dark:text-amber-400">
-                              <span>Доп. гости ({guestsNum - BASE_GUESTS_FREE} чел.)</span>
+                              <span>Доп. гости ({guestsNum - appSettings.base_guests} чел.)</span>
                               <span>{formatRub(price.extraGuestFee)}</span>
                             </div>
                           )}
@@ -762,28 +765,28 @@ export function BookingModal({ open, onClose }: Props) {
                       <input
                         type="number"
                         min={1}
-                        max={14}
+                        max={appSettings.max_guests}
                         value={form.guests === "" ? "" : form.guests}
                         placeholder="2"
                         onChange={(e) => {
                           const v = e.target.value
                           if (v === "") { update("guests", ""); return }
-                          const n = Math.min(14, Math.max(1, Number(v) || 1))
+                          const n = Math.min(appSettings.max_guests, Math.max(1, Number(v) || 1))
                           update("guests", String(n))
                         }}
                         className="w-16 rounded-lg border border-input bg-background py-2 text-center text-lg font-medium text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       />
                       <button
                         type="button"
-                        onClick={() => update("guests", String(Math.min(14, Number(form.guests || 1) + 1)))}
+                        onClick={() => update("guests", String(Math.min(appSettings.max_guests, Number(form.guests || 1) + 1)))}
                         className="flex size-10 shrink-0 items-center justify-center rounded-full border border-input bg-background text-lg font-bold hover:bg-muted transition-colors"
                         aria-label="Увеличить"
                       >+</button>
-                      <span className="text-xs text-muted-foreground">макс. 14</span>
+                      <span className="text-xs text-muted-foreground">макс. {appSettings.max_guests}</span>
                     </div>
-                    {Number(form.guests) > 6 && appSettings.extra_guest_price > 0 && (
+                    {Number(form.guests) > appSettings.base_guests && appSettings.extra_guest_price > 0 && (
                       <p className="text-xs text-amber-600 dark:text-amber-400">
-                        + {appSettings.extra_guest_price.toLocaleString("ru-RU")} ₽/гость/ночь за {Number(form.guests) - 6} доп. {Number(form.guests) - 6 === 1 ? "гостя" : "гостей"}
+                        + {appSettings.extra_guest_price.toLocaleString("ru-RU")} ₽/гость/ночь за {Number(form.guests) - appSettings.base_guests} доп. {Number(form.guests) - appSettings.base_guests === 1 ? "гостя" : "гостей"}
                       </p>
                     )}
                   </div>
