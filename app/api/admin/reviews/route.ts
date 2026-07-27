@@ -11,7 +11,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const authError = requireAdminAuth(req)
+  const authError = await requireAdminAuth(req)
   if (authError) return authError
   const supabase = createServiceClient()
   const body = await req.json()
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const authError = requireAdminAuth(req)
+  const authError = await requireAdminAuth(req)
   if (authError) return authError
   const supabase = createServiceClient()
   const { id } = await req.json()
@@ -32,7 +32,7 @@ export async function DELETE(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const authError = requireAdminAuth(req)
+  const authError = await requireAdminAuth(req)
   if (authError) return authError
   const supabase = createServiceClient()
   const { id, ...updates } = await req.json()

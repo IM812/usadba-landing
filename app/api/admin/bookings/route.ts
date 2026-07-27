@@ -3,7 +3,7 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { requireAdminAuth } from '@/lib/admin-auth'
 
 export async function GET(req: NextRequest) {
-  const authError = requireAdminAuth(req)
+  const authError = await requireAdminAuth(req)
   if (authError) return authError
 
   const supabase = createServiceClient()
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const authError = requireAdminAuth(req)
+  const authError = await requireAdminAuth(req)
   if (authError) return authError
 
   const supabase = createServiceClient()

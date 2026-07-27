@@ -11,7 +11,7 @@ export async function GET() {
 }
 
 export async function PATCH(req: NextRequest) {
-  const authError = requireAdminAuth(req)
+  const authError = await requireAdminAuth(req)
   if (authError) return authError
 
   const supabase = createServiceClient()
