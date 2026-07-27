@@ -5,7 +5,7 @@ import { Thermometer } from "lucide-react"
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
-const WEATHER_URL = "https://yandex.ru/pogoda/velikiye-luki"
+const WEATHER_URL = "https://yandex.ru/pogoda/10496"
 
 export function WeatherBadge() {
   const { data } = useSWR<{ ok: boolean; temp: number; label: string }>("/api/weather", fetcher, {
