@@ -110,13 +110,17 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
   const calcPrice = () => {
     if (!checkIn || !checkOut) return null
     const nights = daysBetween(checkIn, checkOut)
-    let total = 0
+    let subtotal = 0
     for (let i = 0; i < nights; i++) {
       const d = addDays(checkIn, i)
-      total += getSeasonalPrice(d, seasonalPrices, settings.base_price, settings.weekend_price)
+      subtotal += getSeasonalPrice(d, seasonalPrices, settings.base_price, settings.weekend_price)
     }
-    total += settings.cleaning_fee
-    return { nights, total }
+    const BASE_GUESTS = 8
+    const extraGuests = Math.max(0, guests - BASE_GUESTS)
+    const extraGuestFee = extraGuests * nights * (settings.extra_guest_price ?? 0)
+    const cleaningFee = settings.cleaning_fee ?? 0
+    const total = subtotal + extraGuestFee + cleaningFee
+    return { nights, subtotal, extraGuestFee, cleaningFee, total }
   }
 
   const price = calcPrice()
@@ -197,7 +201,7 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
             </div>
 
             <div className="mt-4 flex flex-wrap gap-3 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5"><span className="inline-block size-3 rounded-full bg-rose-200 dark:bg-rose-950" />Занято</span>
+              <span className="flex items-center gap-1.5"><span className="inline-block size-3 rounded-full bg-rose-200 dark:bg-rose-950" />З��нято</span>
               <span className="flex items-center gap-1.5"><span className="inline-block size-3 rounded-full bg-primary" />Ваши даты</span>
               <span className="flex items-center gap-1.5"><span className="inline-block size-3 rounded-full bg-primary/15" />Выбранный период</span>
             </div>
@@ -242,12 +246,15 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
                   <p className="mt-1 font-serif text-4xl text-foreground">
                     {price.total.toLocaleString("ru-RU")} ₽
                   </p>
-                  <p className="mt-1 text-sm text-muted-foreground">{price.nights} {price.nights === 1 ? "ночь" : price.nights < 5 ? "ночи" : "ночей"}</p>
-                  {settings.cleaning_fee > 0 && (
-                    <p className="mt-1 text-xs text-muted-foreground">Включая уборку {settings.cleaning_fee.toLocaleString("ru-RU")} ₽</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {price.nights} {price.nights === 1 ? "ночь" : price.nights < 5 ? "ночи" : "ночей"}
+                    {" · "}{price.subtotal.toLocaleString("ru-RU")} ₽ за проживание
+                  </p>
+                  {price.cleaningFee > 0 && (
+                    <p className="mt-0.5 text-xs text-muted-foreground">+ уборка {price.cleaningFee.toLocaleString("ru-RU")} ₽</p>
                   )}
-                  {price.nights >= 5 && (
-                    <p className="mt-2 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">Скидка 10% при бронировании от 5 ночей</p>
+                  {price.extraGuestFee > 0 && (
+                    <p className="mt-0.5 text-xs text-muted-foreground">+ доп. гости {price.extraGuestFee.toLocaleString("ru-RU")} ₽</p>
                   )}
                 </>
               ) : (
