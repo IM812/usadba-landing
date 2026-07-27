@@ -110,7 +110,7 @@ export async function POST(req: Request) {
     const [{ data: settings }, { data: seasons }] = await Promise.all([
       supabase
         .from('settings')
-        .select('base_price, weekend_price, price_mode, telegram_bot_token, telegram_chat_id, avito_ics_url, site_url')
+        .select('base_price, weekend_price, price_mode, extra_guest_price, base_guests, max_guests, telegram_bot_token, telegram_chat_id, avito_ics_url, site_url')
         .eq('id', 1)
         .single(),
       supabase
@@ -123,6 +123,19 @@ export async function POST(req: Request) {
     const basePrice = settings?.base_price ?? 20000
     const weekendPrice = settings?.weekend_price ?? 24000
     const priceMode = settings?.price_mode ?? 'base'
+    const extraGuestPrice = settings?.extra_guest_price ?? 1500
+    const baseGuests = settings?.base_guests ?? 8
+    const maxGuests = settings?.max_guests ?? 15
+    const guestsCount = parseInt(guests) || 1
+
+    // Validate guest count
+    if (guestsCount > maxGuests) {
+      return NextResponse.json(
+        { ok: false, error: 'too_many_guests', max: maxGuests },
+        { status: 400 },
+      )
+    }
+
     const botToken = settings?.telegram_bot_token ?? ''
     const chatId = settings?.telegram_chat_id ?? ''
     const avitoUrl = settings?.avito_ics_url ?? ''
@@ -153,13 +166,16 @@ export async function POST(req: Request) {
     }
 
     // --- Calculate price ---
-    const { total, nights, weekendNights, weekdayNights } = calcPrice(
+    const { total: accommodationTotal, nights, weekendNights, weekdayNights } = calcPrice(
       arrival,
       departure,
       basePrice,
       weekendPrice,
       priceMode === 'seasonal' ? (seasons ?? []) : [],
     )
+    const extraGuests = Math.max(0, guestsCount - baseGuests)
+    const extraGuestTotal = extraGuests * extraGuestPrice * nights
+    const total = accommodationTotal + extraGuestTotal
 
     // --- Save to Supabase ---
     const { data: booking, error: insertError } = await supabase
@@ -194,6 +210,9 @@ export async function POST(req: Request) {
         : null,
       weekdayNights > 0
         ? `   Будни: ${weekdayNights} н. × ${formatRub(basePrice)} = ${formatRub(weekdayNights * basePrice)}`
+        : null,
+      extraGuests > 0
+        ? `   Доп. гостей: ${extraGuests} × ${formatRub(extraGuestPrice)} × ${nights} н. = ${formatRub(extraGuestTotal)}`
         : null,
       `   Итого за ${nights} ночей: *${formatRub(total)}*`,
     ].filter(Boolean)

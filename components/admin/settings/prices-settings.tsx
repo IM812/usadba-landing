@@ -14,6 +14,7 @@ export function PricesSettings() {
   const [form, setForm] = useState({
     base_price: '', weekend_price: '', extra_guest_price: '',
     minimum_nights: '', cleaning_fee: '', check_in_time: '', check_out_time: '',
+    base_guests: '', max_guests: '',
   })
   const [priceMode, setPriceMode] = useState<'base' | 'seasonal'>('base')
 
@@ -27,6 +28,8 @@ export function PricesSettings() {
         cleaning_fee: String(s.cleaning_fee ?? ''),
         check_in_time: s.check_in_time ?? '14:00',
         check_out_time: s.check_out_time ?? '12:00',
+        base_guests: String(s.base_guests ?? '8'),
+        max_guests: String(s.max_guests ?? '15'),
       })
       setPriceMode(s.price_mode === 'seasonal' ? 'seasonal' : 'base')
     }
@@ -47,6 +50,8 @@ export function PricesSettings() {
         check_in_time: form.check_in_time,
         check_out_time: form.check_out_time,
         price_mode: priceMode,
+        base_guests: parseInt(form.base_guests) || 8,
+        max_guests: parseInt(form.max_guests) || 15,
       }),
     })
     const json = await res.json()
@@ -121,6 +126,12 @@ export function PricesSettings() {
         </FieldRow>
         <FieldRow label="Доп. гость" hint="За каждого гостя сверх базы, ₽">
           <TextInput type="number" value={form.extra_guest_price} onChange={(v) => update('extra_guest_price', v)} />
+        </FieldRow>
+        <FieldRow label="Базовое кол-во гостей" hint="Включено в цену без доплаты">
+          <TextInput type="number" value={form.base_guests} onChange={(v) => update('base_guests', v)} min="1" max="50" />
+        </FieldRow>
+        <FieldRow label="Максимум гостей" hint="Больше — бронирование невозможно">
+          <TextInput type="number" value={form.max_guests} onChange={(v) => update('max_guests', v)} min="1" max="50" />
         </FieldRow>
         <FieldRow label="Стоимость уборки" hint="Фиксированная сумма, ₽">
           <TextInput type="number" value={form.cleaning_fee} onChange={(v) => update('cleaning_fee', v)} />

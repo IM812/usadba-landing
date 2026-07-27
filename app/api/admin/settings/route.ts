@@ -4,7 +4,7 @@ import { requireAdminAuth } from '@/lib/admin-auth'
 
 // Public-safe fields only — secrets (telegram bot token, ICS url, etc.) require auth
 const PUBLIC_FIELDS =
-  'title, subtitle, description, phone, address, telegram, whatsapp, base_price, weekend_price, extra_guest_price, cleaning_fee, minimum_nights, check_in_time, check_out_time, price_mode'
+  'title, subtitle, description, phone, address, telegram, whatsapp, base_price, weekend_price, extra_guest_price, cleaning_fee, minimum_nights, check_in_time, check_out_time, price_mode, base_guests, max_guests'
 
 export async function GET(req: NextRequest) {
   const supabase = createServiceClient()
