@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 
-// Антропково, Псковская область (примерные координаты)
+// Антропково — координаты близки к Великим Лукам
 const LAT = 56.34
-const LON = 29.37
+const LON = 30.54
 
 const weatherLabels: Record<number, string> = {
   0: 'ясно',
