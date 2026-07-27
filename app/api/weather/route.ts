@@ -31,9 +31,8 @@ const weatherLabels: Record<number, string> = {
 
 export async function GET() {
   try {
-    // Open-Meteo: fetch both actual and apparent temp — Yandex shows apparent
     const res = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,apparent_temperature,weather_code&timezone=Europe/Moscow`,
+      `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code&timezone=Europe/Moscow`,
       { next: { revalidate: 600 } }, // cache 10 min
     )
 
@@ -42,8 +41,7 @@ export async function GET() {
     }
 
     const data = await res.json()
-    // Yandex Weather displays apparent (feels-like) temperature, not actual
-    const temp = Math.round(data?.current?.apparent_temperature ?? data?.current?.temperature_2m ?? 0)
+    const temp = Math.round(data?.current?.temperature_2m ?? 0)
     const code: number = data?.current?.weather_code ?? 0
 
     return NextResponse.json({
