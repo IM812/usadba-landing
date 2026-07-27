@@ -15,9 +15,14 @@ export function WeatherBadge() {
   const sign = data.temp > 0 ? "+" : ""
 
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-3 py-1 text-xs font-medium text-primary-foreground backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm">
+    <a
+      href="https://yandex.ru/pogoda/pskov"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1.5 rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-3 py-1 text-xs font-medium text-primary-foreground backdrop-blur transition hover:bg-primary-foreground/20 active:scale-95 sm:px-4 sm:py-1.5 sm:text-sm"
+    >
       <Thermometer className="size-3.5" aria-hidden="true" />
       {`Сейчас в усадьбе ${sign}${data.temp}°${data.label ? `, ${data.label}` : ""}`}
-    </span>
+    </a>
   )
 }
