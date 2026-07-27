@@ -12,24 +12,67 @@ function formatRub(n: number) {
   return n.toLocaleString('ru-RU') + ' ₽'
 }
 
+type SeasonalPrice = {
+  date_from: string
+  date_to: string
+  base_price: number
+  weekend_price: number
+}
+
+function isWeekend(d: Date) {
+  const day = d.getDay()
+  return day === 5 || day === 6
+}
+
+function seasonWidth(from: string, to: string): number {
+  const [fm, fd] = from.split('-').map(Number)
+  const [tm, td] = to.split('-').map(Number)
+  const fromDay = fm * 31 + fd
+  const toDay = tm * 31 + td
+  return toDay >= fromDay ? toDay - fromDay : (12 * 31 + 31) - fromDay + toDay
+}
+
+function getSeasonalPrice(
+  d: Date,
+  seasons: SeasonalPrice[],
+  fallbackBase: number,
+  fallbackWeekend: number,
+): number {
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  const key = `${mm}-${dd}`
+  const sorted = [...seasons].sort(
+    (a, b) => seasonWidth(a.date_from, a.date_to) - seasonWidth(b.date_from, b.date_to)
+  )
+  for (const s of sorted) {
+    const from = s.date_from
+    const to = s.date_to
+    const inRange = from <= to ? key >= from && key <= to : key >= from || key <= to
+    if (inRange) return isWeekend(d) ? s.weekend_price : s.base_price
+  }
+  return isWeekend(d) ? fallbackWeekend : fallbackBase
+}
+
 function calcPrice(
   arrival: string,
   departure: string,
   basePrice: number,
   weekendPrice: number,
+  seasons: SeasonalPrice[] = [],
 ): { total: number; nights: number; weekendNights: number; weekdayNights: number } {
   const start = new Date(arrival)
   const end = new Date(departure)
   const nights = Math.round((end.getTime() - start.getTime()) / 86_400_000)
+  let total = 0
   let weekendNights = 0
   for (let i = 0; i < nights; i++) {
     const d = new Date(start)
     d.setDate(d.getDate() + i)
     const day = d.getDay()
     if (day === 5 || day === 6 || day === 0) weekendNights++
+    total += getSeasonalPrice(d, seasons, basePrice, weekendPrice)
   }
   const weekdayNights = nights - weekendNights
-  const total = weekendNights * weekendPrice + weekdayNights * basePrice
   return { total, nights, weekendNights, weekdayNights }
 }
 
@@ -63,15 +106,36 @@ export async function POST(req: Request) {
 
     const supabase = createServiceClient()
 
-    // --- Load settings ---
-    const { data: settings } = await supabase
-      .from('settings')
-      .select('base_price, weekend_price, telegram_bot_token, telegram_chat_id, avito_ics_url, site_url')
-      .eq('id', 1)
-      .single()
+    // --- Load settings + seasonal prices ---
+    const [{ data: settings }, { data: seasons }] = await Promise.all([
+      supabase
+        .from('settings')
+        .select('base_price, weekend_price, price_mode, extra_guest_price, base_guests, max_guests, telegram_bot_token, telegram_chat_id, avito_ics_url, site_url')
+        .eq('id', 1)
+        .single(),
+      supabase
+        .from('seasonal_prices')
+        .select('date_from, date_to, base_price, weekend_price')
+        .eq('active', true)
+        .order('sort_order'),
+    ])
 
     const basePrice = settings?.base_price ?? 20000
     const weekendPrice = settings?.weekend_price ?? 24000
+    const priceMode = settings?.price_mode ?? 'base'
+    const extraGuestPrice = settings?.extra_guest_price ?? 1500
+    const baseGuests = settings?.base_guests ?? 8
+    const maxGuests = settings?.max_guests ?? 15
+    const guestsCount = parseInt(guests) || 1
+
+    // Validate guest count
+    if (guestsCount > maxGuests) {
+      return NextResponse.json(
+        { ok: false, error: 'too_many_guests', max: maxGuests },
+        { status: 400 },
+      )
+    }
+
     const botToken = settings?.telegram_bot_token ?? ''
     const chatId = settings?.telegram_chat_id ?? ''
     const avitoUrl = settings?.avito_ics_url ?? ''
@@ -102,12 +166,16 @@ export async function POST(req: Request) {
     }
 
     // --- Calculate price ---
-    const { total, nights, weekendNights, weekdayNights } = calcPrice(
+    const { total: accommodationTotal, nights, weekendNights, weekdayNights } = calcPrice(
       arrival,
       departure,
       basePrice,
       weekendPrice,
+      priceMode === 'seasonal' ? (seasons ?? []) : [],
     )
+    const extraGuests = Math.max(0, guestsCount - baseGuests)
+    const extraGuestTotal = extraGuests * extraGuestPrice * nights
+    const total = accommodationTotal + extraGuestTotal
 
     // --- Save to Supabase ---
     const { data: booking, error: insertError } = await supabase
@@ -142,6 +210,9 @@ export async function POST(req: Request) {
         : null,
       weekdayNights > 0
         ? `   Будни: ${weekdayNights} н. × ${formatRub(basePrice)} = ${formatRub(weekdayNights * basePrice)}`
+        : null,
+      extraGuests > 0
+        ? `   Доп. гостей: ${extraGuests} × ${formatRub(extraGuestPrice)} × ${nights} н. = ${formatRub(extraGuestTotal)}`
         : null,
       `   Итого за ${nights} ночей: *${formatRub(total)}*`,
     ].filter(Boolean)

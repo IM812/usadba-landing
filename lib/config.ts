@@ -1,5 +1,9 @@
-// Centralized hardcoded config — all secrets are server-only
-// NEXT_PUBLIC_ values are intentionally public (Supabase anon key is safe to expose)
+// SERVER-ONLY config — contains secrets. NEVER import from client components.
+// For browser-safe values use lib/config.public.ts instead.
+
+if (typeof window !== 'undefined') {
+  throw new Error('SECURITY: lib/config.ts was imported in browser code. Use lib/config.public.ts instead.')
+}
 
 export const config = {
   supabase: {

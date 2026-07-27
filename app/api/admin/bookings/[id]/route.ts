@@ -1,8 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { fetchAvitoRanges, rangesOverlap } from '@/lib/ics'
+import { requireAdminAuth } from '@/lib/admin-auth'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authError = await requireAdminAuth(req)
+  if (authError) return authError
+
   const { id } = await params
   const supabase = createServiceClient()
   const body = await req.json()
@@ -56,7 +60,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   return NextResponse.json({ ok: true, data })
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authError = await requireAdminAuth(req)
+  if (authError) return authError
+
   const { id } = await params
   const supabase = createServiceClient()
 

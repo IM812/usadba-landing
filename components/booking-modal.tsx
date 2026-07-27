@@ -38,7 +38,7 @@ type FormState = {
 const emptyForm: FormState = {
   arrival: "",
   departure: "",
-  guests: "",
+  guests: "2",
   name: "",
   phone: "",
   email: "",
@@ -89,40 +89,124 @@ function selectionOverlapsBusy(arrival: string, departure: string, ranges: BusyR
 // Pricing
 // ---------------------------------------------------------------------------
 
-/** Returns true if the given YYYY-MM-DD is Fri/Sat/Sun (weekend pricing). */
-function isWeekendNight(iso: string): boolean {
-  const day = new Date(iso).getDay() // 0=Sun,1=Mon...5=Fri,6=Sat
-  return day === 5 || day === 6 || day === 0
+type SeasonalPrice = {
+  date_from: string  // MM-DD
+  date_to: string    // MM-DD
+  base_price: number
+  weekend_price: number
+  active: boolean
+}
+
+type AppSettings = {
+  base_price: number
+  weekend_price: number
+  extra_guest_price: number
+  cleaning_fee: number
+  minimum_nights: number
+  base_guests: number
+  max_guests: number
+  price_mode: string
+}
+
+/** Returns true if the given Date is Fri/Sat (weekend pricing). */
+function isWeekendNight(d: Date): boolean {
+  const day = d.getDay()
+  return day === 5 || day === 6
+}
+
+/** Width of a season in days (for priority: narrower = higher priority) */
+function seasonWidth(from: string, to: string): number {
+  const [fm, fd] = from.split("-").map(Number)
+  const [tm, td] = to.split("-").map(Number)
+  const fromDay = fm * 31 + fd
+  const toDay = tm * 31 + td
+  return toDay >= fromDay ? toDay - fromDay : (12 * 31 + 31) - fromDay + toDay
+}
+
+function getSeasonalNightPrice(
+  d: Date,
+  seasons: SeasonalPrice[],
+  fallbackBase: number,
+  fallbackWeekend: number,
+): number {
+  const mm = String(d.getMonth() + 1).padStart(2, "0")
+  const dd = String(d.getDate()).padStart(2, "0")
+  const key = `${mm}-${dd}`
+
+  // Sort by narrowest range first — most specific season wins
+  const sorted = [...seasons].sort(
+    (a, b) => seasonWidth(a.date_from, a.date_to) - seasonWidth(b.date_from, b.date_to)
+  )
+
+  for (const s of sorted) {
+    const from = s.date_from
+    const to = s.date_to
+    const inRange = from <= to ? key >= from && key <= to : key >= from || key <= to
+    if (inRange) return isWeekendNight(d) ? s.weekend_price : s.base_price
+  }
+  return isWeekendNight(d) ? fallbackWeekend : fallbackBase
+}
+
+interface NightLine {
+  label: string
+  price: number
+  count: number
 }
 
 interface PriceBreakdown {
   nights: number
-  weekendNights: number
-  weekdayNights: number
+  lines: NightLine[]
+  subtotal: number
+  extraGuestFee: number
+  cleaningFee: number
   total: number
 }
 
-/** Calculate total price for the stay [arrival, departure). */
+/** Calculate total price for the stay [arrival, departure) with seasons and guests. */
 function calculatePrice(
   arrival: string,
   departure: string,
-  priceWeekday: number,
-  priceWeekend: number,
+  settings: AppSettings,
+  seasons: SeasonalPrice[],
+  guests = 1,
 ): PriceBreakdown | null {
   if (!arrival || !departure || departure <= arrival) return null
   const start = new Date(arrival)
   const end = new Date(departure)
   const nights = Math.round((end.getTime() - start.getTime()) / 86_400_000)
-  let weekendNights = 0
+
+  // Accumulate per-night prices, group into lines
+  const nightPrices: number[] = []
   for (let i = 0; i < nights; i++) {
     const d = new Date(start)
     d.setDate(d.getDate() + i)
-    const iso = d.toISOString().split("T")[0]
-    if (isWeekendNight(iso)) weekendNights++
+    nightPrices.push(
+      getSeasonalNightPrice(d, seasons, settings.base_price, settings.weekend_price)
+    )
   }
-  const weekdayNights = nights - weekendNights
-  const total = weekendNights * priceWeekend + weekdayNights * priceWeekday
-  return { nights, weekendNights, weekdayNights, total }
+
+  // Group consecutive nights with the same price
+  const lines: NightLine[] = []
+  for (const p of nightPrices) {
+    const last = lines[lines.length - 1]
+    if (last && last.price === p) {
+      last.count++
+    } else {
+      lines.push({ label: "", price: p, count: 1 })
+    }
+  }
+  // Build human labels
+  lines.forEach((l) => {
+    l.label = `${l.count} ${l.count === 1 ? "ночь" : l.count < 5 ? "ночи" : "ночей"} × ${formatRub(l.price)}`
+  })
+
+  const subtotal = nightPrices.reduce((s, p) => s + p, 0)
+  const extraGuests = Math.max(0, guests - (settings.base_guests ?? 8))
+  const extraGuestFee = extraGuests * nights * (settings.extra_guest_price ?? 0)
+  const cleaningFee = settings.cleaning_fee ?? 0
+  const total = subtotal + extraGuestFee + cleaningFee
+
+  return { nights, lines, subtotal, extraGuestFee, cleaningFee, total }
 }
 
 function formatRub(n: number): string {
@@ -325,21 +409,18 @@ export function BookingModal({ open, onClose }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Prices from settings — reload every time the modal opens
-  const [priceWeekday, setPriceWeekday] = useState(20_000)
-  const [priceWeekend, setPriceWeekend] = useState(24_000)
-  useEffect(() => {
-    if (!open) return
-    fetch("/api/admin/settings")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d?.data) {
-          if (d.data.base_price)    setPriceWeekday(Number(d.data.base_price))
-          if (d.data.weekend_price) setPriceWeekend(Number(d.data.weekend_price))
-        }
-      })
-      .catch(() => {})
-  }, [open])
+  // Settings + seasonal prices — loaded together with availability
+  const [appSettings, setAppSettings] = useState<AppSettings>({
+    base_price: 20_000,
+    weekend_price: 24_000,
+    extra_guest_price: 0,
+    cleaning_fee: 0,
+    minimum_nights: 1,
+    base_guests: 8,
+    max_guests: 15,
+    price_mode: 'base',
+  })
+  const [seasonalPrices, setSeasonalPrices] = useState<SeasonalPrice[]>([])
 
   // Calendar state
   const now = new Date()
@@ -366,6 +447,9 @@ export function BookingModal({ open, onClose }: Props) {
         setBusyRanges([])
         setAvailError("Занятые даты временно недоступны — уточните у нас перед бронированием.")
       }
+      // Load settings + seasonal prices from the same response
+      if (data.settings) setAppSettings(data.settings)
+      if (Array.isArray(data.seasonalPrices)) setSeasonalPrices(data.seasonalPrices)
     } catch {
       setBusyRanges([])
       setAvailError("Занятые даты временно недоступны — уточните у нас перед бронированием.")
@@ -627,27 +711,34 @@ export function BookingModal({ open, onClose }: Props) {
 
                   {/* Price breakdown */}
                   {(() => {
-                    const price = calculatePrice(form.arrival, form.departure, priceWeekday, priceWeekend)
+                    const guestsNum = Number(form.guests) || 1
+                    const price = calculatePrice(form.arrival, form.departure, appSettings, appSettings.price_mode === 'seasonal' ? seasonalPrices : [], guestsNum)
                     if (!price) return null
                     return (
                       <div className="rounded-lg border border-border bg-secondary/50 px-4 py-3 text-sm">
                         <div className="mb-2 font-medium text-foreground">
                           Стоимость проживания
                           <span className="ml-1.5 text-xs font-normal text-muted-foreground">
-                            до 8 человек, дополнительные места по запросу
+                            до {appSettings.base_guests} без доплаты, макс. {appSettings.max_guests}
                           </span>
                         </div>
                         <div className="flex flex-col gap-1 text-muted-foreground">
-                          {price.weekendNights > 0 && (
-                            <div className="flex justify-between">
-                              <span>Выходные · {price.weekendNights} ночь/и × {formatRub(priceWeekend)}</span>
-                              <span className="text-foreground">{formatRub(price.weekendNights * priceWeekend)}</span>
+                          {price.lines.map((line, i) => (
+                            <div key={i} className="flex justify-between">
+                              <span>{line.label}</span>
+                              <span className="text-foreground">{formatRub(line.price * line.count)}</span>
+                            </div>
+                          ))}
+                          {price.extraGuestFee > 0 && (
+                            <div className="flex justify-between text-amber-600 dark:text-amber-400">
+                              <span>Доп. гости ({guestsNum - appSettings.base_guests} чел.)</span>
+                              <span>{formatRub(price.extraGuestFee)}</span>
                             </div>
                           )}
-                          {price.weekdayNights > 0 && (
+                          {price.cleaningFee > 0 && (
                             <div className="flex justify-between">
-                              <span>Будни · {price.weekdayNights} ночь/и × {formatRub(priceWeekday)}</span>
-                              <span className="text-foreground">{formatRub(price.weekdayNights * priceWeekday)}</span>
+                              <span>Уборка</span>
+                              <span className="text-foreground">{formatRub(price.cleaningFee)}</span>
                             </div>
                           )}
                         </div>
@@ -661,29 +752,43 @@ export function BookingModal({ open, onClose }: Props) {
 
                   {/* Guests */}
                   <div className="flex flex-col gap-1.5">
-                    <label htmlFor="guests" className="text-sm font-medium text-foreground">
+                    <label className="text-sm font-medium text-foreground">
                       Количество гостей
                     </label>
-                    <div className="relative">
-                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                        <Users className="size-4" />
-                      </span>
-                      <select
-                        id="guests"
-                        value={form.guests}
-                        onChange={(e) => update("guests", e.target.value)}
-                        className="w-full appearance-none rounded-lg border border-input bg-background py-3 pl-9 pr-3 text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30"
-                      >
-                        <option value="" disabled>
-                          Выберите количество
-                        </option>
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                          <option key={n} value={n}>
-                            {n} {n === 1 ? "гость" : n < 5 ? "гостя" : "гостей"}
-                          </option>
-                        ))}
-                      </select>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => update("guests", String(Math.max(1, Number(form.guests || 1) - 1)))}
+                        className="flex size-10 shrink-0 items-center justify-center rounded-full border border-input bg-background text-lg font-bold hover:bg-muted transition-colors"
+                        aria-label="Уменьшить"
+                      >−</button>
+                      <input
+                        type="number"
+                        min={1}
+                        max={appSettings.max_guests}
+                        value={form.guests === "" ? "" : form.guests}
+                        placeholder="2"
+                        onChange={(e) => {
+                          const v = e.target.value
+                          if (v === "") { update("guests", ""); return }
+                          const n = Math.min(appSettings.max_guests, Math.max(1, Number(v) || 1))
+                          update("guests", String(n))
+                        }}
+                        className="w-16 rounded-lg border border-input bg-background py-2 text-center text-lg font-medium text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => update("guests", String(Math.min(appSettings.max_guests, Number(form.guests || 1) + 1)))}
+                        className="flex size-10 shrink-0 items-center justify-center rounded-full border border-input bg-background text-lg font-bold hover:bg-muted transition-colors"
+                        aria-label="Увеличить"
+                      >+</button>
+                      <span className="text-xs text-muted-foreground">макс. {appSettings.max_guests}</span>
                     </div>
+                    {Number(form.guests) > appSettings.base_guests && appSettings.extra_guest_price > 0 && (
+                      <p className="text-xs text-amber-600 dark:text-amber-400">
+                        + {appSettings.extra_guest_price.toLocaleString("ru-RU")} ₽/гость/ночь за {Number(form.guests) - appSettings.base_guests} доп. {Number(form.guests) - appSettings.base_guests === 1 ? "гостя" : "гостей"}
+                      </p>
+                    )}
                   </div>
 
                   <button
@@ -731,7 +836,7 @@ export function BookingModal({ open, onClose }: Props) {
                       <strong>{form.guests}</strong>
                     </div>
                     {(() => {
-                      const price = calculatePrice(form.arrival, form.departure, priceWeekday, priceWeekend)
+                      const price = calculatePrice(form.arrival, form.departure, appSettings, seasonalPrices, Number(form.guests) || 1)
                       if (!price) return null
                       return (
                         <div className="mt-1 border-t border-border/50 pt-1 font-medium text-foreground">

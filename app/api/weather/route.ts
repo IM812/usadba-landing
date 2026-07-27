@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 
-// Антропково, Псковская область (примерные координаты)
-const LAT = 56.34
-const LON = 29.37
+// Великие Луки, Псковская область
+const LAT = 56.3374
+const LON = 30.5288
 
 const weatherLabels: Record<number, string> = {
   0: 'ясно',

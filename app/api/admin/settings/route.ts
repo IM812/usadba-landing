@@ -2,16 +2,24 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { requireAdminAuth } from '@/lib/admin-auth'
 
-// GET is intentionally public — the public site reads settings (title, phone, etc.)
-export async function GET() {
+// Public-safe fields only — secrets (telegram bot token, ICS url, etc.) require auth
+const PUBLIC_FIELDS =
+  'title, subtitle, description, phone, address, telegram, whatsapp, base_price, weekend_price, extra_guest_price, cleaning_fee, minimum_nights, check_in_time, check_out_time, price_mode, base_guests, max_guests'
+
+export async function GET(req: NextRequest) {
   const supabase = createServiceClient()
-  const { data, error } = await supabase.from('settings').select('*').eq('id', 1).single()
+
+  // Authenticated admins get the full row; everyone else gets the safe subset
+  const isAdmin = (await requireAdminAuth(req)) === null
+  const fields = isAdmin ? '*' : PUBLIC_FIELDS
+
+  const { data, error } = await supabase.from('settings').select(fields).eq('id', 1).single()
   if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true, data })
 }
 
 export async function PATCH(req: NextRequest) {
-  const authError = requireAdminAuth(req)
+  const authError = await requireAdminAuth(req)
   if (authError) return authError
 
   const supabase = createServiceClient()

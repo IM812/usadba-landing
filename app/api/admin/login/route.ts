@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
 
   // Issue signed token: "admin:<issued_at>"
   const payload = `admin:${Date.now()}`
-  const token = signToken(payload)
+  const token = await signToken(payload)
 
   const response = NextResponse.json({ ok: true })
   response.cookies.set('admin_session', token, {

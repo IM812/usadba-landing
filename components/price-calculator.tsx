@@ -25,6 +25,50 @@ function isWeekend(d: Date) {
   return day === 5 || day === 6 // пт-сб как "выходные" для цены
 }
 
+type SeasonalPrice = {
+  id: string
+  name: string
+  date_from: string // MM-DD
+  date_to: string   // MM-DD
+  base_price: number
+  weekend_price: number
+  active: boolean
+}
+
+/** Width of a season in approximate days — used to sort narrowest-first */
+function seasonWidth(from: string, to: string): number {
+  const [fm, fd] = from.split('-').map(Number)
+  const [tm, td] = to.split('-').map(Number)
+  const fromDay = fm * 31 + fd
+  const toDay = tm * 31 + td
+  return toDay >= fromDay ? toDay - fromDay : (12 * 31 + 31) - fromDay + toDay
+}
+
+function getSeasonalPrice(
+  d: Date,
+  seasons: SeasonalPrice[],
+  fallbackBase: number,
+  fallbackWeekend: number,
+): number {
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  const key = `${mm}-${dd}`
+
+  // Narrowest season wins — sort ascending by width so specific overrides broad
+  const sorted = [...seasons].sort(
+    (a, b) => seasonWidth(a.date_from, a.date_to) - seasonWidth(b.date_from, b.date_to)
+  )
+
+  for (const s of sorted) {
+    const from = s.date_from
+    const to = s.date_to
+    const inRange = from <= to ? key >= from && key <= to : key >= from || key <= to
+    if (inRange) return isWeekend(d) ? s.weekend_price : s.base_price
+  }
+
+  return isWeekend(d) ? fallbackWeekend : fallbackBase
+}
+
 export function PriceCalculator({ onBook }: { onBook: () => void }) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -36,13 +80,16 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
   const [guests, setGuests] = useState(2)
   const [bookedRanges, setBookedRanges] = useState<{ start: string; end: string }[]>([])
   const [settings, setSettings] = useState({ base_price: 20000, weekend_price: 24000, extra_guest_price: 0, cleaning_fee: 0, minimum_nights: 1 })
+  const [seasonalPrices, setSeasonalPrices] = useState<SeasonalPrice[]>([])
 
   useEffect(() => {
     fetch("/api/availability")
       .then(r => r.json())
       .then(d => {
         if (d.blockedRanges) setBookedRanges(d.blockedRanges)
+        else if (d.ranges) setBookedRanges(d.ranges)
         if (d.settings) setSettings(d.settings)
+        if (d.seasonalPrices) setSeasonalPrices(d.seasonalPrices)
       })
       .catch(() => {})
   }, [])
@@ -71,16 +118,22 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
     }
   }
 
+  const BASE_GUESTS = 6
+  const MAX_GUESTS = 14
+
   const calcPrice = () => {
     if (!checkIn || !checkOut) return null
     const nights = daysBetween(checkIn, checkOut)
-    let total = 0
+    let subtotal = 0
     for (let i = 0; i < nights; i++) {
       const d = addDays(checkIn, i)
-      total += isWeekend(d) ? settings.weekend_price : settings.base_price
+      subtotal += getSeasonalPrice(d, seasonalPrices, settings.base_price, settings.weekend_price)
     }
-    total += settings.cleaning_fee
-    return { nights, total }
+    const extraGuests = Math.max(0, guests - BASE_GUESTS)
+    const extraGuestFee = extraGuests * nights * (settings.extra_guest_price ?? 0)
+    const cleaningFee = settings.cleaning_fee ?? 0
+    const total = subtotal + extraGuestFee + cleaningFee
+    return { nights, subtotal, extraGuestFee, cleaningFee, total }
   }
 
   const price = calcPrice()
@@ -161,7 +214,7 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
             </div>
 
             <div className="mt-4 flex flex-wrap gap-3 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5"><span className="inline-block size-3 rounded-full bg-rose-200 dark:bg-rose-950" />Занято</span>
+              <span className="flex items-center gap-1.5"><span className="inline-block size-3 rounded-full bg-rose-200 dark:bg-rose-950" />З��нято</span>
               <span className="flex items-center gap-1.5"><span className="inline-block size-3 rounded-full bg-primary" />Ваши даты</span>
               <span className="flex items-center gap-1.5"><span className="inline-block size-3 rounded-full bg-primary/15" />Выбранный период</span>
             </div>
@@ -192,10 +245,38 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
                 <Users className="size-4" /> Гостей
               </div>
               <div className="flex items-center gap-3">
-                <button onClick={() => setGuests(g => Math.max(1, g - 1))} className="flex size-9 items-center justify-center rounded-full border border-border hover:bg-muted transition-colors text-lg font-bold">−</button>
-                <span className="w-8 text-center text-xl font-serif text-foreground">{guests}</span>
-                <button onClick={() => setGuests(g => Math.min(12, g + 1))} className="flex size-9 items-center justify-center rounded-full border border-border hover:bg-muted transition-colors text-lg font-bold">+</button>
+                <button
+                  type="button"
+                  onClick={() => setGuests(g => Math.max(1, g - 1))}
+                  className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border hover:bg-muted transition-colors text-lg font-bold"
+                  aria-label="Уменьшить"
+                >−</button>
+                <input
+                  type="number"
+                  min={1}
+                  max={MAX_GUESTS}
+                  value={guests}
+                  onChange={e => {
+                    const v = Math.min(MAX_GUESTS, Math.max(1, Number(e.target.value) || 1))
+                    setGuests(v)
+                  }}
+                  className="w-14 rounded-lg border border-input bg-background py-1.5 text-center text-xl font-serif text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setGuests(g => Math.min(MAX_GUESTS, g + 1))}
+                  className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border hover:bg-muted transition-colors text-lg font-bold"
+                  aria-label="Увеличить"
+                >+</button>
+                <span className="text-xs text-muted-foreground leading-tight">
+                  макс.{" "}{MAX_GUESTS}
+                </span>
               </div>
+              {guests > BASE_GUESTS && settings.extra_guest_price > 0 && (
+                <p className="mt-2 text-xs text-amber-600 dark:text-amber-400">
+                  + {settings.extra_guest_price.toLocaleString("ru-RU")} ₽/гость/ночь за {guests - BASE_GUESTS} доп. {guests - BASE_GUESTS === 1 ? "гостя" : "гостей"}
+                </p>
+              )}
             </div>
 
             {/* Price breakdown */}
@@ -206,13 +287,19 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
                   <p className="mt-1 font-serif text-4xl text-foreground">
                     {price.total.toLocaleString("ru-RU")} ₽
                   </p>
-                  <p className="mt-1 text-sm text-muted-foreground">{price.nights} {price.nights === 1 ? "ночь" : price.nights < 5 ? "ночи" : "ночей"}</p>
-                  {settings.cleaning_fee > 0 && (
-                    <p className="mt-1 text-xs text-muted-foreground">Включая уборку {settings.cleaning_fee.toLocaleString("ru-RU")} ₽</p>
-                  )}
-                  {price.nights >= 5 && (
-                    <p className="mt-2 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">Скидка 10% при бронировании от 5 ночей</p>
-                  )}
+                  <div className="mt-2 flex flex-col gap-0.5 text-xs text-muted-foreground">
+                    <span>
+                      {price.nights} {price.nights === 1 ? "ночь" : price.nights < 5 ? "ночи" : "ночей"} — {price.subtotal.toLocaleString("ru-RU")} ₽
+                    </span>
+                    {price.extraGuestFee > 0 && (
+                      <span className="text-amber-600 dark:text-amber-400">
+                        + доп. гости — {price.extraGuestFee.toLocaleString("ru-RU")} ₽
+                      </span>
+                    )}
+                    {price.cleaningFee > 0 && (
+                      <span>+ уборка — {price.cleaningFee.toLocaleString("ru-RU")} ₽</span>
+                    )}
+                  </div>
                 </>
               ) : (
                 <p className="text-sm text-muted-foreground">

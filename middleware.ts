@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
     }
 
     const cookie = request.cookies.get('admin_session')
-    const valid = !!cookie?.value && verifyToken(cookie.value) !== null
+    const valid = !!cookie?.value && (await verifyToken(cookie.value)) !== null
 
     if (!valid) {
       const url = request.nextUrl.clone()
