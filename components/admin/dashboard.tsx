@@ -69,6 +69,28 @@ const SEASON_COLORS: Record<string, string> = {
   Зима: '#60a5fa',
 }
 
+function ChartTooltip({ active, payload, label, formatter }: any) {
+  if (!active || !payload?.length) return null
+  return (
+    <div style={{
+      background: '#1c1c1e',
+      border: '1px solid #3a3a3c',
+      borderRadius: 8,
+      padding: '8px 12px',
+      fontSize: 12,
+      color: '#f5f5f5',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+    }}>
+      {label && <p style={{ fontWeight: 600, marginBottom: 4, color: '#a1a1aa' }}>{label}</p>}
+      {payload.map((p: any, i: number) => (
+        <p key={i} style={{ color: p.color ?? '#f5f5f5' }}>
+          {formatter ? formatter(p.value, p) : p.value}
+        </p>
+      ))}
+    </div>
+  )
+}
+
 
 export function AdminDashboard() {
   const { data: stats } = useSWR('/api/admin/stats', fetcher, { refreshInterval: 30000 })
@@ -134,29 +156,23 @@ export function AdminDashboard() {
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">Брони по месяцам</p>
             <ResponsiveContainer width="100%" height={100}>
               <BarChart data={s?.monthly ?? []} margin={{ top: 0, right: 0, left: -18, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#3a3a3c" vertical={false} />
                 <XAxis
                   dataKey="label"
-                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fontSize: 10, fill: '#71717a' }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
                   allowDecimals={false}
-                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fontSize: 10, fill: '#71717a' }}
                   axisLine={false}
                   tickLine={false}
                   width={28}
                 />
                 <Tooltip
-                  formatter={(v: any) => [`${v} броней`, '']}
-                  cursor={{ fill: 'hsl(var(--secondary))' }}
-                  contentStyle={{
-                    background: 'hsl(var(--popover))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px',
-                    fontSize: '12px',
-                  }}
+                  content={<ChartTooltip formatter={(v: any) => `${v} броней`} />}
+                  cursor={{ fill: 'rgba(255,255,255,0.05)' }}
                 />
                 <Bar dataKey="bookings" fill="#4ade80" radius={[4, 4, 0, 0]} maxBarSize={22} />
               </BarChart>
@@ -167,29 +183,23 @@ export function AdminDashboard() {
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">Выручка по месяцам, ₽</p>
             <ResponsiveContainer width="100%" height={100}>
               <BarChart data={s?.monthly ?? []} margin={{ top: 0, right: 0, left: -18, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#3a3a3c" vertical={false} />
                 <XAxis
                   dataKey="label"
-                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fontSize: 10, fill: '#71717a' }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fontSize: 10, fill: '#71717a' }}
                   axisLine={false}
                   tickLine={false}
                   tickFormatter={(v) => v === 0 ? '0' : `${(v / 1000).toFixed(0)}k`}
                   width={28}
                 />
                 <Tooltip
-                  formatter={(v: any) => [formatRub(v), '']}
-                  cursor={{ fill: 'hsl(var(--secondary))' }}
-                  contentStyle={{
-                    background: 'hsl(var(--popover))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px',
-                    fontSize: '12px',
-                  }}
+                  content={<ChartTooltip formatter={(v: any) => formatRub(v)} />}
+                  cursor={{ fill: 'rgba(255,255,255,0.05)' }}
                 />
                 <Bar dataKey="revenue" fill="#60a5fa" radius={[4, 4, 0, 0]} maxBarSize={22} />
               </BarChart>
@@ -227,12 +237,23 @@ export function AdminDashboard() {
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(v: any, _: any, props: any) => [`${v} ночей`, props.payload.name]}
-                    contentStyle={{
-                      background: 'hsl(var(--popover))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                      fontSize: '12px',
+                    content={({ active, payload }) => {
+                      if (!active || !payload?.length) return null
+                      const d = payload[0].payload
+                      return (
+                        <div style={{
+                          background: '#1c1c1e',
+                          border: '1px solid #3a3a3c',
+                          borderRadius: 8,
+                          padding: '8px 12px',
+                          fontSize: 12,
+                          color: '#f5f5f5',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+                        }}>
+                          <p style={{ fontWeight: 600, marginBottom: 2, color: d.fill }}>{d.name}</p>
+                          <p>{d.nights} ночей</p>
+                        </div>
+                      )
                     }}
                   />
                 </PieChart>
