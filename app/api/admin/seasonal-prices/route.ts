@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { requireAdminAuth } from '@/lib/admin-auth'
 
@@ -20,7 +20,10 @@ function normalizeMmDd(v: string): string {
   return cleaned
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const authError = await requireAdminAuth(req)
+  if (authError) return authError
+
   const supabase = createServiceClient()
   const raw = await req.json()
   const body = {

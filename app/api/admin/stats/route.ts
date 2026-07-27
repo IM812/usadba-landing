@@ -1,8 +1,11 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { requireAdminAuth } from '@/lib/admin-auth'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const authError = await requireAdminAuth(req)
+  if (authError) return authError
+
   const supabase = createServiceClient()
 
   const { data: bookings, error } = await supabase

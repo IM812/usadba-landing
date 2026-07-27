@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
+import { requireAdminAuth } from '@/lib/admin-auth'
 
 function normalizeMmDd(v: string): string {
   // Accept "08-01", "08.01", "08/01", "0801" → always return "MM-DD"
@@ -10,7 +11,10 @@ function normalizeMmDd(v: string): string {
   return cleaned
 }
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authError = await requireAdminAuth(req)
+  if (authError) return authError
+
   const { id } = await params
   const supabase = createServiceClient()
   const raw = await req.json()
@@ -29,7 +33,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   return NextResponse.json({ ok: true, data })
 }
 
-export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authError = await requireAdminAuth(req)
+  if (authError) return authError
+
   const { id } = await params
   const supabase = createServiceClient()
   const { error } = await supabase.from('seasonal_prices').delete().eq('id', id)

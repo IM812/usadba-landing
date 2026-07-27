@@ -33,16 +33,25 @@ export async function signToken(payload: string): Promise<string> {
 
 /** Verify and extract payload. Returns null if invalid/tampered. */
 export async function verifyToken(token: string): Promise<string | null> {
-  // Backward-compatible: accept the old plain cookie value
-  if (token === 'authenticated') return 'authenticated'
-
   const lastDot = token.lastIndexOf('.')
   if (lastDot === -1) return null
   const payload = token.slice(0, lastDot)
   const hmacHex = token.slice(lastDot + 1)
 
+  // Reject malformed signatures early (must be 64 hex chars for SHA-256)
+  if (!/^[0-9a-f]{64}$/i.test(hmacHex)) return null
+
+  // Payload must be "admin:<timestamp>" — reject anything else
+  if (!/^admin:\d+$/.test(payload)) return null
+
+  // Enforce max session age (7 days) even if cookie maxAge is bypassed
+  const issuedAt = Number(payload.slice(6))
+  if (!Number.isFinite(issuedAt) || Date.now() - issuedAt > 7 * 24 * 60 * 60 * 1000) return null
+
   // Decode the stored hex signature
-  const bytes = new Uint8Array(hmacHex.match(/.{1,2}/g)!.map((b) => parseInt(b, 16)))
+  const pairs = hmacHex.match(/.{2}/g)
+  if (!pairs) return null
+  const bytes = new Uint8Array(pairs.map((b) => parseInt(b, 16)))
 
   const key = await getKey()
   const valid = await crypto.subtle.verify(
