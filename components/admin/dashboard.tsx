@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import type { Booking } from '@/lib/types'
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
-  RadialBarChart, RadialBar, Legend,
+  PieChart, Pie, Cell,
 } from 'recharts'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -69,20 +69,6 @@ const SEASON_COLORS: Record<string, string> = {
   Зима: '#60a5fa',
 }
 
-// Custom tooltip for revenue chart
-function RevenueTooltip({ active, payload, label }: any) {
-  if (!active || !payload?.length) return null
-  return (
-    <div className="bg-popover border border-border rounded-lg px-3 py-2 text-xs shadow-lg">
-      <p className="font-medium text-foreground mb-1">{label}</p>
-      {payload.map((p: any) => (
-        <p key={p.name} style={{ color: p.color }}>
-          {p.name === 'revenue' ? formatRub(p.value) : `${p.value} броней`}
-        </p>
-      ))}
-    </div>
-  )
-}
 
 export function AdminDashboard() {
   const { data: stats } = useSWR('/api/admin/stats', fetcher, { refreshInterval: 30000 })
@@ -141,78 +127,30 @@ export function AdminDashboard() {
 
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Monthly bookings & revenue chart */}
-        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-foreground mb-4">Бронирования по месяцам</h2>
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={s?.monthly ?? []} margin={{ top: 0, right: 0, left: -10, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-              <XAxis
-                dataKey="label"
-                tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                yAxisId="bookings"
-                orientation="left"
-                tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
-                axisLine={false}
-                tickLine={false}
-                width={25}
-              />
-              <YAxis
-                yAxisId="revenue"
-                orientation="right"
-                tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
-                axisLine={false}
-                tickLine={false}
-                tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
-                width={35}
-              />
-              <Tooltip content={<RevenueTooltip />} cursor={{ fill: 'hsl(var(--secondary))' }} />
-              <Bar yAxisId="bookings" dataKey="bookings" name="bookings" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} maxBarSize={28} />
-              <Bar yAxisId="revenue" dataKey="revenue" name="revenue" fill="hsl(var(--primary) / 0.3)" radius={[4, 4, 0, 0]} maxBarSize={28} />
-            </BarChart>
-          </ResponsiveContainer>
-          <div className="flex items-center gap-4 mt-2 justify-end">
-            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <span className="size-2.5 rounded-sm bg-primary inline-block" /> Брони
-            </span>
-            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <span className="size-2.5 rounded-sm bg-primary/30 inline-block" /> Выручка
-            </span>
-          </div>
-        </div>
-
-        {/* Season occupancy chart */}
-        <div className="bg-card border border-border rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-foreground mb-4">Загруженность по сезонам</h2>
-          {seasonData.every((d: any) => d.nights === 0) ? (
-            <div className="h-[220px] flex items-center justify-center text-sm text-muted-foreground">
-              Нет данных
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height={220}>
-              <RadialBarChart
-                cx="50%"
-                cy="50%"
-                innerRadius="20%"
-                outerRadius="80%"
-                data={seasonData}
-                startAngle={180}
-                endAngle={-180}
-              >
-                <RadialBar dataKey="nights" label={false} background={{ fill: 'hsl(var(--secondary))' }} />
-                <Legend
-                  iconSize={10}
-                  layout="vertical"
-                  verticalAlign="middle"
-                  align="right"
-                  formatter={(value) => <span className="text-xs text-muted-foreground">{value}</span>}
+        {/* Monthly bookings chart */}
+        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5 space-y-5">
+          {/* Bookings count */}
+          <div>
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">Брони по месяцам</p>
+            <ResponsiveContainer width="100%" height={100}>
+              <BarChart data={s?.monthly ?? []} margin={{ top: 0, right: 0, left: -18, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis
+                  dataKey="label"
+                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  allowDecimals={false}
+                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={28}
                 />
                 <Tooltip
-                  formatter={(v) => [`${v} ночей`, '']}
+                  formatter={(v: any) => [`${v} броней`, '']}
+                  cursor={{ fill: 'hsl(var(--secondary))' }}
                   contentStyle={{
                     background: 'hsl(var(--popover))',
                     border: '1px solid hsl(var(--border))',
@@ -220,8 +158,105 @@ export function AdminDashboard() {
                     fontSize: '12px',
                   }}
                 />
-              </RadialBarChart>
+                <Bar dataKey="bookings" fill="#4ade80" radius={[4, 4, 0, 0]} maxBarSize={22} />
+              </BarChart>
             </ResponsiveContainer>
+          </div>
+          {/* Revenue */}
+          <div>
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">Выручка по месяцам, ₽</p>
+            <ResponsiveContainer width="100%" height={100}>
+              <BarChart data={s?.monthly ?? []} margin={{ top: 0, right: 0, left: -18, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis
+                  dataKey="label"
+                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => v === 0 ? '0' : `${(v / 1000).toFixed(0)}k`}
+                  width={28}
+                />
+                <Tooltip
+                  formatter={(v: any) => [formatRub(v), '']}
+                  cursor={{ fill: 'hsl(var(--secondary))' }}
+                  contentStyle={{
+                    background: 'hsl(var(--popover))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                  }}
+                />
+                <Bar dataKey="revenue" fill="#60a5fa" radius={[4, 4, 0, 0]} maxBarSize={22} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Season occupancy chart */}
+        <div className="bg-card border border-border rounded-xl p-5 flex flex-col">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-4">Сезоны</p>
+          {seasonData.every((d: any) => d.nights === 0) ? (
+            <div className="flex-1 flex flex-col items-center justify-center gap-2">
+              <span className="text-3xl text-muted-foreground/30">◔</span>
+              <span className="text-xs text-muted-foreground">Нет данных</span>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4">
+              <ResponsiveContainer width="100%" height={160}>
+                <PieChart>
+                  <Pie
+                    data={seasonData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={48}
+                    outerRadius={72}
+                    paddingAngle={4}
+                    dataKey="nights"
+                    stroke="none"
+                  >
+                    {seasonData.map((entry: any, index: number) => (
+                      <Cell
+                        key={index}
+                        style={{ fill: entry.fill, outline: 'none' }}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(v: any, _: any, props: any) => [`${v} ночей`, props.payload.name]}
+                    contentStyle={{
+                      background: 'hsl(var(--popover))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                      fontSize: '12px',
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="flex flex-col gap-2">
+                {seasonData.map((d: any) => {
+                  const total = seasonData.reduce((acc: number, x: any) => acc + x.nights, 0)
+                  const pct = total > 0 ? Math.round((d.nights / total) * 100) : 0
+                  return (
+                    <div key={d.name} className="flex items-center gap-2">
+                      <span className="size-2.5 rounded-full shrink-0" style={{ backgroundColor: d.fill }} />
+                      <span className="text-xs text-muted-foreground flex-1">{d.name}</span>
+                      <div className="flex-1 h-1 bg-secondary rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full"
+                          style={{ width: `${pct}%`, backgroundColor: d.fill }}
+                        />
+                      </div>
+                      <span className="text-xs font-medium text-foreground w-8 text-right">{pct}%</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
           )}
         </div>
       </div>
