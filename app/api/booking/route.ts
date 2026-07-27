@@ -110,7 +110,7 @@ export async function POST(req: Request) {
     const [{ data: settings }, { data: seasons }] = await Promise.all([
       supabase
         .from('settings')
-        .select('base_price, weekend_price, telegram_bot_token, telegram_chat_id, avito_ics_url, site_url')
+        .select('base_price, weekend_price, price_mode, telegram_bot_token, telegram_chat_id, avito_ics_url, site_url')
         .eq('id', 1)
         .single(),
       supabase
@@ -122,6 +122,7 @@ export async function POST(req: Request) {
 
     const basePrice = settings?.base_price ?? 20000
     const weekendPrice = settings?.weekend_price ?? 24000
+    const priceMode = settings?.price_mode ?? 'base'
     const botToken = settings?.telegram_bot_token ?? ''
     const chatId = settings?.telegram_chat_id ?? ''
     const avitoUrl = settings?.avito_ics_url ?? ''
@@ -157,7 +158,7 @@ export async function POST(req: Request) {
       departure,
       basePrice,
       weekendPrice,
-      seasons ?? [],
+      priceMode === 'seasonal' ? (seasons ?? []) : [],
     )
 
     // --- Save to Supabase ---
