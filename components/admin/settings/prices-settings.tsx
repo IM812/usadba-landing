@@ -118,10 +118,10 @@ export function PricesSettings() {
       </div>
 
       <SettingsForm title="Базовые цены" onSubmit={handleSubmit}>
-        <FieldRow label="Цена (будни)" hint="Пн–Чт за ночь, ₽">
+        <FieldRow label="Цена (будни)" hint="Вс–Чт за ночь, ₽">
           <TextInput type="number" value={form.base_price} onChange={(v) => update('base_price', v)} />
         </FieldRow>
-        <FieldRow label="Цена (выходные)" hint="Пт–Вс за ночь, ₽">
+        <FieldRow label="Цена (выходные)" hint="Пт–Сб за ночь, ₽">
           <TextInput type="number" value={form.weekend_price} onChange={(v) => update('weekend_price', v)} />
         </FieldRow>
         <FieldRow label="Доп. гость" hint="За каждого гостя сверх базы, ₽">

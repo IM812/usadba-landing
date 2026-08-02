@@ -80,12 +80,18 @@ export function TextInput({
   placeholder,
   type = 'text',
   required,
+  min,
+  max,
+  step,
 }: {
   value: string | number
   onChange: (v: string) => void
   placeholder?: string
   type?: string
   required?: boolean
+  min?: string | number
+  max?: string | number
+  step?: string | number
 }) {
   return (
     <input
@@ -94,6 +100,9 @@ export function TextInput({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       required={required}
+      min={min}
+      max={max}
+      step={step}
       className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
     />
   )
