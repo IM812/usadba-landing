@@ -53,27 +53,53 @@ function getSeasonalPrice(
   return isWeekend(d) ? fallbackWeekend : fallbackBase
 }
 
+type NightInfo = { date: Date; price: number; weekend: boolean }
+
 function calcPrice(
   arrival: string,
   departure: string,
   basePrice: number,
   weekendPrice: number,
   seasons: SeasonalPrice[] = [],
-): { total: number; nights: number; weekendNights: number; weekdayNights: number } {
+): { total: number; nights: number; nightsList: NightInfo[] } {
   const start = new Date(arrival)
   const end = new Date(departure)
   const nights = Math.round((end.getTime() - start.getTime()) / 86_400_000)
   let total = 0
-  let weekendNights = 0
+  const nightsList: NightInfo[] = []
   for (let i = 0; i < nights; i++) {
     const d = new Date(start)
     d.setDate(d.getDate() + i)
-    const day = d.getDay()
-    if (day === 5 || day === 6 || day === 0) weekendNights++
-    total += getSeasonalPrice(d, seasons, basePrice, weekendPrice)
+    const price = getSeasonalPrice(d, seasons, basePrice, weekendPrice)
+    total += price
+    nightsList.push({ date: d, price, weekend: isWeekend(d) })
   }
-  const weekdayNights = nights - weekendNights
-  return { total, nights, weekendNights, weekdayNights }
+  return { total, nights, nightsList }
+}
+
+/** Группирует ночи по фактической цене — так разбивка всегда сходится с итогом */
+function buildPriceBreakdown(nightsList: NightInfo[]): string[] {
+  const groups = new Map<string, { price: number; count: number; weekend: boolean }>()
+  for (const n of nightsList) {
+    const key = `${n.price}|${n.weekend ? 'w' : 'b'}`
+    const g = groups.get(key)
+    if (g) g.count++
+    else groups.set(key, { price: n.price, count: 1, weekend: n.weekend })
+  }
+  return [...groups.values()]
+    .sort((a, b) => b.price - a.price)
+    .map(
+      (g) =>
+        `   ${g.weekend ? 'Выходные' : 'Будни'}: ${g.count} н. × ${formatRub(g.price)} = ${formatRub(g.count * g.price)}`,
+    )
+}
+
+function nightsWord(n: number) {
+  const mod10 = n % 10
+  const mod100 = n % 100
+  if (mod10 === 1 && mod100 !== 11) return 'ночь'
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return 'ночи'
+  return 'ночей'
 }
 
 async function sendTelegramMessage(
@@ -166,7 +192,7 @@ export async function POST(req: Request) {
     }
 
     // --- Calculate price ---
-    const { total: accommodationTotal, nights, weekendNights, weekdayNights } = calcPrice(
+    const { total: accommodationTotal, nights, nightsList } = calcPrice(
       arrival,
       departure,
       basePrice,
@@ -205,16 +231,11 @@ export async function POST(req: Request) {
     // --- Send Telegram notification ---
     const priceLines = [
       `💰 *Стоимость:*`,
-      weekendNights > 0
-        ? `   Выходные: ${weekendNights} н. × ${formatRub(weekendPrice)} = ${formatRub(weekendNights * weekendPrice)}`
-        : null,
-      weekdayNights > 0
-        ? `   Будни: ${weekdayNights} н. × ${formatRub(basePrice)} = ${formatRub(weekdayNights * basePrice)}`
-        : null,
+      ...buildPriceBreakdown(nightsList),
       extraGuests > 0
         ? `   Доп. гостей: ${extraGuests} × ${formatRub(extraGuestPrice)} × ${nights} н. = ${formatRub(extraGuestTotal)}`
         : null,
-      `   Итого за ${nights} ночей: *${formatRub(total)}*`,
+      `   Итого за ${nights} ${nightsWord(nights)}: *${formatRub(total)}*`,
     ].filter(Boolean)
 
     const text = [
