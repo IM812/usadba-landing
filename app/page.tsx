@@ -14,6 +14,7 @@ import { Contacts } from "@/components/contacts"
 import { SiteFooter } from "@/components/site-footer"
 import { BookingModal } from "@/components/booking-modal"
 import { ScrollReveal } from "@/components/scroll-reveal"
+import { MobileCtaBar } from "@/components/mobile-cta-bar"
 
 export default function Page() {
   const [bookingOpen, setBookingOpen] = useState(false)
@@ -33,6 +34,7 @@ export default function Page() {
       <HowToGetThere />
       <Contacts onBook={openBooking} />
       <SiteFooter />
+      <MobileCtaBar onBook={openBooking} hidden={bookingOpen} />
       <BookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} />
     </main>
   )

@@ -208,9 +208,9 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
           </div>
 
           {/* Summary */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 sm:gap-4">
             {/* Dates */}
-            <div className="rounded-2xl border border-border bg-background p-5">
+            <div className="rounded-2xl border border-border bg-background p-4 sm:p-5">
               <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
                 <CalendarDays className="size-4" /> Даты
               </div>
@@ -227,7 +227,7 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
             </div>
 
             {/* Guests */}
-            <div className="rounded-2xl border border-border bg-background p-5">
+            <div className="rounded-2xl border border-border bg-background p-4 sm:p-5">
               <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
                 <Users className="size-4" /> Гостей
               </div>
@@ -252,7 +252,7 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
                 <button
                   type="button"
                   onClick={() => setGuests(g => Math.min(MAX_GUESTS, g + 1))}
-                  className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border hover:bg-muted transition-colors text-lg font-bold"
+                  className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border text-lg font-bold transition-colors hover:bg-muted active:bg-muted"
                   aria-label="Увеличить"
                 >+</button>
                 <span className="text-xs text-muted-foreground leading-tight">
@@ -267,7 +267,7 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
             </div>
 
             {/* Price breakdown */}
-            <div className="flex-1 rounded-2xl border border-border bg-background p-5">
+            <div className="flex-1 rounded-2xl border border-border bg-background p-4 sm:p-5">
               {price ? (
                 <>
                   <p className="text-sm font-semibold text-muted-foreground">Итого</p>
@@ -298,7 +298,7 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
             <button
               type="button"
               onClick={onBook}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 font-semibold text-primary-foreground transition hover:opacity-90 active:scale-95"
+              className="flex min-h-13 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 font-semibold text-primary-foreground transition hover:opacity-90 active:scale-[0.98]"
             >
               Забронировать <ArrowRight className="size-4" />
             </button>

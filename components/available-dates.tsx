@@ -25,26 +25,28 @@ export function AvailableDates({ onBook }: { onBook: () => void }) {
     const today = startOfToday()
 
     /**
-     * Ночь занята, если её дата попадает в [start, end).
-     * День выезда (end) свободен для заезда нового гостя, а день заезда
-     * следующего гостя (start) можно использовать как день выезда — поэтому
-     * окно "5–8" означает: заезд 5-го (после выезда предыдущих), выезд 8-го.
+     * Та же логика, что и в календаре бронирования (isBusy):
+     * жёстко заняты только дни строго внутри брони. День заезда следующего
+     * гостя (r.start) и день выезда предыдущего (r.end) остаются доступными —
+     * это транзитные дни (выезд до 12:00, заезд вечером).
      */
-    const isBookedNight = (key: string) => ranges.some((r) => key >= r.start && key < r.end)
+    const isFreeDay = (key: string) => !ranges.some((r) => key > r.start && key < r.end)
 
+    const HORIZON = 90
     const found: { s: string; e: string; nights: number }[] = []
     let i = 0
-    while (i < 90 && found.length < 4) {
-      const start = addDays(today, i)
-      if (!isBookedNight(toDateKey(start))) {
-        let j = i + 1
-        while (j < 90 && !isBookedNight(toDateKey(addDays(today, j)))) j++
-        const nights = j - i
-        if (nights >= 2) found.push(formatRange(start, addDays(today, j)))
-        i = j
-      } else {
+    while (i < HORIZON && found.length < 4) {
+      if (!isFreeDay(toDateKey(addDays(today, i)))) {
         i++
+        continue
       }
+      // непрерывный отрезок доступных дней: i … j-1
+      let j = i + 1
+      while (j < HORIZON && isFreeDay(toDateKey(addDays(today, j)))) j++
+      const lastFree = j - 1
+      const nights = lastFree - i
+      if (nights >= 2) found.push(formatRange(addDays(today, i), addDays(today, lastFree)))
+      i = j
     }
     setWindows(found.slice(0, 4))
   }, [data])

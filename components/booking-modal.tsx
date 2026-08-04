@@ -454,7 +454,7 @@ export function BookingModal({ open, onClose }: Props) {
       if (Array.isArray(data.seasonalPrices)) setSeasonalPrices(data.seasonalPrices)
     } catch {
       setBusyRanges([])
-      setAvailError("Занятые даты временно недоступны — уточните у нас перед бронированием.")
+      setAvailError("Занятые даты временно недоступны — уточните у нас перед бр��нированием.")
     } finally {
       setAvailLoading(false)
     }
@@ -546,7 +546,7 @@ export function BookingModal({ open, onClose }: Props) {
       if (!res.ok) throw new Error("server_error")
       setSubmitted(true)
     } catch {
-      setError("Не удалось ��тправить заявку. Позвоните нам: +7 (995) 155-88-42")
+      setError("Не удалось отправить заявку. Позвоните нам: +7 (995) 155-88-42")
     } finally {
       setLoading(false)
     }
@@ -596,25 +596,25 @@ export function BookingModal({ open, onClose }: Props) {
         className="absolute inset-0 h-full w-full cursor-default bg-foreground/60 backdrop-blur-sm"
       />
 
-      <div className="relative z-10 w-full max-h-[92dvh] overflow-y-auto rounded-t-2xl bg-card shadow-2xl sm:max-w-lg sm:rounded-2xl">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4 border-b border-border bg-primary px-6 py-5 text-primary-foreground">
+      <div className="relative z-10 flex max-h-[94svh] w-full flex-col overflow-hidden rounded-t-2xl bg-card shadow-2xl sm:max-h-[92dvh] sm:max-w-lg sm:rounded-2xl">
+        {/* Header — остаётся на месте при прокрутке формы */}
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border bg-primary px-4 py-4 text-primary-foreground sm:px-6 sm:py-5">
           <div>
-            <p className="font-serif text-2xl leading-tight">Бронирование усадьбы</p>
-            <p className="mt-1 text-sm text-primary-foreground/80">Усадьба в Антропково</p>
+            <p className="font-serif text-xl leading-tight sm:text-2xl">Бронирование усадьбы</p>
+            <p className="mt-0.5 text-sm text-primary-foreground/80 sm:mt-1">Усадьба в Антропково</p>
           </div>
           <button
             type="button"
             onClick={close}
             aria-label="Закрыть форму"
-            className="rounded-full p-1.5 text-primary-foreground/80 transition hover:bg-primary-foreground/15 hover:text-primary-foreground"
+            className="-mr-1 flex size-10 shrink-0 items-center justify-center rounded-full text-primary-foreground/80 transition hover:bg-primary-foreground/15 hover:text-primary-foreground"
           >
             <X className="size-5" />
           </button>
         </div>
 
         {submitted ? (
-          <div className="flex flex-col items-center gap-4 px-6 py-12 text-center">
+          <div className="flex flex-col items-center gap-4 overflow-y-auto px-5 py-10 pb-safe text-center sm:px-6 sm:py-12">
             <div className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
               <Check className="size-8" />
             </div>
@@ -633,15 +633,15 @@ export function BookingModal({ open, onClose }: Props) {
             </button>
           </div>
         ) : (
-          <>
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain">
             {/* Steps indicator */}
-            <div className="flex items-center gap-3 px-6 pt-5">
+            <div className="flex items-center gap-2 px-4 pt-4 sm:gap-3 sm:px-6 sm:pt-5">
               <StepDot index={1} label="Даты и гости" active={step === 1} done={step === 2} />
               <div className="h-px flex-1 bg-border" />
               <StepDot index={2} label="Ваши контакты" active={step === 2} done={false} />
             </div>
 
-            <form onSubmit={handleSubmit} className="px-6 pb-6 pt-5">
+            <form onSubmit={handleSubmit} className="px-4 pb-safe pt-4 sm:px-6 sm:pb-6 sm:pt-5">
               {step === 1 ? (
                 <div className="flex flex-col gap-4">
                   {/* Availability status */}
@@ -796,7 +796,7 @@ export function BookingModal({ open, onClose }: Props) {
                   <button
                     type="submit"
                     disabled={!step1Valid || availLoading || !!availError}
-                    className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="mt-2 flex min-h-13 items-center justify-center gap-2 rounded-xl bg-primary px-6 font-semibold text-primary-foreground transition hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Далее
                     <ArrowRight className="size-4" />
@@ -862,7 +862,7 @@ export function BookingModal({ open, onClose }: Props) {
                       type="button"
                       onClick={() => setStep(1)}
                       disabled={loading}
-                      className="flex items-center justify-center gap-2 rounded-lg border border-input bg-background px-5 py-3 font-medium text-foreground transition hover:bg-secondary disabled:opacity-40"
+                      className="flex min-h-13 shrink-0 items-center justify-center gap-2 rounded-xl border border-input bg-background px-4 font-medium text-foreground transition hover:bg-secondary disabled:opacity-40"
                     >
                       <ArrowLeft className="size-4" />
                       Назад
@@ -870,7 +870,7 @@ export function BookingModal({ open, onClose }: Props) {
                     <button
                       type="submit"
                       disabled={!step2Valid || loading}
-                      className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="flex min-h-13 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 font-semibold text-primary-foreground transition hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       {loading ? "Отправляем..." : "Забронировать"}
                     </button>
@@ -878,7 +878,7 @@ export function BookingModal({ open, onClose }: Props) {
                 </div>
               )}
             </form>
-          </>
+          </div>
         )}
       </div>
     </div>
@@ -900,15 +900,17 @@ function StepDot({
   done: boolean
 }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex shrink-0 items-center gap-2">
       <span
-        className={`flex size-7 items-center justify-center rounded-full text-sm font-medium transition ${
+        className={`flex size-7 shrink-0 items-center justify-center rounded-full text-sm font-medium transition ${
           active || done ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
         }`}
       >
         {done ? <Check className="size-4" /> : index}
       </span>
-      <span className={`text-sm font-medium ${active || done ? "text-foreground" : "text-muted-foreground"}`}>
+      <span
+        className={`whitespace-nowrap text-[13px] font-medium sm:text-sm ${active || done ? "text-foreground" : "text-muted-foreground"}`}
+      >
         {label}
       </span>
     </div>
@@ -947,7 +949,7 @@ function Field({
           inputMode={inputMode}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full rounded-lg border border-input bg-background py-3 pl-9 pr-3 text-foreground outline-none transition placeholder:text-muted-foreground/70 focus:border-ring focus:ring-2 focus:ring-ring/30"
+          className="min-h-13 w-full rounded-xl border border-input bg-background pl-9 pr-3 text-base text-foreground outline-none transition placeholder:text-muted-foreground/70 focus:border-ring focus:ring-2 focus:ring-ring/30"
         />
       </div>
     </div>
