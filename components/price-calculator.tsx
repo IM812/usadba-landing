@@ -157,27 +157,27 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
     d.toLocaleDateString("ru-RU", { day: "numeric", month: "long" })
 
   return (
-    <section id="calculator" className="bg-card py-16 sm:py-24">
+    <section id="calculator" className="bg-card py-14 sm:py-24">
       <div data-reveal className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 text-center">
+        <div className="mb-6 text-center sm:mb-10">
           <p className="text-sm font-semibold uppercase tracking-widest text-primary">Цена поездки</p>
-          <h2 className="mt-3 font-serif text-3xl text-foreground sm:text-4xl">Рассчитайте стоимость</h2>
-          <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+          <h2 className="mt-2.5 font-serif text-3xl text-foreground sm:mt-3 sm:text-4xl">Рассчитайте стоимость</h2>
+          <p className="mx-auto mt-2.5 max-w-xl text-pretty text-muted-foreground sm:mt-3">
             Выберите даты и количество гостей — сразу увидите итоговую сумму
           </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-[1fr_340px]">
           {/* Calendar */}
-          <div className="rounded-2xl border border-border bg-background p-5 sm:p-6">
+          <div className="rounded-2xl border border-border bg-background p-3 sm:p-6">
             <div className="mb-4 flex items-center justify-between">
-              <button onClick={prevMonth} className="flex size-9 items-center justify-center rounded-full hover:bg-muted transition-colors" aria-label="Предыдущий месяц">
+              <button onClick={prevMonth} className="flex size-11 items-center justify-center rounded-full transition-colors hover:bg-muted active:bg-muted" aria-label="Предыдущий месяц">
                 <ChevronLeft className="size-5" />
               </button>
               <span className="font-serif text-lg text-foreground">
                 {MONTHS_RU[month]} {year}
               </span>
-              <button onClick={nextMonth} className="flex size-9 items-center justify-center rounded-full hover:bg-muted transition-colors" aria-label="Следующий месяц">
+              <button onClick={nextMonth} className="flex size-11 items-center justify-center rounded-full transition-colors hover:bg-muted active:bg-muted" aria-label="Следующий месяц">
                 <ChevronRight className="size-5" />
               </button>
             </div>
@@ -200,8 +200,8 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
               )}
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-3 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5"><span className="inline-block size-3 rounded-full bg-rose-200 dark:bg-rose-950" />З��нято</span>
+            <div className="mt-4 flex flex-wrap gap-x-3 gap-y-2 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1.5"><span className="inline-block size-3 rounded-full bg-rose-200 dark:bg-rose-950" />Занято</span>
               <span className="flex items-center gap-1.5"><span className="inline-block size-3 rounded-full bg-primary" />Ваши даты</span>
               <span className="flex items-center gap-1.5"><span className="inline-block size-3 rounded-full bg-primary/15" />Выбранный период</span>
             </div>
@@ -235,7 +235,7 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
                 <button
                   type="button"
                   onClick={() => setGuests(g => Math.max(1, g - 1))}
-                  className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border hover:bg-muted transition-colors text-lg font-bold"
+                  className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border text-lg font-bold transition-colors hover:bg-muted active:bg-muted"
                   aria-label="Уменьшить"
                 >−</button>
                 <input

@@ -87,12 +87,15 @@ export function Contacts({ onBook }: { onBook: () => void }) {
                   key={item.label}
                   href={item.href}
                   {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  className="rounded-2xl border border-primary-foreground/15 bg-primary-foreground/5 p-5 transition hover:bg-primary-foreground/10 active:bg-primary-foreground/15"
+                  className="block rounded-2xl border border-primary-foreground/15 bg-primary-foreground/5 p-4 transition hover:bg-primary-foreground/10 active:bg-primary-foreground/15 sm:p-5"
                 >
                   {content}
                 </a>
               ) : (
-                <div key={item.label} className="rounded-2xl border border-primary-foreground/15 bg-primary-foreground/5 p-5">
+                <div
+                  key={item.label}
+                  className="rounded-2xl border border-primary-foreground/15 bg-primary-foreground/5 p-4 sm:p-5"
+                >
                   {content}
                 </div>
               )
