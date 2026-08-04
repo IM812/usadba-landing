@@ -41,9 +41,9 @@ export function About() {
   const amenities: Amenity[] = data?.data?.length ? data.data : DEFAULTS
 
   return (
-    <section id="about" className="bg-background py-16 sm:py-28">
+    <section id="about" className="bg-background py-14 sm:py-28">
       <div data-reveal className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+        <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
           {/* Image */}
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-xl lg:order-last">
             <Image
@@ -70,37 +70,37 @@ export function About() {
               Рядом — легендарная усадьба Ореховно.
             </p>
 
-            <dl className="mt-8 grid grid-cols-3 gap-4">
-              <div>
-                <dt className="font-serif text-3xl text-primary sm:text-4xl">250 м²</dt>
-                <dd className="mt-1 text-xs text-muted-foreground sm:text-sm">Площадь дома</dd>
+            <dl className="mt-7 grid grid-cols-3 gap-2 sm:gap-4">
+              <div className="rounded-xl border border-border bg-card px-3 py-3 text-center sm:border-0 sm:bg-transparent sm:px-0 sm:text-left">
+                <dt className="font-serif text-2xl leading-none text-primary sm:text-4xl">250 м²</dt>
+                <dd className="mt-1.5 text-xs leading-snug text-muted-foreground sm:text-sm">Площадь дома</dd>
               </div>
-              <div>
-                <dt className="font-serif text-3xl text-primary sm:text-4xl">4</dt>
-                <dd className="mt-1 text-xs text-muted-foreground sm:text-sm">Спальни со своим санузлом</dd>
+              <div className="rounded-xl border border-border bg-card px-3 py-3 text-center sm:border-0 sm:bg-transparent sm:px-0 sm:text-left">
+                <dt className="font-serif text-2xl leading-none text-primary sm:text-4xl">4</dt>
+                <dd className="mt-1.5 text-xs leading-snug text-muted-foreground sm:text-sm">Спальни с санузлом</dd>
               </div>
-              <div>
-                <dt className="font-serif text-3xl text-primary sm:text-4xl">5,0</dt>
-                <dd className="mt-1 text-xs text-muted-foreground sm:text-sm">Рейтинг Яндекс·Карты</dd>
+              <div className="rounded-xl border border-border bg-card px-3 py-3 text-center sm:border-0 sm:bg-transparent sm:px-0 sm:text-left">
+                <dt className="font-serif text-2xl leading-none text-primary sm:text-4xl">5,0</dt>
+                <dd className="mt-1.5 text-xs leading-snug text-muted-foreground sm:text-sm">Рейтинг на Картах</dd>
               </div>
             </dl>
           </div>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-4 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid grid-cols-1 gap-3 sm:mt-16 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
           {amenities.map((a) => {
             const Icon = iconMap[a.icon?.toLowerCase()] ?? Check
             const desc = DESCRIPTIONS[a.label] ?? ""
             return (
               <div
                 key={a.id}
-                className="flex items-start gap-4 rounded-2xl border border-border bg-card p-5 sm:flex-col sm:gap-0 sm:p-6"
+                className="flex items-start gap-3.5 rounded-2xl border border-border bg-card p-4 sm:flex-col sm:gap-0 sm:p-6"
               >
                 <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:size-11">
                   <Icon className="size-5" />
                 </div>
-                <div className="sm:mt-4">
-                  <h3 className="font-serif text-lg text-foreground sm:text-xl">{a.label}</h3>
+                <div className="min-w-0 sm:mt-4">
+                  <h3 className="font-serif text-lg leading-snug text-foreground sm:text-xl">{a.label}</h3>
                   {desc && (
                     <p className="mt-1 text-sm leading-relaxed text-muted-foreground sm:mt-2">{desc}</p>
                   )}

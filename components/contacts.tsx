@@ -47,22 +47,22 @@ export function Contacts({ onBook }: { onBook: () => void }) {
   ]
 
   return (
-    <section id="contacts" className="bg-primary py-16 text-primary-foreground sm:py-28">
+    <section id="contacts" className="bg-primary py-14 text-primary-foreground sm:py-28">
       <div data-reveal className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
+        <div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
           <div>
             <p className="text-sm font-semibold uppercase tracking-widest text-accent">Контакты</p>
-            <h2 className="mt-3 text-balance font-serif text-3xl leading-tight sm:text-5xl">
+            <h2 className="mt-2.5 text-balance font-serif text-3xl leading-tight sm:mt-3 sm:text-5xl">
               Готовы принять вас в гости
             </h2>
-            <p className="mt-4 text-pretty leading-relaxed text-primary-foreground/80">
+            <p className="mt-3 text-pretty leading-relaxed text-primary-foreground/80 sm:mt-4">
               Напишите или позвоните нам — поможем выбрать даты и ответим на все вопросы. Или сразу оставьте заявку на
               бронирование.
             </p>
             <button
               type="button"
               onClick={onBook}
-              className="mt-6 w-full rounded-xl bg-accent px-8 py-4 text-base font-semibold text-accent-foreground transition hover:opacity-90 active:scale-95 sm:mt-8 sm:w-auto sm:py-3.5"
+              className="mt-5 min-h-13 w-full rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground transition hover:opacity-90 active:scale-[0.98] sm:mt-8 sm:w-auto sm:py-3.5"
             >
               Забронировать
             </button>
@@ -71,13 +71,15 @@ export function Contacts({ onBook }: { onBook: () => void }) {
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
             {items.map((item) => {
               const content = (
-                <>
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-primary-foreground/10 text-accent">
+                <div className="flex items-start gap-3.5 sm:block">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-foreground/10 text-accent">
                     <item.icon className="size-5" />
                   </div>
-                  <p className="mt-3 text-sm text-primary-foreground/70">{item.label}</p>
-                  <p className="mt-1 font-medium leading-snug">{item.value}</p>
-                </>
+                  <div className="min-w-0 sm:mt-3">
+                    <p className="text-sm text-primary-foreground/70">{item.label}</p>
+                    <p className="mt-0.5 text-pretty font-medium leading-snug sm:mt-1">{item.value}</p>
+                  </div>
+                </div>
               )
               const isExternal = item.href?.startsWith("http")
               return item.href ? (
@@ -85,12 +87,15 @@ export function Contacts({ onBook }: { onBook: () => void }) {
                   key={item.label}
                   href={item.href}
                   {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  className="rounded-2xl border border-primary-foreground/15 bg-primary-foreground/5 p-5 transition hover:bg-primary-foreground/10 active:bg-primary-foreground/15"
+                  className="block rounded-2xl border border-primary-foreground/15 bg-primary-foreground/5 p-4 transition hover:bg-primary-foreground/10 active:bg-primary-foreground/15 sm:p-5"
                 >
                   {content}
                 </a>
               ) : (
-                <div key={item.label} className="rounded-2xl border border-primary-foreground/15 bg-primary-foreground/5 p-5">
+                <div
+                  key={item.label}
+                  className="rounded-2xl border border-primary-foreground/15 bg-primary-foreground/5 p-4 sm:p-5"
+                >
                   {content}
                 </div>
               )
