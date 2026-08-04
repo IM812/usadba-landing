@@ -159,9 +159,43 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    scroll-behavior: smooth;
+    /* якорные переходы не уезжают под фиксированную шапку */
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     @apply bg-background text-foreground;
+    /* никакого горизонтального «люфта» на телефоне */
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
   }
+  /* на телефоне ссылки/кнопки не должны быть меньше 44px по высоте */
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    touch-action: manipulation;
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* отступ под «домашнюю полоску» на iPhone */
+@utility pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+@utility pb-safe-0 {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* ===== Scroll reveal ===== */

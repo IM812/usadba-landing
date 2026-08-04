@@ -59,15 +59,16 @@ export function SiteHeader({ onBook }: { onBook: () => void }) {
           <button
             type="button"
             onClick={onBook}
-            className="rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground transition hover:opacity-90 active:scale-95"
+            className="flex min-h-11 items-center rounded-lg bg-accent px-4 text-sm font-semibold text-accent-foreground transition hover:opacity-90 active:scale-95"
           >
             Забронировать
           </button>
           <button
             type="button"
-            aria-label="Открыть меню"
+            aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
+            aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
-            className="rounded-lg p-2 text-primary-foreground md:hidden"
+            className="flex size-11 items-center justify-center rounded-lg text-primary-foreground transition active:bg-primary-foreground/10 md:hidden"
           >
             {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
@@ -75,29 +76,30 @@ export function SiteHeader({ onBook }: { onBook: () => void }) {
       </div>
 
       {menuOpen && (
-        <nav className="border-t border-primary-foreground/10 bg-primary/95 px-4 py-3 backdrop-blur md:hidden">
-          <ul className="flex flex-col gap-1">
+        <nav
+          className="max-h-[calc(100svh-4rem)] overflow-y-auto border-t border-primary-foreground/10 bg-primary px-4 pb-safe pt-2 shadow-xl md:hidden"
+          aria-label="Мобильная навигация"
+        >
+          <ul className="flex flex-col">
             {navLinks.map((link) => (
-              <li key={link.href}>
+              <li key={link.href} className="border-b border-primary-foreground/10 last:border-0">
                 <a
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
-                  className="block rounded-lg px-3 py-2 text-primary-foreground/90 transition hover:bg-primary-foreground/10"
+                  className="flex min-h-12 items-center rounded-lg px-3 text-base text-primary-foreground/90 transition active:bg-primary-foreground/10"
                 >
                   {link.label}
                 </a>
               </li>
             ))}
-            <li>
-              <a
-                href="tel:+79951558842"
-                className="mt-1 flex items-center gap-2 rounded-lg px-3 py-2 text-primary-foreground/90"
-              >
-                <Phone className="size-4 text-accent" />
-                +7 (995) 155-88-42
-              </a>
-            </li>
           </ul>
+          <a
+            href="tel:+79951558842"
+            className="mt-3 flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary-foreground/10 px-3 font-semibold text-primary-foreground"
+          >
+            <Phone className="size-4 text-accent" />
+            +7 (995) 155-88-42
+          </a>
         </nav>
       )}
     </header>

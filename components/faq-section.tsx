@@ -36,16 +36,16 @@ function FaqItem({ q, a }: { q: string; a: string }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-start justify-between gap-4 py-5 text-left"
+        className="flex w-full min-h-14 items-start justify-between gap-3 py-4 text-left sm:gap-4 sm:py-5"
         aria-expanded={open}
       >
-        <span className="font-serif text-lg text-foreground leading-snug">{q}</span>
+        <span className="text-pretty font-serif text-lg leading-snug text-foreground">{q}</span>
         <ChevronDown
           className={`size-5 shrink-0 text-muted-foreground transition-transform duration-200 mt-0.5 ${open ? "rotate-180" : ""}`}
         />
       </button>
       {open && (
-        <p className="pb-5 text-pretty leading-relaxed text-muted-foreground">{a}</p>
+        <p className="pb-5 text-pretty text-[15px] leading-relaxed text-muted-foreground sm:text-base">{a}</p>
       )}
     </div>
   )
@@ -56,27 +56,29 @@ export function FaqSection() {
   const items = data?.data?.length ? data.data : fallbackFaq
 
   return (
-    <section id="faq" className="bg-muted/40 py-16 sm:py-28">
+    <section id="faq" className="bg-muted/40 py-14 sm:py-28">
       <div data-reveal className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header — stacked on mobile, side-by-side on desktop */}
-        <div className="mb-8 sm:mb-12">
+        <div className="mb-6 sm:mb-12">
           <p className="text-sm font-semibold uppercase tracking-widest text-primary">FAQ</p>
-          <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <h2 className="text-balance font-serif text-3xl leading-tight text-foreground sm:text-4xl">
-              Частые вопросы
-            </h2>
+          <div className="mt-2.5 flex flex-col gap-3 sm:mt-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+            <div className="max-w-xl">
+              <h2 className="text-balance font-serif text-3xl leading-tight text-foreground sm:text-4xl">
+                Частые вопросы
+              </h2>
+              <p className="mt-2.5 text-pretty leading-relaxed text-muted-foreground">
+                Не нашли ответ? Напишите нам — ответим в течение нескольких часов.
+              </p>
+            </div>
             <a
               href="tel:+79951558842"
-              className="inline-flex w-fit items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+              className="inline-flex min-h-12 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition hover:opacity-90 sm:w-fit sm:py-3"
             >
               Позвонить нам
             </a>
           </div>
-          <p className="mt-3 max-w-xl text-pretty leading-relaxed text-muted-foreground">
-            Не нашли ответ? Напишите нам — ответим в течение нескольких часов.
-          </p>
         </div>
-        <div className="rounded-2xl border border-border bg-card px-5 sm:px-6">
+        <div className="rounded-2xl border border-border bg-card px-4 sm:px-6">
           {items.map((item: { question: string; answer: string }, idx: number) => (
             <FaqItem key={idx} q={item.question} a={item.answer} />
           ))}

@@ -102,9 +102,38 @@ export function Reviews() {
     if (!track) return
     const card = track.children[current] as HTMLElement | undefined
     if (card) {
-      track.scrollTo({ left: card.offsetLeft - 16, behavior: "smooth" })
+      track.scrollTo({ left: card.offsetLeft - track.offsetLeft, behavior: "smooth" })
     }
   }, [current])
+
+  // Синхронизируем точки со свайпом пальцем
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+    let raf = 0
+    const onScroll = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        const cards = Array.from(track.children) as HTMLElement[]
+        const left = track.scrollLeft
+        let closest = 0
+        let min = Number.POSITIVE_INFINITY
+        cards.forEach((c, i) => {
+          const d = Math.abs(c.offsetLeft - track.offsetLeft - left)
+          if (d < min) {
+            min = d
+            closest = i
+          }
+        })
+        setCurrent((c) => (c === Math.min(closest, maxIndex) ? c : Math.min(closest, maxIndex)))
+      })
+    }
+    track.addEventListener("scroll", onScroll, { passive: true })
+    return () => {
+      cancelAnimationFrame(raf)
+      track.removeEventListener("scroll", onScroll)
+    }
+  }, [maxIndex])
 
   // card width as fraction of container minus gaps
   const cardWidth =
@@ -153,13 +182,13 @@ export function Reviews() {
         <div className="relative">
           <div
             ref={trackRef}
-            className="flex gap-4 overflow-x-hidden pb-2"
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-2 no-scrollbar"
           >
             {reviews.map((r, idx) => (
               <article
                 key={r.id ?? idx}
                 style={{ minWidth: cardWidth, maxWidth: cardWidth }}
-                className="shrink-0 flex flex-col rounded-2xl border border-border bg-card p-6 sm:p-7"
+                className="flex shrink-0 snap-start flex-col rounded-2xl border border-border bg-card p-5 sm:p-7"
               >
                 <Quote className="size-7 shrink-0 text-accent" />
 

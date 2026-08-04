@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { X, ChevronLeft, ChevronRight, Expand } from "lucide-react"
 import useSWR from "swr"
 
@@ -36,6 +36,7 @@ export function Gallery() {
       : fallbackPhotos
 
   const [lightbox, setLightbox] = useState<number | null>(null)
+  const touchStartX = useRef<number | null>(null)
 
   const close = useCallback(() => setLightbox(null), [])
   const prev = useCallback(
@@ -63,12 +64,12 @@ export function Gallery() {
   }, [lightbox, close, prev, next])
 
   return (
-    <section id="gallery" className="bg-secondary py-16 sm:py-28">
+    <section id="gallery" className="bg-secondary py-14 sm:py-28">
       <div data-reveal className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-3 sm:mb-10 sm:gap-4">
           <div className="max-w-2xl">
             <p className="text-sm font-semibold uppercase tracking-widest text-primary">Галерея</p>
-            <h2 className="mt-3 text-balance font-serif text-4xl leading-tight text-foreground sm:text-5xl">
+            <h2 className="mt-2.5 text-balance font-serif text-3xl leading-tight text-foreground sm:mt-3 sm:text-5xl">
               Загляните в усадьбу
             </h2>
           </div>
@@ -113,11 +114,11 @@ export function Gallery() {
           role="dialog"
           aria-modal="true"
           aria-label={photos[lightbox].alt}
-          className="fixed inset-0 z-[100] flex flex-col bg-foreground/95 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex h-[100svh] flex-col bg-foreground/95 backdrop-blur-sm"
           onClick={close}
         >
           {/* Top bar */}
-          <div className="flex items-center justify-between px-4 py-3 sm:px-6">
+          <div className="flex shrink-0 items-center justify-between px-4 py-3 sm:px-6">
             <span className="text-sm font-medium text-background/70">
               {lightbox + 1} / {photos.length}
             </span>
@@ -132,7 +133,20 @@ export function Gallery() {
           </div>
 
           {/* Image */}
-          <div className="relative flex-1 px-2 sm:px-16" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="relative min-h-0 flex-1 px-2 sm:px-16"
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => {
+              touchStartX.current = e.touches[0].clientX
+            }}
+            onTouchEnd={(e) => {
+              const start = touchStartX.current
+              if (start === null) return
+              const delta = e.changedTouches[0].clientX - start
+              if (Math.abs(delta) > 50) (delta < 0 ? next : prev)()
+              touchStartX.current = null
+            }}
+          >
             <Image
               src={photos[lightbox].src || "/placeholder.svg"}
               alt={photos[lightbox].alt}
@@ -162,9 +176,9 @@ export function Gallery() {
           </div>
 
           {/* Caption + thumbnails */}
-          <div className="px-4 pb-4 pt-3 sm:px-6" onClick={(e) => e.stopPropagation()}>
-            <p className="mb-3 text-center text-sm text-background/80">{photos[lightbox].alt}</p>
-            <div className="mx-auto flex max-w-full justify-start gap-2 overflow-x-auto pb-1 sm:justify-center">
+          <div className="shrink-0 px-4 pb-safe pt-3 sm:px-6" onClick={(e) => e.stopPropagation()}>
+            <p className="mb-3 text-pretty text-center text-sm text-background/80">{photos[lightbox].alt}</p>
+            <div className="mx-auto flex max-w-full justify-start gap-2 overflow-x-auto pb-1 no-scrollbar sm:justify-center">
               {photos.map((p, i) => (
                 <button
                   key={p.src}

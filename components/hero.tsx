@@ -16,7 +16,10 @@ export function Hero({ onBook }: { onBook: () => void }) {
   const description = s?.description || "Большой бревенчатый дом между двумя озёрами. Баня, сибирский чан, причал, лодка и сап-борды. 5 часов от Москвы."
 
   return (
-    <section id="hero" className="relative flex min-h-screen items-center overflow-hidden">
+    <section
+      id="hero"
+      className="relative flex min-h-[100svh] items-end overflow-hidden sm:min-h-screen sm:items-center"
+    >
       <video
         autoPlay
         muted
@@ -41,9 +44,9 @@ export function Hero({ onBook }: { onBook: () => void }) {
       <div className="absolute inset-0 bg-gradient-to-r from-primary/80 via-primary/40 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 via-transparent to-transparent" />
 
-      <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 pb-10 pt-20 sm:gap-10 sm:pb-16 sm:pt-32 sm:px-6 lg:px-8">
+      <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 pb-24 pt-24 sm:gap-10 sm:pb-16 sm:pt-32 sm:px-6 lg:px-8">
         <div className="max-w-2xl">
-          <div className="mb-3 flex flex-col gap-2 sm:mb-4 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="mb-3 flex flex-wrap items-center gap-2 sm:mb-4">
             <button
               type="button"
               onClick={() => {
@@ -65,15 +68,15 @@ export function Hero({ onBook }: { onBook: () => void }) {
         </div>
 
         <div className="w-full rounded-2xl border border-primary-foreground/20 bg-primary-foreground/10 p-4 backdrop-blur-md sm:max-w-2xl">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <p className="font-serif text-base text-primary-foreground sm:text-xl">{subtitle}</p>
-              <p className="hidden text-sm text-primary-foreground/80 sm:block">Быстрая заявка в два простых шага</p>
+              <p className="font-serif text-lg text-primary-foreground sm:text-xl">{subtitle}</p>
+              <p className="text-sm text-primary-foreground/80">Быстрая заявка в два простых шага</p>
             </div>
             <button
               type="button"
               onClick={onBook}
-              className="flex shrink-0 items-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition hover:opacity-90 active:scale-95 sm:px-6 sm:py-3.5 sm:text-base"
+              className="flex min-h-12 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-accent px-5 text-base font-semibold text-accent-foreground transition hover:opacity-90 active:scale-[0.98] sm:w-auto sm:px-6 sm:py-3.5"
             >
               Забронировать
               <ArrowRight className="size-4" />
