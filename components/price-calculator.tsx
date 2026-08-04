@@ -2,23 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { ChevronLeft, ChevronRight, Users, CalendarDays, ArrowRight } from "lucide-react"
+import { addDays, nightsBetween as daysBetween, toDateKey } from "@/lib/date"
 
 const MONTHS_RU = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"]
 const DAYS_RU = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"]
-
-function toDateKey(d: Date) {
-  return d.toISOString().slice(0, 10)
-}
-
-function addDays(d: Date, n: number) {
-  const r = new Date(d)
-  r.setDate(r.getDate() + n)
-  return r
-}
-
-function daysBetween(a: Date, b: Date) {
-  return Math.round((b.getTime() - a.getTime()) / 86400000)
-}
 
 function isWeekend(d: Date) {
   const day = d.getDay()

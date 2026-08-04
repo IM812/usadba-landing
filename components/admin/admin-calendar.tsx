@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Booking } from '@/lib/types'
 import type { BusyRange } from '@/lib/ics'
+import { todayKey } from '@/lib/date'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -82,7 +83,7 @@ export function AdminCalendar() {
     return bookings.some((b) => b.check_out === iso && b.status !== 'cancelled')
   }
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = todayKey()
 
   return (
     <div className="p-6 max-w-5xl mx-auto">

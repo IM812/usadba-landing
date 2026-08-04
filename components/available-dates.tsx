@@ -4,18 +4,15 @@ import { useEffect, useState } from "react"
 import { CalendarDays, ArrowRight } from "lucide-react"
 import useSWR from "swr"
 
-const fetcher = (url: string) => fetch(url).then(r => r.json())
+import { addDays, nightsBetween, startOfToday, toDateKey } from "@/lib/date"
 
-function addDays(d: Date, n: number) {
-  const r = new Date(d); r.setDate(r.getDate() + n); return r
-}
+const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 function formatRange(start: Date, end: Date) {
   const opts: Intl.DateTimeFormatOptions = { day: "numeric", month: "short" }
   const s = start.toLocaleDateString("ru-RU", opts)
   const e = end.toLocaleDateString("ru-RU", opts)
-  const nights = Math.round((end.getTime() - start.getTime()) / 86400000)
-  return { s, e, nights }
+  return { s, e, nights: nightsBetween(start, end) }
 }
 
 export function AvailableDates({ onBook }: { onBook: () => void }) {
@@ -23,29 +20,27 @@ export function AvailableDates({ onBook }: { onBook: () => void }) {
   const [windows, setWindows] = useState<{ s: string; e: string; nights: number }[]>([])
 
   useEffect(() => {
-    if (!data?.blockedRanges) return
-    const today = new Date(); today.setHours(0, 0, 0, 0)
-    const booked: Set<string> = new Set()
-    for (const r of data.blockedRanges) {
-      let cur = new Date(r.start)
-      const end = new Date(r.end)
-      while (cur < end) {
-        booked.add(cur.toISOString().slice(0, 10))
-        cur = addDays(cur, 1)
-      }
-    }
-    // Find free windows (3+ nights) in next 90 days
+    const ranges: { start: string; end: string }[] = data?.blockedRanges ?? data?.ranges ?? []
+    if (!ranges.length) return
+    const today = startOfToday()
+
+    /**
+     * Ночь занята, если её дата попадает в [start, end).
+     * День выезда (end) свободен для заезда нового гостя, а день заезда
+     * следующего гостя (start) можно использовать как день выезда — поэтому
+     * окно "5–8" означает: заезд 5-го (после выезда предыдущих), выезд 8-го.
+     */
+    const isBookedNight = (key: string) => ranges.some((r) => key >= r.start && key < r.end)
+
     const found: { s: string; e: string; nights: number }[] = []
     let i = 0
     while (i < 90 && found.length < 4) {
       const start = addDays(today, i)
-      if (!booked.has(start.toISOString().slice(0, 10))) {
+      if (!isBookedNight(toDateKey(start))) {
         let j = i + 1
-        while (j < 90 && !booked.has(addDays(today, j).toISOString().slice(0, 10))) j++
+        while (j < 90 && !isBookedNight(toDateKey(addDays(today, j)))) j++
         const nights = j - i
-        if (nights >= 2) {
-          found.push(formatRange(start, addDays(today, j)))
-        }
+        if (nights >= 2) found.push(formatRange(start, addDays(today, j)))
         i = j
       } else {
         i++

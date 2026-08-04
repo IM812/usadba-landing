@@ -17,6 +17,7 @@ import {
   AlertTriangle,
 } from "lucide-react"
 import type { BusyRange } from "@/app/api/availability/route"
+import { todayKey } from "@/lib/date"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -58,7 +59,8 @@ function toISO(year: number, month: number, day: number): string {
 }
 
 function today(): string {
-  return new Date().toISOString().split("T")[0]
+  // локальный день — toISOString() дал бы вчерашнюю дату для МСК ночью
+  return todayKey()
 }
 
 /**
