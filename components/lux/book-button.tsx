@@ -19,7 +19,7 @@ export function BookButton({
   const { openBooking } = useBooking()
 
   return (
-    <LuxButton type="button" variant={variant} className={className} onClick={openBooking}>
+    <LuxButton type="button" variant={variant} className={className} onClick={() => openBooking()}>
       {children}
     </LuxButton>
   )

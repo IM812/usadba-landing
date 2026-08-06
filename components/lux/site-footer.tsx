@@ -2,9 +2,11 @@ import Link from "next/link"
 import { MapPin, Phone, Send } from "lucide-react"
 import { contacts, navigation, secondaryNavigation, site } from "@/lib/site"
 import { Container, Eyebrow } from "@/components/lux/ui"
+import { getRates } from "@/lib/rates"
 
-export function SiteFooter() {
+export async function SiteFooter() {
   const year = new Date().getFullYear()
+  const { settings } = await getRates()
 
   return (
     <footer className="border-t border-border bg-card">
@@ -79,7 +81,7 @@ export function SiteFooter() {
             © {year} {site.name}
           </p>
           <p className="text-pretty">
-            Дом сдаётся целиком · Заезд с 15:00, выезд до 12:00 · Можно с детьми и питомцами
+            {`Дом сдаётся целиком · Заезд с ${settings.check_in_time}, выезд до ${settings.check_out_time} · Можно с детьми и питомцами`}
           </p>
         </div>
       </Container>

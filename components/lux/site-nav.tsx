@@ -95,7 +95,7 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
             </a>
             <button
               type="button"
-              onClick={openBooking}
+              onClick={() => openBooking()}
               className="inline-flex min-h-10 items-center rounded-sm border border-accent/70 px-4 text-[11px] font-medium uppercase tracking-[0.16em] text-accent transition-colors hover:bg-accent hover:text-accent-foreground sm:min-h-11 sm:px-6 sm:text-[12px]"
             >
               Забронировать

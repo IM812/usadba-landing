@@ -22,9 +22,17 @@ import { todayKey } from "@/lib/date"
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+export type BookingPrefill = {
+  arrival?: string
+  departure?: string
+  guests?: string
+}
+
 type Props = {
   open: boolean
   onClose: () => void
+  /** Даты и гости, выбранные на странице бронирования до открытия модалки. */
+  prefill?: BookingPrefill
 }
 
 type FormState = {
@@ -404,7 +412,7 @@ function Calendar({
 // ---------------------------------------------------------------------------
 // Main modal
 // ---------------------------------------------------------------------------
-export function BookingModal({ open, onClose }: Props) {
+export function BookingModal({ open, onClose, prefill }: Props) {
   const [step, setStep] = useState<1 | 2>(1)
   const [form, setForm] = useState<FormState>(emptyForm)
   const [submitted, setSubmitted] = useState(false)
@@ -454,7 +462,7 @@ export function BookingModal({ open, onClose }: Props) {
       if (Array.isArray(data.seasonalPrices)) setSeasonalPrices(data.seasonalPrices)
     } catch {
       setBusyRanges([])
-      setAvailError("Занятые даты временно недоступны — уточните у нас перед бр��нированием.")
+      setAvailError("Занятые даты временно недоступны — уточните у нас перед бр����нированием.")
     } finally {
       setAvailLoading(false)
     }
@@ -471,6 +479,29 @@ export function BookingModal({ open, onClose }: Props) {
       document.body.style.overflow = ""
     }
   }, [open, fetchAvailability])
+
+  // Подхватываем даты, выбранные на странице бронирования
+  useEffect(() => {
+    if (!open || !prefill) return
+    const { arrival, departure, guests } = prefill
+    if (!arrival && !departure && !guests) return
+
+    setForm((f) => ({
+      ...f,
+      arrival: arrival ?? f.arrival,
+      departure: departure ?? f.departure,
+      guests: guests ?? f.guests,
+    }))
+    setSelecting(arrival && !departure ? "departure" : "arrival")
+
+    if (arrival) {
+      const [y, m] = arrival.split("-").map(Number)
+      if (y && m) {
+        setCalYear(y)
+        setCalMonth(m - 1)
+      }
+    }
+  }, [open, prefill])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

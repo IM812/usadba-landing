@@ -42,7 +42,7 @@ export function BookingCta({
         <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:gap-4">
           <button
             type="button"
-            onClick={openBooking}
+            onClick={() => openBooking()}
             className="inline-flex min-h-13 items-center justify-center rounded-sm bg-accent px-8 text-[12px] font-medium uppercase tracking-[0.16em] text-accent-foreground transition-colors hover:bg-accent/85"
           >
             Проверить даты

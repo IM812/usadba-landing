@@ -1,5 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
 import { Container } from "@/components/lux/ui"
 
 /** Заголовочный блок внутренних страниц: фото на всю ширину и крупная антиква. */
@@ -10,16 +11,26 @@ export function PageHero({
   image,
   imageAlt,
   meta,
+  size = "default",
 }: {
   eyebrow: string
-  title: string
+  title: React.ReactNode
   lead?: string
   image: string
   imageAlt: string
   meta?: readonly string[]
+  /** «short» — для утилитарных страниц, где важнее контент под хиро. */
+  size?: "default" | "short"
 }) {
   return (
-    <section className="relative flex min-h-[62svh] items-end overflow-hidden pt-28 pb-14 sm:min-h-[70svh] sm:pb-20">
+    <section
+      className={cn(
+        "relative flex items-end overflow-hidden pt-28",
+        size === "default"
+          ? "min-h-[62svh] pb-14 sm:min-h-[70svh] sm:pb-20"
+          : "min-h-[46svh] pb-12 sm:min-h-[52svh] sm:pb-16",
+      )}
+    >
       <Image
         src={image || "/placeholder.svg"}
         alt={imageAlt}

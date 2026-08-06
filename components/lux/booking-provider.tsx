@@ -1,10 +1,10 @@
 "use client"
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react"
-import { BookingModal } from "@/components/booking-modal"
+import { BookingModal, type BookingPrefill } from "@/components/booking-modal"
 
 type BookingContextValue = {
-  openBooking: () => void
+  openBooking: (prefill?: BookingPrefill) => void
   closeBooking: () => void
   isOpen: boolean
 }
@@ -22,8 +22,13 @@ export function useBooking() {
 
 export function BookingProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false)
+  const [prefill, setPrefill] = useState<BookingPrefill | undefined>(undefined)
 
-  const openBooking = useCallback(() => setIsOpen(true), [])
+  const openBooking = useCallback((next?: BookingPrefill) => {
+    setPrefill(next)
+    setIsOpen(true)
+  }, [])
+
   const closeBooking = useCallback(() => setIsOpen(false), [])
 
   const value = useMemo(
@@ -34,7 +39,7 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
   return (
     <BookingContext.Provider value={value}>
       {children}
-      <BookingModal open={isOpen} onClose={closeBooking} />
+      <BookingModal open={isOpen} onClose={closeBooking} prefill={prefill} />
     </BookingContext.Provider>
   )
 }
