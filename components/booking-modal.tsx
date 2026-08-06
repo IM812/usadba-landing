@@ -462,7 +462,7 @@ export function BookingModal({ open, onClose, prefill }: Props) {
       if (Array.isArray(data.seasonalPrices)) setSeasonalPrices(data.seasonalPrices)
     } catch {
       setBusyRanges([])
-      setAvailError("Занятые даты временно недоступны — уточните у нас перед бр����нированием.")
+      setAvailError("Занятые даты временно недоступны — уточ��ите у нас перед бр����нированием.")
     } finally {
       setAvailLoading(false)
     }
@@ -629,16 +629,20 @@ export function BookingModal({ open, onClose, prefill }: Props) {
 
       <div className="relative z-10 flex max-h-[94svh] w-full flex-col overflow-hidden rounded-t-2xl bg-card shadow-2xl sm:max-h-[92dvh] sm:max-w-lg sm:rounded-2xl">
         {/* Header — остаётся на месте при прокрутке формы */}
-        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border bg-primary px-4 py-4 text-primary-foreground sm:px-6 sm:py-5">
+        <div className="relative flex shrink-0 items-start justify-between gap-3 border-b border-border bg-secondary px-4 py-4 text-foreground sm:px-6 sm:py-5">
+          {/* латунная нить вместо плотной заливки — акцент, а не пятно */}
+          <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-accent/70" />
           <div>
-            <p className="font-serif text-xl leading-tight sm:text-2xl">Бронирование усадьбы</p>
-            <p className="mt-0.5 text-sm text-primary-foreground/80 sm:mt-1">Усадьба в Антропково</p>
+            <p className="eyebrow text-accent">Усадьба в Антропково</p>
+            <p className="mt-2 font-serif text-xl font-light leading-tight sm:text-2xl">
+              Бронирование усадьбы
+            </p>
           </div>
           <button
             type="button"
             onClick={close}
             aria-label="Закрыть форму"
-            className="-mr-1 flex size-10 shrink-0 items-center justify-center rounded-full text-primary-foreground/80 transition hover:bg-primary-foreground/15 hover:text-primary-foreground"
+            className="-mr-1 flex size-10 shrink-0 items-center justify-center rounded-full text-muted-foreground transition hover:bg-foreground/10 hover:text-foreground"
           >
             <X className="size-5" />
           </button>
@@ -819,7 +823,7 @@ export function BookingModal({ open, onClose, prefill }: Props) {
                     </div>
                     {Number(form.guests) > appSettings.base_guests && appSettings.extra_guest_price > 0 && (
                       <p className="text-xs text-amber-600 dark:text-amber-400">
-                        + {appSettings.extra_guest_price.toLocaleString("ru-RU")} ₽/гость/ночь за {Number(form.guests) - appSettings.base_guests} доп. {Number(form.guests) - appSettings.base_guests === 1 ? "гостя" : "гостей"}
+                        + {appSettings.extra_guest_price.toLocaleString("ru-RU")} ��/гость/ночь за {Number(form.guests) - appSettings.base_guests} доп. {Number(form.guests) - appSettings.base_guests === 1 ? "гостя" : "гостей"}
                       </p>
                     )}
                   </div>

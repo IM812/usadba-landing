@@ -4,7 +4,11 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    // Телефон должен получать лёгкий webp по своему размеру, а не полноразмерный JPEG:
+    // именно из-за отключённой оптимизации галерея и хиро тормозили при скролле.
+    formats: ['image/webp'],
+    deviceSizes: [400, 520, 640, 828, 1080, 1280, 1600, 1920],
+    minimumCacheTTL: 2678400,
   },
   async headers() {
     return [

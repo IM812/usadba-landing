@@ -2,6 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { HomeHero } from "@/components/lux/home-hero"
 import { BookingCta } from "@/components/lux/booking-cta"
+import { FreeDates } from "@/components/lux/free-dates"
 import { ReviewsRail } from "@/components/lux/reviews-rail"
 import {
   ArchImage,
@@ -16,7 +17,7 @@ import {
 } from "@/components/lux/ui"
 import { LodgingJsonLd } from "@/components/json-ld"
 import { getRates } from "@/lib/rates"
-import { estateFacts, includedInStay, navigation, seasons, site } from "@/lib/site"
+import { estateFacts, includedInStay, navigation, site } from "@/lib/site"
 
 const chapters = [
   {
@@ -141,45 +142,8 @@ export default async function HomePage() {
         </Container>
       </Section>
 
-      {/* ===== Сезоны ===== */}
-      <Section tone="base">
-        <Container size="wide">
-          <div data-reveal>
-            <SectionHeading
-              eyebrow="Круглый год"
-              title="Четыре разных усадьбы"
-              lead="Одно и то же место выглядит и живёт по-разному от сезона к сезону. Выбирайте тот, что ближе."
-            />
-          </div>
-
-          <div data-reveal className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {seasons.map((s) => (
-              <article key={s.id} className="group flex flex-col">
-                <div className="relative aspect-3/4 w-full overflow-hidden rounded-sm bg-secondary">
-                  <Image
-                    src={s.image || "/placeholder.svg"}
-                    alt={`Усадьба в сезон: ${s.name.toLowerCase()}`}
-                    fill
-                    sizes="(max-width: 640px) 100vw, 25vw"
-                    className="object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105"
-                  />
-                  <div
-                    aria-hidden
-                    className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/10 to-transparent"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 p-5">
-                    <h3 className="font-serif text-2xl font-light text-foreground">{s.name}</h3>
-                    <p className="eyebrow mt-1.5 text-accent">{s.months}</p>
-                  </div>
-                </div>
-                <p className="mt-4 text-pretty text-[13px] leading-relaxed text-muted-foreground">
-                  {s.line}
-                </p>
-              </article>
-            ))}
-          </div>
-        </Container>
-      </Section>
+      {/* ===== Ближайшие свободные даты ===== */}
+      <FreeDates />
 
       {/* ===== Что включено ===== */}
       <Section tone="deep">

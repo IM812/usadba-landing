@@ -60,19 +60,21 @@
   --card-foreground: oklch(0.95 0.01 95);
   --popover: oklch(0.19 0.014 155);
   --popover-foreground: oklch(0.95 0.01 95);
-  --primary: oklch(0.765 0.105 82);
+  /* Приглушённая латунь вместо горчичного жёлтого: та же тёплая нота,
+     но чистота ниже — на больших плоскостях больше не кричит. */
+  --primary: oklch(0.83 0.045 78);
   --primary-foreground: oklch(0.17 0.02 155);
   --secondary: oklch(0.245 0.016 155);
   --secondary-foreground: oklch(0.95 0.01 95);
   --muted: oklch(0.225 0.014 155);
   --muted-foreground: oklch(0.705 0.014 135);
-  --accent: oklch(0.765 0.105 82);
+  --accent: oklch(0.83 0.045 78);
   --accent-foreground: oklch(0.17 0.02 155);
   --destructive: oklch(0.62 0.19 25);
   --border: oklch(0.95 0.01 95 / 13%);
   --input: oklch(0.95 0.01 95 / 17%);
-  --ring: oklch(0.765 0.105 82);
-  --chart-1: oklch(0.765 0.105 82);
+  --ring: oklch(0.83 0.045 78);
+  --chart-1: oklch(0.83 0.045 78);
   --chart-2: oklch(0.6 0.07 150);
   --chart-3: oklch(0.7 0.05 130);
   --chart-4: oklch(0.45 0.05 155);
@@ -213,6 +215,15 @@
   animation: lux-ken-burns 22s ease-out both;
 }
 
+/* На телефоне бесконечный наезд на полноэкранный кадр стоит слишком дорого:
+   оставляем статичную крупную композицию. */
+@media (max-width: 640px) {
+  .lux-ken-burns {
+    animation: none;
+    transform: scale(1.06);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lux-rise,
   .lux-ken-burns {
@@ -233,6 +244,9 @@
 [data-reveal].revealed {
   opacity: 1;
   transform: translateY(0);
+  /* слой сбрасывается сразу после появления — иначе на телефоне
+     десятки композитных слоёв висят до конца сессии и скролл дёргается */
+  will-change: auto;
 }
 
 [data-reveal="left"] {

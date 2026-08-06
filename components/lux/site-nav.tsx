@@ -31,12 +31,30 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
   const { openBooking } = useBooking()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [everOpened, setEverOpened] = useState(false)
 
+  const openMenu = () => {
+    setEverOpened(true)
+    setMenuOpen(true)
+  }
+
+  // Состояние шапки считаем через IntersectionObserver, а не в обработчике
+  // скролла: браузер сам решает, когда пересечь порог, и главный поток свободен.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
-    onScroll()
-    window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
+    const sentinel = document.createElement("div")
+    sentinel.setAttribute("aria-hidden", "true")
+    sentinel.style.cssText = "position:absolute;top:24px;left:0;width:1px;height:1px;pointer-events:none"
+    document.body.prepend(sentinel)
+
+    const io = new IntersectionObserver(([entry]) => setScrolled(!entry.isIntersecting), {
+      threshold: 0,
+    })
+    io.observe(sentinel)
+
+    return () => {
+      io.disconnect()
+      sentinel.remove()
+    }
   }, [])
 
   // Меню закрывается при переходе на другую страницу
@@ -63,15 +81,17 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
       <header
         className={cn(
           "fixed inset-x-0 top-0 z-50 transition-all duration-500",
+          // blur включаем только с планшета: на телефоне он заставляет
+          // перерисовывать всю полосу на каждом кадре скролла
           solid
-            ? "border-b border-border bg-background/85 backdrop-blur-xl"
+            ? "border-b border-border bg-background/95 sm:bg-background/85 sm:backdrop-blur-lg"
             : "border-b border-transparent",
         )}
       >
         <nav className="mx-auto flex h-18 max-w-[1600px] items-center justify-between gap-4 px-4 sm:h-20 sm:px-8 lg:h-24 lg:px-12">
           <button
             type="button"
-            onClick={() => setMenuOpen(true)}
+            onClick={openMenu}
             aria-expanded={menuOpen}
             className="group flex items-center gap-3 text-foreground transition-colors hover:text-accent"
           >
@@ -162,17 +182,21 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
             </ul>
 
             <div className="flex flex-col justify-between gap-8">
-              <div className="relative aspect-4/5 w-full max-w-sm overflow-hidden rounded-sm bg-secondary lg:ml-auto">
-                <Image
-                  src="/images/real/photo2.jpg"
-                  alt="Ночная подсветка соснового леса вокруг усадьбы зимой"
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 30vw"
-                  className={cn(
-                    "object-cover transition-all duration-1000",
-                    menuOpen ? "scale-100 opacity-100" : "scale-105 opacity-0",
-                  )}
-                />
+              {/* Кадр грузится только после первого открытия меню — телефон
+                  не тратит трафик и память на скрытую картинку */}
+              <div className="relative hidden aspect-4/5 w-full max-w-sm overflow-hidden rounded-sm bg-secondary sm:block lg:ml-auto">
+                {everOpened ? (
+                  <Image
+                    src="/images/real/photo2.jpg"
+                    alt="Ночная подсветка соснового леса вокруг усадьбы зимой"
+                    fill
+                    sizes="(max-width: 1024px) 60vw, 30vw"
+                    className={cn(
+                      "object-cover transition-all duration-1000",
+                      menuOpen ? "scale-100 opacity-100" : "scale-105 opacity-0",
+                    )}
+                  />
+                ) : null}
               </div>
 
               <div className="flex flex-col gap-5 lg:ml-auto lg:max-w-sm lg:text-right">

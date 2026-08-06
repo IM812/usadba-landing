@@ -14,11 +14,22 @@ export function ContactDock() {
   const [visible, setVisible] = useState(false)
   const [open, setOpen] = useState(false)
 
+  // Появление считает браузер, а не обработчик скролла на каждом кадре.
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 480)
-    onScroll()
-    window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
+    const sentinel = document.createElement("div")
+    sentinel.setAttribute("aria-hidden", "true")
+    sentinel.style.cssText = "position:absolute;top:480px;left:0;width:1px;height:1px;pointer-events:none"
+    document.body.prepend(sentinel)
+
+    const io = new IntersectionObserver(([entry]) => setVisible(!entry.isIntersecting), {
+      threshold: 0,
+    })
+    io.observe(sentinel)
+
+    return () => {
+      io.disconnect()
+      sentinel.remove()
+    }
   }, [])
 
   const links = [
@@ -46,7 +57,7 @@ export function ContactDock() {
             href={l.href}
             target={l.href.startsWith("http") ? "_blank" : undefined}
             rel={l.href.startsWith("http") ? "noopener noreferrer" : undefined}
-            className="flex min-h-11 items-center gap-3 rounded-sm border border-border bg-card/95 px-4 text-[12px] font-medium uppercase tracking-[0.14em] text-foreground backdrop-blur-md transition-colors hover:border-accent hover:text-accent"
+            className="flex min-h-11 items-center gap-3 rounded-sm border border-border bg-card px-4 text-[12px] font-medium uppercase tracking-[0.14em] text-foreground transition-colors hover:border-accent hover:text-accent"
           >
             <l.icon className="size-4 text-accent" aria-hidden="true" />
             {l.label}
@@ -59,7 +70,7 @@ export function ContactDock() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label={open ? "Скрыть способы связи" : "Показать способы связи"}
-        className="flex size-13 items-center justify-center rounded-full border border-accent/50 bg-background/90 text-accent backdrop-blur-md transition-colors hover:bg-accent hover:text-accent-foreground"
+        className="flex size-13 items-center justify-center rounded-full border border-accent/50 bg-card text-accent shadow-lg shadow-background/60 transition-colors hover:bg-accent hover:text-accent-foreground"
       >
         {open ? (
           <X className="size-5" aria-hidden="true" />
