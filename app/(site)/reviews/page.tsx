@@ -29,6 +29,9 @@ const themes = [
   },
 ]
 
+// Отзывы редактируются в админке — обновляем раз в 5 минут.
+export const revalidate = 300
+
 export default async function ReviewsPage() {
   const reviews = await getReviews()
 
