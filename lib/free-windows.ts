@@ -92,10 +92,15 @@ export async function getFreeWindows(): Promise<{
   try {
     const supabase = createServiceClient()
 
-    const [bookings, dbSettings, dbSeasons] = await Promise.all([
+    // Календарь Авито тянем параллельно с базой: раньше он ждал её ответа,
+    // и время рендера складывалось из двух задержек подряд.
+    const envAvitoUrl = process.env.AVITO_ICS_URL || ''
+
+    const [bookings, dbSettings, dbSeasons, envAvito] = await Promise.all([
       supabase.from('bookings').select('check_in, check_out').eq('status', 'confirmed'),
       supabase.from('settings').select('*').eq('id', 1).single(),
       supabase.from('seasonal_prices').select('*').eq('active', true).order('sort_order'),
+      envAvitoUrl ? fetchAvitoRanges(envAvitoUrl) : Promise.resolve(null),
     ])
 
     ranges = (bookings.data ?? []).map((b) => ({ start: b.check_in, end: b.check_out }))
@@ -108,10 +113,14 @@ export async function getFreeWindows(): Promise<{
       settings = { ...DEFAULT_SETTINGS, ...clean } as AvailabilitySettings
     }
 
-    const avitoUrl = dbSettings.data?.avito_ics_url || process.env.AVITO_ICS_URL || ''
+    // Адрес из настроек приоритетнее: если он совпал с переменной окружения,
+    // переиспользуем уже полученный параллельно ответ и не ходим по сети снова.
+    const dbAvitoUrl = dbSettings.data?.avito_ics_url || ''
+    const avitoUrl = dbAvitoUrl || envAvitoUrl
+
     if (avitoUrl) {
-      const { ranges: avito } = await fetchAvitoRanges(avitoUrl)
-      ranges = [...ranges, ...avito]
+      const reuse = envAvito && avitoUrl === envAvitoUrl ? envAvito : await fetchAvitoRanges(avitoUrl)
+      ranges = [...ranges, ...reuse.ranges]
     }
   } catch (err) {
     console.error('[free-windows] Не удалось получить занятость:', err)

@@ -231,8 +231,11 @@
   }
 }
 
-/* ===== Scroll reveal ===== */
-[data-reveal] {
+/* ===== Scroll reveal =====
+   Скрываем блок ТОЛЬКО когда точно известно, что JS работает и сможет его
+   проявить: класс reveal-ready ставит инлайн-скрипт в <head>. Если бандл не
+   догрузился или JS отключён, правило не применяется и страница видна. */
+.reveal-ready [data-reveal] {
   opacity: 0;
   transform: translateY(28px);
   transition:
@@ -245,14 +248,14 @@
   opacity: 1;
   transform: translateY(0);
   /* слой сбрасывается сразу после появления — иначе на телефоне
-     десятки композитных слоёв висят до конца сессии и скролл дёргается */
+     десятки композитных слоёв висят до к��нца сессии и скролл дёргается */
   will-change: auto;
 }
 
-[data-reveal="left"] {
+.reveal-ready [data-reveal="left"] {
   transform: translateX(-32px);
 }
-[data-reveal="right"] {
+.reveal-ready [data-reveal="right"] {
   transform: translateX(32px);
 }
 [data-reveal="left"].revealed,
@@ -261,6 +264,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .reveal-ready [data-reveal],
   [data-reveal] {
     opacity: 1;
     transform: none;

@@ -17,6 +17,7 @@ import {
 } from "@/components/lux/ui"
 import { LodgingJsonLd } from "@/components/json-ld"
 import { getRates } from "@/lib/rates"
+import { getReviews } from "@/lib/reviews"
 import { estateFacts, includedInStay, navigation, site } from "@/lib/site"
 
 const chapters = [
@@ -47,7 +48,8 @@ const chapters = [
 export const revalidate = 300
 
 export default async function HomePage() {
-  const { settings } = await getRates()
+  // Параллельно: последовательные await складывали задержки в общее время рендера.
+  const [{ settings }, reviews] = await Promise.all([getRates(), getReviews()])
 
   return (
     <>
@@ -188,7 +190,7 @@ export default async function HomePage() {
             </TextLink>
           </div>
           <div data-reveal className="mt-14">
-            <ReviewsRail />
+            <ReviewsRail reviews={reviews} />
           </div>
         </Container>
       </Section>

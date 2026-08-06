@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { createServiceClient } from '@/lib/supabase/server'
 
 export type RateSettings = {
@@ -36,8 +37,14 @@ const FALLBACK: RateSettings = {
   check_out_time: '12:00',
 }
 
-/** Читает тарифы напрямую из БД для серверного рендеринга страницы цен. */
-export async function getRates(): Promise<{
+/**
+ * Читает тарифы из БД для серверного рендеринга.
+ *
+ * Обёрнуто в React cache(): на одной странице функцию вызывают и сама страница,
+ * и футер, и подсчёт свободных окон — раньше это давало по 2–3 одинаковых
+ * запроса к Supabase на каждый рендер и добавляло сотни миллисекунд.
+ */
+export const getRates = cache(async function getRates(): Promise<{
   settings: RateSettings
   seasons: SeasonalRate[]
 }> {
@@ -71,7 +78,7 @@ export async function getRates(): Promise<{
     console.error('[rates] failed to load', err)
     return { settings: FALLBACK, seasons: [] }
   }
-}
+})
 
 /** «06-01» → «1 июня» */
 export function formatMonthDay(md: string): string {

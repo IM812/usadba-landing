@@ -1,3 +1,5 @@
+import { cache } from 'react'
+
 export const YANDEX_REVIEWS_URL =
   'https://yandex.ru/maps/org/usadba_v_antropkovo/216703670267/reviews/'
 
@@ -54,3 +56,34 @@ export const fallbackReviews: GuestReview[] = [
     text: 'Чувствуется, что хозяева вложили сердце и большой труд в усадьбу. И внутри, и снаружи уютно и комфортно, есть всё необходимое. Уезжать не хотелось.',
   },
 ]
+
+/**
+ * Отзывы для серверного рендеринга.
+ *
+ * Раньше страницы тянули их на клиенте через /api/admin/reviews: гость видел
+ * заглушку, потом текст подменялся, а поисковики контента не получали вовсе.
+ */
+export const getReviews = cache(async function getReviews(): Promise<GuestReview[]> {
+  try {
+    const { createServiceClient } = await import('@/lib/supabase/server')
+    const supabase = createServiceClient()
+
+    const { data } = await supabase.from('reviews').select('*').order('sort_order')
+    if (!data?.length) return fallbackReviews
+
+    return data.map((r, i) => ({
+      id: String(r.id ?? `db-${i}`),
+      name: r.author_name ?? r.name ?? 'Гость усадьбы',
+      date:
+        r.date ??
+        (r.created_at
+          ? new Date(r.created_at).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })
+          : ''),
+      rating: r.rating ?? 5,
+      text: r.text,
+    }))
+  } catch (err) {
+    console.error('[reviews] failed to load', err)
+    return fallbackReviews
+  }
+})

@@ -1,39 +1,8 @@
 "use client"
 
 import { useRef } from "react"
-import useSWR from "swr"
 import { ChevronLeft, ChevronRight, Star } from "lucide-react"
-import { fallbackReviews, type GuestReview } from "@/lib/reviews"
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json())
-
-type ApiReview = {
-  id?: string
-  author_name?: string
-  name?: string
-  date?: string
-  created_at?: string
-  rating?: number
-  text: string
-}
-
-export function useGuestReviews(): GuestReview[] {
-  const { data } = useSWR<{ ok: boolean; data: ApiReview[] }>("/api/admin/reviews", fetcher)
-
-  if (!data?.ok || !data.data?.length) return fallbackReviews
-
-  return data.data.map((r, i) => ({
-    id: r.id ?? `db-${i}`,
-    name: r.author_name ?? r.name ?? "Гость усадьбы",
-    date:
-      r.date ??
-      (r.created_at
-        ? new Date(r.created_at).toLocaleDateString("ru-RU", { month: "long", year: "numeric" })
-        : ""),
-    rating: r.rating ?? 5,
-    text: r.text,
-  }))
-}
+import type { GuestReview } from "@/lib/reviews"
 
 export function ReviewCard({ review, className }: { review: GuestReview; className?: string }) {
   return (
@@ -55,8 +24,7 @@ export function ReviewCard({ review, className }: { review: GuestReview; classNa
 }
 
 /** Горизонтальная лента отзывов — свайп на телефоне, стрелки на десктопе. */
-export function ReviewsRail() {
-  const reviews = useGuestReviews()
+export function ReviewsRail({ reviews }: { reviews: GuestReview[] }) {
   const trackRef = useRef<HTMLDivElement>(null)
 
   const scrollBy = (dir: 1 | -1) => {
@@ -103,9 +71,7 @@ export function ReviewsRail() {
 }
 
 /** Полная сетка отзывов для страницы /reviews. */
-export function ReviewsGrid() {
-  const reviews = useGuestReviews()
-
+export function ReviewsGrid({ reviews }: { reviews: GuestReview[] }) {
   return (
     <div className="grid gap-x-12 gap-y-12 md:grid-cols-2">
       {reviews.map((r) => (

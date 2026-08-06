@@ -5,7 +5,7 @@ import { BookingCta } from "@/components/lux/booking-cta"
 import { ReviewsGrid } from "@/components/lux/reviews-rail"
 import { Container, Section, SectionHeading, Eyebrow, TextLink } from "@/components/lux/ui"
 import { site } from "@/lib/site"
-import { YANDEX_REVIEWS_URL } from "@/lib/reviews"
+import { YANDEX_REVIEWS_URL, getReviews } from "@/lib/reviews"
 
 export const metadata: Metadata = {
   title: "Отзывы гостей",
@@ -29,7 +29,9 @@ const themes = [
   },
 ]
 
-export default function ReviewsPage() {
+export default async function ReviewsPage() {
+  const reviews = await getReviews()
+
   return (
     <>
       <PageHero
@@ -101,7 +103,7 @@ export default function ReviewsPage() {
         <Section tone="raised">
         <Container>
           <SectionHeading eyebrow="Слово гостям" title="Отзывы без правок" />
-          <ReviewsGrid />
+          <ReviewsGrid reviews={reviews} />
         </Container>
       </Section>
 

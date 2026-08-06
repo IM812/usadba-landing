@@ -4,24 +4,34 @@ import { useEffect } from "react"
 import { usePathname } from "next/navigation"
 
 /**
- * Показывает элементы с [data-reveal] при попадании во вьюпорт.
+ * Проявляет элементы с [data-reveal] при попадании во вьюпорт.
  *
- * Живёт в layout, поэтому обязан переподписываться на каждой навигации:
- * иначе блоки новой страницы никогда не получат .revealed и останутся
- * невидимыми. MutationObserver дополнительно подхватывает элементы,
- * которые появляются позже (данные из API, раскрытые списки).
+ * Главный принцип: контент НИКОГДА не должен остаться невидимым.
+ * Скрывающее правило в CSS висит на классе `reveal-ready`, который ставит
+ * инлайн-скрипт в <head> (см. layout.tsx). Если JS не загрузился — правило
+ * не применяется и страница видна целиком. Если JS загрузился, но наблюдатель
+ * почему-то не сработал, всё раскрывает страховочный таймер.
  */
 export function ScrollReveal() {
   const pathname = usePathname()
 
   useEffect(() => {
+    const all = () => Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"))
     const reveal = (el: Element) => el.classList.add("revealed")
+    const revealAll = () => all().forEach(reveal)
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      document.querySelectorAll("[data-reveal]").forEach(reveal)
+      revealAll()
       return
     }
 
+    if (typeof IntersectionObserver === "undefined") {
+      revealAll()
+      return
+    }
+
+    // threshold 0: достаточно одного пикселя во вьюпорте. С прежним 0.08
+    // блок выше экрана мог не дотянуть до порога и остаться скрытым навсегда.
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -31,30 +41,34 @@ export function ScrollReveal() {
           }
         }
       },
-      { threshold: 0.08, rootMargin: "0px 0px -32px 0px" },
+      { threshold: 0, rootMargin: "0px 0px -24px 0px" },
     )
 
-    const observe = (root: ParentNode) => {
-      root.querySelectorAll?.("[data-reveal]:not(.revealed)").forEach((el) => io.observe(el))
+    const scan = () => {
+      for (const el of all()) {
+        if (el.classList.contains("revealed")) continue
+        // всё, что уже видно или осталось выше экрана, показываем сразу —
+        // не ждём колбэка наблюдателя
+        const top = el.getBoundingClientRect().top
+        if (top < window.innerHeight) reveal(el)
+        else io.observe(el)
+      }
     }
 
-    observe(document)
+    scan()
 
-    // Элементы, отрендеренные после первого прохода
-    const mo = new MutationObserver((records) => {
-      for (const r of records) {
-        for (const node of r.addedNodes) {
-          if (!(node instanceof HTMLElement)) continue
-          if (node.matches("[data-reveal]")) io.observe(node)
-          observe(node)
-        }
-      }
-    })
-    mo.observe(document.body, { childList: true, subtree: true })
+    // Контент, отрендеренный после первого прохода (данные из API и т.п.).
+    // Точечные повторные проходы вместо MutationObserver на всём <body>:
+    // тот срабатывал на каждое изменение DOM и заметно грузил телефон.
+    const rescans = [120, 600, 1600].map((ms) => window.setTimeout(scan, ms))
+
+    // Страховка: что бы ни случилось, через 3 секунды страница видна.
+    const failsafe = window.setTimeout(revealAll, 3000)
 
     return () => {
       io.disconnect()
-      mo.disconnect()
+      rescans.forEach(clearTimeout)
+      clearTimeout(failsafe)
     }
   }, [pathname])
 

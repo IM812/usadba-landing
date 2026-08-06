@@ -61,6 +61,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" className={`bg-background ${cormorant.variable} ${inter.variable}`}>
+      <head>
+        {/*
+          Включает анимацию появления блоков только при живом JS. Пока класса нет,
+          [data-reveal] полностью видим — так пустой экран невозможен в принципе,
+          даже если бандл не догрузился. Страховка снимает класс через 4 секунды.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var d=document.documentElement;d.classList.add('reveal-ready');setTimeout(function(){d.classList.remove('reveal-ready')},4000)}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body className="bg-background text-foreground font-sans antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
