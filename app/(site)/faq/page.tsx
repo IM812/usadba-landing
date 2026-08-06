@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { PageHero } from "@/components/lux/page-hero"
 import { BookingCta } from "@/components/lux/booking-cta"
 import { Container, Section, SectionHeading, TextLink } from "@/components/lux/ui"
+import { FaqJsonLd } from "@/components/json-ld"
 import { contacts } from "@/lib/site"
 import { getFaq } from "@/lib/faq"
 
@@ -11,11 +12,16 @@ export const metadata: Metadata = {
     "Размещение, минимальный срок, баня и чан, дети и питомцы, магазины и связь — всё, что обычно спрашивают перед бронированием усадьбы.",
 }
 
+// Ответы собираются из настроек в админке — обновляем раз в 5 минут.
+export const revalidate = 300
+
 export default async function FaqPage() {
   const items = await getFaq()
 
   return (
     <>
+      <FaqJsonLd items={items} />
+
       <PageHero
         eyebrow="Вопросы и ответы"
         title="Всё, что спрашивают до приезда"

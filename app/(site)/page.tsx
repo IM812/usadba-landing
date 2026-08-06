@@ -14,6 +14,8 @@ import {
   SectionHeading,
   TextLink,
 } from "@/components/lux/ui"
+import { LodgingJsonLd } from "@/components/json-ld"
+import { getRates } from "@/lib/rates"
 import { estateFacts, includedInStay, navigation, seasons, site } from "@/lib/site"
 
 const chapters = [
@@ -40,9 +42,15 @@ const chapters = [
   },
 ]
 
-export default function HomePage() {
+// Время заезда для микроразметки берётся из настроек — обновляем раз в 5 минут.
+export const revalidate = 300
+
+export default async function HomePage() {
+  const { settings } = await getRates()
+
   return (
     <>
+      <LodgingJsonLd checkIn={settings.check_in_time} checkOut={settings.check_out_time} />
       <HomeHero />
 
       {/* ===== Манифест ===== */}
