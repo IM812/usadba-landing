@@ -15,9 +15,27 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Усадьба в Антропково — гостевой дом в Псковской области',
+  title: {
+    default: 'Усадьба в Антропково — частная усадьба между двух озёр',
+    template: '%s — Усадьба в Антропково',
+  },
   description:
-    'Большой бревенчатый дом (250 м²) между двумя озёрами в Псковской области. Баня, сибирский чан, причал, лодка и сап-борды. Рейтинг 5,0 · 41 отзыв. 5 часов от Москвы.',
+    'Частная бревенчатая усадьба 250 м² между двумя озёрами в Псковской области. Баня на дровах, сибирский чан, причал, лодка и сап-борды. Рейтинг 5,0 · 41 отзыв. 5 часов от Москвы.',
+  keywords: [
+    'усадьба Антропково',
+    'дом на озере Псковская область',
+    'баня и чан посуточно',
+    'загородный дом целиком',
+  ],
+  openGraph: {
+    type: 'website',
+    locale: 'ru_RU',
+    siteName: 'Усадьба в Антропково',
+    title: 'Усадьба в Антропково — частная усадьба между двух озёр',
+    description:
+      'Бревенчатый дом 250 м² в сосновом лесу между двумя озёрами. Баня на дровах, сибирский чан, свой причал. Дом сдаётся целиком.',
+    images: [{ url: '/images/real/photo11.jpg', width: 1024, height: 768 }],
+  },
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',
@@ -30,8 +48,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  colorScheme: 'light',
-  themeColor: '#33553d',
+  colorScheme: 'dark',
+  themeColor: '#111a15',
 }
 
 export default function RootLayout({
@@ -40,8 +58,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ru" className={`light bg-background ${cormorant.variable} ${inter.variable}`}>
-      <body className="antialiased">
+    <html lang="ru" className={`bg-background ${cormorant.variable} ${inter.variable}`}>
+      <body className="bg-background text-foreground font-sans antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

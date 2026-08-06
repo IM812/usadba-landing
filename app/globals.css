@@ -47,7 +47,49 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* ============================================================
+   «Тёмный лесной люкс» — основная тема публичного сайта.
+   Палитра из 5 цветов: угольно-зелёный фон, тёмная поверхность,
+   тёплый белый текст, шалфейно-серый и латунный акцент.
+   ============================================================ */
 :root {
+  color-scheme: dark;
+  --background: oklch(0.155 0.012 155);
+  --foreground: oklch(0.95 0.01 95);
+  --card: oklch(0.203 0.014 155);
+  --card-foreground: oklch(0.95 0.01 95);
+  --popover: oklch(0.19 0.014 155);
+  --popover-foreground: oklch(0.95 0.01 95);
+  --primary: oklch(0.765 0.105 82);
+  --primary-foreground: oklch(0.17 0.02 155);
+  --secondary: oklch(0.245 0.016 155);
+  --secondary-foreground: oklch(0.95 0.01 95);
+  --muted: oklch(0.225 0.014 155);
+  --muted-foreground: oklch(0.705 0.014 135);
+  --accent: oklch(0.765 0.105 82);
+  --accent-foreground: oklch(0.17 0.02 155);
+  --destructive: oklch(0.62 0.19 25);
+  --border: oklch(0.95 0.01 95 / 13%);
+  --input: oklch(0.95 0.01 95 / 17%);
+  --ring: oklch(0.765 0.105 82);
+  --chart-1: oklch(0.765 0.105 82);
+  --chart-2: oklch(0.6 0.07 150);
+  --chart-3: oklch(0.7 0.05 130);
+  --chart-4: oklch(0.45 0.05 155);
+  --chart-5: oklch(0.85 0.06 90);
+  --radius: 0.25rem;
+  --sidebar: oklch(0.19 0.014 155);
+  --sidebar-foreground: oklch(0.95 0.01 95);
+  --sidebar-primary: oklch(0.765 0.105 82);
+  --sidebar-primary-foreground: oklch(0.17 0.02 155);
+  --sidebar-accent: oklch(0.245 0.016 155);
+  --sidebar-accent-foreground: oklch(0.95 0.01 95);
+  --sidebar-border: oklch(0.95 0.01 95 / 13%);
+  --sidebar-ring: oklch(0.765 0.105 82);
+}
+
+/* Панель управления остаётся светлой и утилитарной */
+.theme-admin {
   color-scheme: light;
   --background: oklch(0.98 0.008 110);
   --foreground: oklch(0.24 0.02 145);
@@ -67,92 +109,7 @@
   --border: oklch(0.88 0.02 120);
   --input: oklch(0.88 0.02 120);
   --ring: oklch(0.42 0.07 150);
-  --chart-1: oklch(0.42 0.07 150);
-  --chart-2: oklch(0.55 0.08 140);
-  --chart-3: oklch(0.72 0.1 85);
-  --chart-4: oklch(0.65 0.06 110);
-  --chart-5: oklch(0.35 0.05 155);
   --radius: 0.5rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  color-scheme: dark;
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    color-scheme: dark;
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
-  }
 }
 
 @layer base {
@@ -196,6 +153,71 @@
 
 @utility pb-safe-0 {
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ===== Подписной знак дизайна: арочные фотографии =====
+   Форма повторяет кирпичную арку камина в усадьбе. */
+@utility arch {
+  border-radius: 999px 999px var(--radius) var(--radius);
+}
+
+@utility arch-sm {
+  border-radius: 14rem 14rem var(--radius) var(--radius);
+}
+
+/* Мелкий капительный надзаголовок */
+@utility eyebrow {
+  font-size: 0.6875rem;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* Тонкая латунная линейка */
+@utility rule-brass {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    color-mix(in oklab, var(--accent) 70%, transparent),
+    transparent
+  );
+}
+
+/* ===== Кинематографичные появления ===== */
+@keyframes lux-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lux-ken-burns {
+  from {
+    transform: scale(1.04);
+  }
+  to {
+    transform: scale(1.14);
+  }
+}
+
+.lux-rise {
+  animation: lux-rise 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.lux-ken-burns {
+  animation: lux-ken-burns 22s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lux-rise,
+  .lux-ken-burns {
+    animation: none;
+  }
 }
 
 /* ===== Scroll reveal ===== */

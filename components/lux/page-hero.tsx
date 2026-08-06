@@ -1,0 +1,71 @@
+import Image from "next/image"
+import Link from "next/link"
+import { Container } from "@/components/lux/ui"
+
+/** Заголовочный блок внутренних страниц: фото на всю ширину и крупная антиква. */
+export function PageHero({
+  eyebrow,
+  title,
+  lead,
+  image,
+  imageAlt,
+  meta,
+}: {
+  eyebrow: string
+  title: string
+  lead?: string
+  image: string
+  imageAlt: string
+  meta?: readonly string[]
+}) {
+  return (
+    <section className="relative flex min-h-[62svh] items-end overflow-hidden pt-28 pb-14 sm:min-h-[70svh] sm:pb-20">
+      <Image
+        src={image || "/placeholder.svg"}
+        alt={imageAlt}
+        fill
+        priority
+        sizes="100vw"
+        className="lux-ken-burns object-cover"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30"
+      />
+
+      <Container size="wide" className="relative">
+        <nav aria-label="Хлебные крошки" className="mb-6">
+          <ol className="eyebrow flex items-center gap-2 text-muted-foreground">
+            <li>
+              <Link href="/" className="transition-colors hover:text-accent">
+                Главная
+              </Link>
+            </li>
+            <li aria-hidden="true">/</li>
+            <li className="text-accent">{eyebrow}</li>
+          </ol>
+        </nav>
+
+        <h1 className="max-w-4xl text-balance font-serif text-[2.5rem] font-light leading-[1.05] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+          {title}
+        </h1>
+
+        {lead ? (
+          <p className="mt-6 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
+            {lead}
+          </p>
+        ) : null}
+
+        {meta?.length ? (
+          <ul className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-border pt-6">
+            {meta.map((m) => (
+              <li key={m} className="text-[13px] tracking-wide text-foreground/75">
+                {m}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </Container>
+    </section>
+  )
+}
