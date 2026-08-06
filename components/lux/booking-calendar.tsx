@@ -95,7 +95,7 @@ function MonthGrid({
                 type="button"
                 onClick={() => onPick(d)}
                 disabled={disabled}
-                aria-label={`${d.getDate()} ${MONTHS[month]}${busy ? " — занято" : ""}`}
+                aria-label={`${longDate(d)}${busy ? " — занято" : ""}`}
                 aria-pressed={Boolean(isIn || isOut)}
                 className={[
                   "relative flex aspect-square w-full items-center justify-center rounded-full text-sm transition-colors duration-200",

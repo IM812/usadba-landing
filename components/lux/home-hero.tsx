@@ -2,6 +2,7 @@ import Image from "next/image"
 import { ArrowDown, Star } from "lucide-react"
 import { BookButton } from "@/components/lux/book-button"
 import { LuxLink } from "@/components/lux/ui"
+import { WeatherBadge } from "@/components/weather-badge"
 import { site } from "@/lib/site"
 
 export function HomeHero() {
@@ -53,6 +54,8 @@ export function HomeHero() {
             Смотреть усадьбу
           </LuxLink>
         </div>
+
+        <WeatherBadge className="lux-rise mt-8 inline-block text-xs uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-accent" />
 
         {/* Полоса ключевых фактов */}
         <dl
