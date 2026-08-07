@@ -84,11 +84,24 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
           // blur включаем только с планшета: на телефоне он заставляет
           // перерисовывать всю полосу на каждом кадре скролла
           solid
-            ? "border-b border-border bg-background/95 sm:bg-background/85 sm:backdrop-blur-lg"
+            ? // На телефоне blur отключён, поэтому фон должен быть полностью
+              // непрозрачным — иначе текст страницы просвечивал сквозь полосу.
+              "border-b border-border bg-background sm:bg-background/85 sm:backdrop-blur-lg"
             : "border-b border-transparent",
         )}
       >
-        <nav className="mx-auto flex h-18 max-w-[1600px] items-center justify-between gap-4 px-4 sm:h-20 sm:px-8 lg:h-24 lg:px-12">
+        {/* Пока шапка прозрачная, она лежит на фото. На светлых кадрах
+            (например, окно с чашками на «Контактах») логотип и «Меню»
+            сливались с фоном — мягкая тень сверху возвращает читаемость,
+            оставаясь незаметной. */}
+        {!solid ? (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background/70 via-background/25 to-transparent"
+          />
+        ) : null}
+
+        <nav className="relative mx-auto flex h-18 max-w-[1600px] items-center justify-between gap-4 px-4 sm:h-20 sm:px-8 lg:h-24 lg:px-12">
           <button
             type="button"
             onClick={openMenu}

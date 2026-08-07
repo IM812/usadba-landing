@@ -281,8 +281,9 @@ function Calendar({
   }
 
   function getDayStyle(iso: string | null): string {
+    // 40px на телефоне — комфортная зона тапа (было 32px, палец промахивался)
     const base =
-      "relative flex h-8 w-8 items-center justify-center rounded-full text-sm transition select-none overflow-hidden"
+      "relative flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-full text-sm transition select-none overflow-hidden"
     if (!iso) return base + " invisible"
     const isToday = iso === todayIso
     const isPast = iso < todayIso
@@ -296,7 +297,9 @@ function Calendar({
       return base + " cursor-not-allowed text-muted-foreground/40"
     }
     if (busy) {
-      return base + " cursor-not-allowed text-muted-foreground/40 bg-destructive/10 line-through"
+      // Нейтральный серый вместо красноватого: занято — это не ошибка,
+      // и бордовые кружки выбивались из хвойно-латунной палитры.
+      return base + " cursor-not-allowed text-muted-foreground/35 bg-muted/60 line-through"
     }
     if (isArrival || isDeparture) {
       return base + " cursor-pointer bg-primary text-primary-foreground font-semibold"
@@ -371,16 +374,19 @@ function Calendar({
             aria-pressed={iso === arrival || iso === departure}
             className={getDayStyle(iso)}
           >
-            {/* Half-pink overlay only for genuine checkout/checkin transition days */}
-            {iso && isCheckoutOnlyTransition(iso) && (
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 rounded-full"
-                style={{
-                  background:
-                    "linear-gradient(to right, transparent 50%, color-mix(in srgb, #f87171 25%, transparent) 50%)",
-                }}
-              />
+                    {/* День пересменки: утро свободно, после 12:00 уже занято.
+                        Закрашиваем именно вторую половину кружка — и тем же
+                        нейтральным тоном, что «Занято», чтобы читалось как
+                        «полдня занято», а не как ошибка. */}
+                    {iso && isCheckoutOnlyTransition(iso) && (
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 rounded-full"
+                        style={{
+                          background:
+                            "linear-gradient(to right, transparent 50%, color-mix(in srgb, var(--muted) 85%, transparent) 50%)",
+                        }}
+                      />
             )}
             <span className="relative z-10">{iso ? parseInt(iso.slice(8), 10) : ""}</span>
           </button>
@@ -390,13 +396,13 @@ function Calendar({
       {/* Legend */}
       <div className="mt-2 flex flex-wrap items-center gap-3 border-t border-border pt-2 text-xs text-muted-foreground">
         <span className="flex items-center gap-1">
-          <span className="inline-block size-3 rounded-full bg-destructive/10" />
-          Занято
+              <span className="inline-block size-3 rounded-full bg-muted/60" />
+              Занято
         </span>
         <span className="flex items-center gap-1">
           <span
             className="inline-block size-3 rounded-full"
-            style={{ background: "linear-gradient(to right, transparent 50%, color-mix(in srgb, #f87171 25%, transparent) 50%)" }}
+              style={{ background: "linear-gradient(to right, transparent 50%, color-mix(in srgb, var(--muted) 85%, transparent) 50%)" }}
           />
           Выезд до 12:00
         </span>
@@ -462,7 +468,7 @@ export function BookingModal({ open, onClose, prefill }: Props) {
       if (Array.isArray(data.seasonalPrices)) setSeasonalPrices(data.seasonalPrices)
     } catch {
       setBusyRanges([])
-      setAvailError("Занятые даты временно недоступны — уточ��ите у нас перед бр����нированием.")
+      setAvailError("Занятые даты временно недоступны — уточните у нас перед бронированием.")
     } finally {
       setAvailLoading(false)
     }
