@@ -209,28 +209,28 @@ export const seasons = [
     id: 'winter',
     name: 'Зима',
     months: 'декабрь — февраль',
-    image: '/images/seasons/winter.png',
+    image: '/images/real/photo2.jpg',
     line: 'Снег по колено, чан под звёздами и камин, который не гаснет.',
   },
   {
     id: 'spring',
     name: 'Весна',
     months: 'март — май',
-    image: '/images/seasons/spring.png',
+    image: '/images/real/photo4.jpg',
     line: 'Лёд уходит с озера, лес просыпается, вечера уже тёплые.',
   },
   {
     id: 'summer',
     name: 'Лето',
     months: 'июнь — август',
-    image: '/images/seasons/summer.png',
+    image: '/images/real/photo12.jpg',
     line: 'Купание с причала, сапы до другого берега, белые ночи.',
   },
   {
     id: 'autumn',
     name: 'Осень',
     months: 'сентябрь — ноябрь',
-    image: '/images/seasons/autumn.png',
+    image: '/images/real/photo10.jpg',
     line: 'Грибы, туман по воде и самый красивый свет в году.',
   },
 ] as const
@@ -294,8 +294,8 @@ export const galleryPhotos = [
   },
   {
     src: '/images/real/photo10.jpg',
-    alt: 'Спальня на мансарде с окном в кроны сосен',
-    caption: 'Мансарда — любимый этаж детей',
+    alt: 'Закат над озером и подсвеченная баня на берегу',
+    caption: 'Закат над озером — до воды две минуты пешком',
   },
 ] as const
 
