@@ -103,7 +103,9 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
             <span className="eyebrow hidden sm:inline">Меню</span>
           </button>
 
-          <Wordmark className="absolute left-1/2 -translate-x-1/2" />
+          {/* На телефоне логотип стоит в потоке: абсолютное центрирование
+              накладывало его на кнопку «Забронировать» при ширине ~390px. */}
+          <Wordmark className="sm:absolute sm:left-1/2 sm:-translate-x-1/2" />
 
           <div className="flex items-center gap-2 sm:gap-6">
             <a
@@ -116,7 +118,7 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
             <button
               type="button"
               onClick={() => openBooking()}
-              className="inline-flex min-h-10 items-center rounded-sm border border-accent/70 px-4 text-[11px] font-medium uppercase tracking-[0.16em] text-accent transition-colors hover:bg-accent hover:text-accent-foreground sm:min-h-11 sm:px-6 sm:text-[12px]"
+              className="inline-flex min-h-10 shrink-0 items-center rounded-sm border border-accent/70 px-3 text-[10px] font-medium uppercase tracking-[0.12em] text-accent transition-colors hover:bg-accent hover:text-accent-foreground sm:min-h-11 sm:px-6 sm:text-[12px] sm:tracking-[0.16em]"
             >
               Забронировать
             </button>

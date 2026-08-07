@@ -1,8 +1,9 @@
 "use client"
 
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Moon } from "lucide-react"
 import { useBooking } from "@/components/lux/booking-provider"
 import { money, nightsWord } from "@/lib/availability"
+import { cn } from "@/lib/utils"
 import type { FreeWindow } from "@/lib/free-windows"
 
 const MONTHS = [
@@ -10,15 +11,21 @@ const MONTHS = [
   "июля", "августа", "сентября", "октября", "ноября", "декабря",
 ]
 
-/** «10 — 13 августа» или «29 августа — 2 сентября» */
-function formatRange(start: string, end: string) {
+/** Разбирает диапазон на части, чтобы крупно показать числа, а месяц — тихо. */
+function splitRange(start: string, end: string) {
   const a = new Date(`${start}T00:00:00`)
   const b = new Date(`${end}T00:00:00`)
   const sameMonth = a.getMonth() === b.getMonth()
 
-  return sameMonth
-    ? `${a.getDate()} — ${b.getDate()} ${MONTHS[a.getMonth()]}`
-    : `${a.getDate()} ${MONTHS[a.getMonth()]} — ${b.getDate()} ${MONTHS[b.getMonth()]}`
+  return {
+    days: `${a.getDate()} — ${b.getDate()}`,
+    month: sameMonth
+      ? MONTHS[a.getMonth()]
+      : `${MONTHS[a.getMonth()]} — ${MONTHS[b.getMonth()]}`,
+    sameMonth,
+    startDay: a.getDate(),
+    endDay: b.getDate(),
+  }
 }
 
 function whenLabel(inDays: number) {
@@ -29,44 +36,74 @@ function whenLabel(inDays: number) {
   return `через ${Math.round(inDays / 7)} нед.`
 }
 
-export function FreeDateCard({ window: w }: { window: FreeWindow }) {
+export function FreeDateCard({
+  window: w,
+  featured = false,
+}: {
+  window: FreeWindow
+  featured?: boolean
+}) {
   const { openBooking } = useBooking()
+  const range = splitRange(w.start, w.end)
 
   return (
     <button
       type="button"
-      onClick={() =>
-        openBooking({ arrival: w.start, departure: w.end })
-      }
-      className="group flex w-full flex-col gap-5 border-t border-border pt-5 text-left transition-colors hover:border-accent/70 sm:gap-6 sm:pt-6"
+      onClick={() => openBooking({ arrival: w.start, departure: w.end })}
+      className={cn(
+        "group relative flex w-full flex-col overflow-hidden rounded-sm border bg-card/70 p-5 text-left transition-all duration-500 sm:p-6",
+        "hover:-translate-y-0.5 hover:bg-card hover:shadow-xl hover:shadow-background/50",
+        featured ? "border-accent/45" : "border-border hover:border-accent/40",
+      )}
     >
-      <div className="flex items-center justify-between gap-3">
+      {/* Латунная нить сверху: у ближайшего окна горит сразу, у остальных — при наведении */}
+      <span
+        aria-hidden
+        className={cn(
+          "absolute inset-x-0 top-0 h-px origin-left bg-accent transition-transform duration-500",
+          featured ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
+        )}
+      />
+
+      <div className="flex items-start justify-between gap-3">
         <span className="eyebrow text-accent">{w.label}</span>
-        <span className="text-[11px] tracking-wide text-muted-foreground">
+        <span className="shrink-0 rounded-full bg-secondary px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
           {whenLabel(w.inDays)}
         </span>
       </div>
 
-      <span className="text-balance font-serif text-[1.75rem] font-light leading-[1.05] text-foreground transition-colors group-hover:text-accent sm:text-[2rem]">
-        {formatRange(w.start, w.end)}
+      {/* Крупные числа — главный носитель смысла, месяц подписью */}
+      <span className="mt-5 font-serif text-[2.6rem] font-light leading-[0.95] tracking-tight text-foreground transition-colors group-hover:text-accent sm:text-[3rem]">
+        {range.days}
+      </span>
+      <span className="mt-2 text-[13px] lowercase tracking-wide text-muted-foreground">
+        {range.month}
       </span>
 
-      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="font-serif text-xl font-light text-foreground">
-          {money(w.total)} ₽
+      <div className="mt-5 flex items-center gap-2 text-[12px] text-muted-foreground">
+        <Moon className="size-3.5 text-accent/70" aria-hidden />
+        {w.nights} {nightsWord(w.nights)} · {money(w.perNight)} ₽ в сутки
+      </div>
+
+      <div className="mt-5 flex items-end justify-between gap-3 border-t border-border pt-4">
+        <span className="flex flex-col">
+          <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+            За всё проживание
+          </span>
+          <span className="mt-1 font-serif text-[1.6rem] font-light leading-none text-foreground">
+            {money(w.total)} ₽
+          </span>
         </span>
-        <span className="text-[13px] text-muted-foreground">
-          {w.nights} {nightsWord(w.nights)} · {money(w.perNight)} ₽ в сутки
+
+        <span
+          aria-hidden
+          className="flex size-10 shrink-0 items-center justify-center rounded-full border border-accent/40 text-accent transition-colors group-hover:bg-accent group-hover:text-accent-foreground"
+        >
+          <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" />
         </span>
       </div>
 
-      <span className="mt-auto inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground transition-colors group-hover:text-accent">
-        Занять эти даты
-        <ArrowRight
-          className="size-3.5 transition-transform duration-300 group-hover:translate-x-1"
-          aria-hidden
-        />
-      </span>
+      <span className="sr-only">Забронировать эти даты</span>
     </button>
   )
 }

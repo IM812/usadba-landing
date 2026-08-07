@@ -32,9 +32,9 @@ export async function FreeDates() {
 
         {windows.length ? (
           <>
-            <div data-reveal className="mt-12 grid gap-10 sm:mt-14 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3 lg:gap-12">
-              {windows.map((w) => (
-                <FreeDateCard key={`${w.start}-${w.nights}`} window={w} />
+            <div data-reveal className="mt-10 grid gap-4 sm:mt-14 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+              {windows.map((w, i) => (
+                <FreeDateCard key={`${w.start}-${w.nights}`} window={w} featured={i === 0} />
               ))}
             </div>
 

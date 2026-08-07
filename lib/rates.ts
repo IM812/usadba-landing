@@ -62,7 +62,10 @@ export const getRates = cache(async function getRates(): Promise<{
         .from('seasonal_prices')
         .select('id, name, date_from, date_to, base_price, weekend_price, sort_order')
         .eq('active', true)
-        .order('sort_order'),
+        // при равном sort_order (по умолчанию он одинаковый) сезоны идут
+        // по календарю, а не в случайном порядке вставки
+        .order('sort_order')
+        .order('date_from'),
     ])
 
     // null-колонки не должны затирать дефолты
@@ -102,3 +105,7 @@ export function formatMonthDay(md: string): string {
 }
 
 export const formatMoney = (n: number) => new Intl.NumberFormat('ru-RU').format(n)
+
+/** Название сезона из админки может быть введено с маленькой буквы. */
+export const seasonTitle = (name: string) =>
+  name ? name.charAt(0).toUpperCase() + name.slice(1) : name

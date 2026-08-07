@@ -5,7 +5,7 @@ import { PageHero } from "@/components/lux/page-hero"
 import { BookingCta } from "@/components/lux/booking-cta"
 import { BookButton } from "@/components/lux/book-button"
 import { Container, Section, SectionHeading, Eyebrow, LuxLink, Divider } from "@/components/lux/ui"
-import { getRates, formatMonthDay, formatMoney } from "@/lib/rates"
+import { getRates, formatMonthDay, formatMoney, seasonTitle } from "@/lib/rates"
 import { includedInStay } from "@/lib/site"
 
 export const metadata: Metadata = {
@@ -65,7 +65,9 @@ export default async function PricesPage() {
                 className="grid gap-3 border-b border-border px-5 py-6 last:border-0 sm:grid-cols-[1.4fr_1fr_1fr] sm:items-baseline sm:gap-6 sm:px-7"
               >
                 <div>
-                  <p className="font-serif text-2xl font-light text-foreground">{s.name}</p>
+                    <p className="font-serif text-2xl font-light text-foreground">
+                      {seasonTitle(s.name)}
+                    </p>
                   <p className="mt-1 text-[13px] text-muted-foreground">
                     {formatMonthDay(s.date_from)} — {formatMonthDay(s.date_to)}
                   </p>

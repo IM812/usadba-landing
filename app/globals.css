@@ -54,40 +54,42 @@
    ============================================================ */
 :root {
   color-scheme: dark;
-  --background: oklch(0.155 0.012 155);
-  --foreground: oklch(0.95 0.01 95);
-  --card: oklch(0.203 0.014 155);
-  --card-foreground: oklch(0.95 0.01 95);
-  --popover: oklch(0.19 0.014 155);
-  --popover-foreground: oklch(0.95 0.01 95);
-  /* Приглушённая латунь вместо горчичного жёлтого: та же тёплая нота,
-     но чистота ниже — на больших плоскостях больше не кричит. */
-  --primary: oklch(0.83 0.045 78);
-  --primary-foreground: oklch(0.17 0.02 155);
-  --secondary: oklch(0.245 0.016 155);
-  --secondary-foreground: oklch(0.95 0.01 95);
-  --muted: oklch(0.225 0.014 155);
-  --muted-foreground: oklch(0.705 0.014 135);
-  --accent: oklch(0.83 0.045 78);
-  --accent-foreground: oklch(0.17 0.02 155);
+  /* Фон — глубокий хвойный уголь, чуть насыщеннее прежнего: перестал
+     выглядеть просто серым и держит тёплый акцент. */
+  --background: oklch(0.148 0.016 158);
+  --foreground: oklch(0.955 0.009 92);
+  --card: oklch(0.208 0.018 158);
+  --card-foreground: oklch(0.955 0.009 92);
+  --popover: oklch(0.192 0.017 158);
+  --popover-foreground: oklch(0.955 0.009 92);
+  /* Полированная латунь: тон уведён от горчичного (hue 82) к медно-шампанскому
+     (hue 66). Тёплый и живой, но не кричит жёлтым. */
+  --primary: oklch(0.815 0.072 66);
+  --primary-foreground: oklch(0.16 0.02 158);
+  --secondary: oklch(0.252 0.02 158);
+  --secondary-foreground: oklch(0.955 0.009 92);
+  --muted: oklch(0.228 0.018 158);
+  --muted-foreground: oklch(0.715 0.016 140);
+  --accent: oklch(0.815 0.072 66);
+  --accent-foreground: oklch(0.16 0.02 158);
   --destructive: oklch(0.62 0.19 25);
-  --border: oklch(0.95 0.01 95 / 13%);
-  --input: oklch(0.95 0.01 95 / 17%);
-  --ring: oklch(0.83 0.045 78);
-  --chart-1: oklch(0.83 0.045 78);
+  --border: oklch(0.955 0.009 92 / 14%);
+  --input: oklch(0.955 0.009 92 / 18%);
+  --ring: oklch(0.815 0.072 66);
+  --chart-1: oklch(0.815 0.072 66);
   --chart-2: oklch(0.6 0.07 150);
   --chart-3: oklch(0.7 0.05 130);
   --chart-4: oklch(0.45 0.05 155);
   --chart-5: oklch(0.85 0.06 90);
   --radius: 0.25rem;
-  --sidebar: oklch(0.19 0.014 155);
-  --sidebar-foreground: oklch(0.95 0.01 95);
-  --sidebar-primary: oklch(0.765 0.105 82);
-  --sidebar-primary-foreground: oklch(0.17 0.02 155);
-  --sidebar-accent: oklch(0.245 0.016 155);
-  --sidebar-accent-foreground: oklch(0.95 0.01 95);
-  --sidebar-border: oklch(0.95 0.01 95 / 13%);
-  --sidebar-ring: oklch(0.765 0.105 82);
+  --sidebar: oklch(0.192 0.017 158);
+  --sidebar-foreground: oklch(0.955 0.009 92);
+  --sidebar-primary: oklch(0.815 0.072 66);
+  --sidebar-primary-foreground: oklch(0.16 0.02 158);
+  --sidebar-accent: oklch(0.252 0.02 158);
+  --sidebar-accent-foreground: oklch(0.955 0.009 92);
+  --sidebar-border: oklch(0.955 0.009 92 / 14%);
+  --sidebar-ring: oklch(0.815 0.072 66);
 }
 
 /* Панель управления остаётся светлой и утилитарной */

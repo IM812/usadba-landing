@@ -22,14 +22,14 @@ export function HomeHero() {
         <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/20 to-transparent" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-6xl px-5 pb-14 pt-32 sm:px-8 sm:pb-20 lg:px-12">
+      <div className="relative mx-auto w-full max-w-6xl px-5 pb-10 pt-28 sm:px-8 sm:pb-20 lg:px-12">
         <p className="lux-rise eyebrow flex items-center gap-3 text-accent" style={{ animationDelay: "100ms" }}>
           <span aria-hidden="true" className="inline-block h-px w-8 bg-accent/60" />
           {site.region} · {site.shortName}
         </p>
 
         <h1
-          className="lux-rise mt-7 max-w-3xl text-balance font-serif text-[3rem] font-light leading-[0.94] tracking-tight text-foreground sm:text-7xl lg:text-[5.5rem]"
+          className="lux-rise mt-5 max-w-3xl text-balance font-serif text-[2.75rem] font-light leading-[0.94] tracking-tight text-foreground sm:mt-7 sm:text-7xl lg:text-[5.5rem]"
           style={{ animationDelay: "220ms" }}
         >
           Усадьба между
@@ -38,7 +38,7 @@ export function HomeHero() {
         </h1>
 
         <p
-          className="lux-rise mt-8 max-w-lg text-pretty text-[15px] leading-relaxed text-foreground/70 sm:text-lg"
+          className="lux-rise mt-5 max-w-lg text-pretty text-[15px] leading-relaxed text-foreground/70 sm:mt-8 sm:text-lg"
           style={{ animationDelay: "360ms" }}
         >
           Бревенчатый дом 250 м² в сосновом бору. Баня на дровах, сибирский чан под звёздами и
@@ -46,7 +46,7 @@ export function HomeHero() {
         </p>
 
         <div
-          className="lux-rise mt-10 flex flex-col gap-3 sm:flex-row sm:items-center"
+          className="lux-rise mt-7 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:items-center"
           style={{ animationDelay: "480ms" }}
         >
           <BookButton>Забронировать даты</BookButton>
@@ -55,11 +55,12 @@ export function HomeHero() {
           </LuxLink>
         </div>
 
-        <WeatherBadge className="lux-rise mt-8 inline-block text-xs uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-accent" />
+        <WeatherBadge className="lux-rise mt-6 inline-block text-xs uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-accent sm:mt-8" />
 
-        {/* Полоса ключевых фактов */}
+        {/* Полоса ключевых фактов. На телефоне подписи убраны — крупные значения
+            читаются и без них, а герой перестаёт вылезать за экран. */}
         <dl
-          className="lux-rise mt-14 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-border pt-8 sm:grid-cols-4"
+          className="lux-rise mt-8 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border pt-6 sm:mt-14 sm:grid-cols-4 sm:gap-x-8 sm:gap-y-6 sm:pt-8"
           style={{ animationDelay: "620ms" }}
         >
           {[
@@ -70,17 +71,21 @@ export function HomeHero() {
           ].map((f) => (
             <div key={f.k}>
               <dt className="eyebrow text-muted-foreground">{f.k}</dt>
-              <dd className="mt-2.5 flex items-center gap-1.5 font-serif text-2xl font-light text-foreground sm:text-3xl">
+              <dd className="mt-1.5 flex items-center gap-1.5 font-serif text-xl font-light text-foreground sm:mt-2.5 sm:text-3xl">
                 {f.v}
-                {f.k === "Рейтинг" ? <Star className="size-4 fill-accent text-accent" aria-hidden /> : null}
+                {f.k === "Рейтинг" ? (
+                  <Star className="size-3.5 fill-accent text-accent sm:size-4" aria-hidden />
+                ) : null}
               </dd>
-              <dd className="mt-1.5 text-xs leading-snug text-muted-foreground">{f.sub}</dd>
+              <dd className="mt-1 hidden text-xs leading-snug text-muted-foreground sm:mt-1.5 sm:block">
+                {f.sub}
+              </dd>
             </div>
           ))}
         </dl>
       </div>
 
-      <div className="relative flex justify-center pb-8">
+      <div className="relative hidden justify-center pb-8 sm:flex">
         <ArrowDown className="size-4 animate-bounce text-accent/70" aria-hidden />
       </div>
     </section>

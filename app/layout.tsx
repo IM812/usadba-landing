@@ -60,7 +60,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ru" className={`bg-background ${cormorant.variable} ${inter.variable}`}>
+    // suppressHydrationWarning: скрипт ниже дописывает класс на <html> до
+    // гидратации, поэтому серверная и клиентская разметка тут расходятся штатно.
+    <html
+      lang="ru"
+      suppressHydrationWarning
+      className={`bg-background ${cormorant.variable} ${inter.variable}`}
+    >
       <head>
         {/*
           Включает анимацию появления блоков только при живом JS. Пока класса нет,
