@@ -272,7 +272,7 @@ export function BookingCalendar() {
 
       {/* Сводка */}
       <aside className="lg:sticky lg:top-28 lg:self-start">
-        <div className="border border-border bg-card p-7">
+        <div className="surface-2 rounded-sm border border-border bg-card p-7">
           <p className="eyebrow text-accent">Ваша поездка</p>
 
           <dl className="mt-7 flex flex-col gap-5">

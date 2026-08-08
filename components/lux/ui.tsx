@@ -56,8 +56,10 @@ export function Section({
       id={id}
       className={cn(
         "py-20 sm:py-28 lg:py-36",
-        tone === "raised" && "bg-card",
-        tone === "deep" && "bg-secondary",
+        // slab: тональная полоса читается как плита со своей кромкой и тенью,
+        // а не как второй плоский прямоугольник, приставленный встык
+        tone === "raised" && "slab relative bg-card",
+        tone === "deep" && "slab relative bg-secondary",
         className,
       )}
     >
@@ -186,7 +188,14 @@ export function ArchImage({
   priority?: boolean
 }) {
   return (
-    <div className={cn("arch relative overflow-hidden bg-secondary", className)}>
+    <div
+      className={cn(
+        // photo-vignette + тень: кадр перестаёт быть плоской наклейкой,
+        // края уходят в фон, под аркой появляется объём
+        "arch photo-vignette relative overflow-hidden bg-secondary shadow-elev-2",
+        className,
+      )}
+    >
       <Image
         src={src || "/placeholder.svg"}
         alt={alt}
@@ -213,7 +222,12 @@ export function FrameImage({
   priority?: boolean
 }) {
   return (
-    <div className={cn("relative overflow-hidden rounded-sm bg-secondary", className)}>
+    <div
+      className={cn(
+        "photo-vignette relative overflow-hidden rounded-sm bg-secondary shadow-elev-2",
+        className,
+      )}
+    >
       <Image
         src={src || "/placeholder.svg"}
         alt={alt}

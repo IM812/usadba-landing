@@ -51,9 +51,12 @@ export function FreeDateCard({
       type="button"
       onClick={() => openBooking({ arrival: w.start, departure: w.end })}
       className={cn(
-        "group relative flex w-full flex-col overflow-hidden rounded-sm border bg-card/70 p-5 text-left transition-all duration-500 sm:p-6",
-        "hover:-translate-y-0.5 hover:bg-card hover:shadow-xl hover:shadow-background/50",
-        featured ? "border-accent/45" : "border-border hover:border-accent/40",
+        // surface даёт верхний отблеск и собственную тень БЕЗ hover: на
+        // телефоне наведения не бывает, а прежняя тень висела только на
+        // hover — поэтому все карточки там выглядели плоскими наклейками.
+        "group relative flex w-full flex-col overflow-hidden rounded-sm border bg-card p-5 text-left transition-all duration-500 sm:p-6",
+        "surface hover:-translate-y-0.5 hover:shadow-elev-3",
+        featured ? "border-accent/45 shadow-elev-2" : "border-border hover:border-accent/40",
       )}
     >
       {/* Латунная нить сверху: у ближайшего окна горит сразу, у остальных — при наведении */}
