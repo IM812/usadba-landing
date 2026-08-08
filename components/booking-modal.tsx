@@ -22,9 +22,17 @@ import { todayKey } from "@/lib/date"
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+export type BookingPrefill = {
+  arrival?: string
+  departure?: string
+  guests?: string
+}
+
 type Props = {
   open: boolean
   onClose: () => void
+  /** Даты и гости, выбранные на странице бронирования до открытия модалки. */
+  prefill?: BookingPrefill
 }
 
 type FormState = {
@@ -273,8 +281,9 @@ function Calendar({
   }
 
   function getDayStyle(iso: string | null): string {
+    // 40px на телефоне — комфортная зона тапа (было 32px, палец промахивался)
     const base =
-      "relative flex h-8 w-8 items-center justify-center rounded-full text-sm transition select-none overflow-hidden"
+      "relative flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-full text-sm transition select-none overflow-hidden"
     if (!iso) return base + " invisible"
     const isToday = iso === todayIso
     const isPast = iso < todayIso
@@ -288,7 +297,9 @@ function Calendar({
       return base + " cursor-not-allowed text-muted-foreground/40"
     }
     if (busy) {
-      return base + " cursor-not-allowed text-muted-foreground/40 bg-destructive/10 line-through"
+      // Нейтральный серый вместо красноватого: занято — это не ошибка,
+      // и бордовые кружки выбивались из хвойно-латунной палитры.
+      return base + " cursor-not-allowed text-muted-foreground/35 bg-muted/60 line-through"
     }
     if (isArrival || isDeparture) {
       return base + " cursor-pointer bg-primary text-primary-foreground font-semibold"
@@ -363,16 +374,19 @@ function Calendar({
             aria-pressed={iso === arrival || iso === departure}
             className={getDayStyle(iso)}
           >
-            {/* Half-pink overlay only for genuine checkout/checkin transition days */}
-            {iso && isCheckoutOnlyTransition(iso) && (
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 rounded-full"
-                style={{
-                  background:
-                    "linear-gradient(to right, transparent 50%, color-mix(in srgb, #f87171 25%, transparent) 50%)",
-                }}
-              />
+                    {/* День пересменки: утро свободно, после 12:00 уже занято.
+                        Закрашиваем именно вторую половину кружка — и тем же
+                        нейтральным тоном, что «Занято», чтобы читалось как
+                        «полдня занято», а не как ошибка. */}
+                    {iso && isCheckoutOnlyTransition(iso) && (
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 rounded-full"
+                        style={{
+                          background:
+                            "linear-gradient(to right, transparent 50%, color-mix(in srgb, var(--muted) 85%, transparent) 50%)",
+                        }}
+                      />
             )}
             <span className="relative z-10">{iso ? parseInt(iso.slice(8), 10) : ""}</span>
           </button>
@@ -382,13 +396,13 @@ function Calendar({
       {/* Legend */}
       <div className="mt-2 flex flex-wrap items-center gap-3 border-t border-border pt-2 text-xs text-muted-foreground">
         <span className="flex items-center gap-1">
-          <span className="inline-block size-3 rounded-full bg-destructive/10" />
-          Занято
+              <span className="inline-block size-3 rounded-full bg-muted/60" />
+              Занято
         </span>
         <span className="flex items-center gap-1">
           <span
             className="inline-block size-3 rounded-full"
-            style={{ background: "linear-gradient(to right, transparent 50%, color-mix(in srgb, #f87171 25%, transparent) 50%)" }}
+              style={{ background: "linear-gradient(to right, transparent 50%, color-mix(in srgb, var(--muted) 85%, transparent) 50%)" }}
           />
           Выезд до 12:00
         </span>
@@ -404,7 +418,7 @@ function Calendar({
 // ---------------------------------------------------------------------------
 // Main modal
 // ---------------------------------------------------------------------------
-export function BookingModal({ open, onClose }: Props) {
+export function BookingModal({ open, onClose, prefill }: Props) {
   const [step, setStep] = useState<1 | 2>(1)
   const [form, setForm] = useState<FormState>(emptyForm)
   const [submitted, setSubmitted] = useState(false)
@@ -471,6 +485,29 @@ export function BookingModal({ open, onClose }: Props) {
       document.body.style.overflow = ""
     }
   }, [open, fetchAvailability])
+
+  // Подхватываем даты, выбранные на странице бронирования
+  useEffect(() => {
+    if (!open || !prefill) return
+    const { arrival, departure, guests } = prefill
+    if (!arrival && !departure && !guests) return
+
+    setForm((f) => ({
+      ...f,
+      arrival: arrival ?? f.arrival,
+      departure: departure ?? f.departure,
+      guests: guests ?? f.guests,
+    }))
+    setSelecting(arrival && !departure ? "departure" : "arrival")
+
+    if (arrival) {
+      const [y, m] = arrival.split("-").map(Number)
+      if (y && m) {
+        setCalYear(y)
+        setCalMonth(m - 1)
+      }
+    }
+  }, [open, prefill])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -546,7 +583,7 @@ export function BookingModal({ open, onClose }: Props) {
       if (!res.ok) throw new Error("server_error")
       setSubmitted(true)
     } catch {
-      setError("Не удалось ��тправить заявку. Позвоните нам: +7 (995) 155-88-42")
+      setError("Не удалось отправить заявку. Позвоните нам: +7 (995) 155-88-42")
     } finally {
       setLoading(false)
     }
@@ -596,25 +633,29 @@ export function BookingModal({ open, onClose }: Props) {
         className="absolute inset-0 h-full w-full cursor-default bg-foreground/60 backdrop-blur-sm"
       />
 
-      <div className="relative z-10 w-full max-h-[92dvh] overflow-y-auto rounded-t-2xl bg-card shadow-2xl sm:max-w-lg sm:rounded-2xl">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4 border-b border-border bg-primary px-6 py-5 text-primary-foreground">
+      <div className="relative z-10 flex max-h-[94svh] w-full flex-col overflow-hidden rounded-t-2xl bg-card shadow-2xl sm:max-h-[92dvh] sm:max-w-lg sm:rounded-2xl">
+        {/* Header — остаётся на месте при прокрутке формы */}
+        <div className="relative flex shrink-0 items-start justify-between gap-3 border-b border-border bg-secondary px-4 py-4 text-foreground sm:px-6 sm:py-5">
+          {/* латунная нить вместо плотной заливки — акцент, а не пятно */}
+          <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-accent/70" />
           <div>
-            <p className="font-serif text-2xl leading-tight">Бронирование усадьбы</p>
-            <p className="mt-1 text-sm text-primary-foreground/80">Усадьба в Антропково</p>
+            <p className="eyebrow text-accent">Усадьба в Антропково</p>
+            <p className="mt-2 font-serif text-xl font-light leading-tight sm:text-2xl">
+              Бронирование усадьбы
+            </p>
           </div>
           <button
             type="button"
             onClick={close}
             aria-label="Закрыть форму"
-            className="rounded-full p-1.5 text-primary-foreground/80 transition hover:bg-primary-foreground/15 hover:text-primary-foreground"
+            className="-mr-1 flex size-10 shrink-0 items-center justify-center rounded-full text-muted-foreground transition hover:bg-foreground/10 hover:text-foreground"
           >
             <X className="size-5" />
           </button>
         </div>
 
         {submitted ? (
-          <div className="flex flex-col items-center gap-4 px-6 py-12 text-center">
+          <div className="flex flex-col items-center gap-4 overflow-y-auto px-5 py-10 pb-safe text-center sm:px-6 sm:py-12">
             <div className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
               <Check className="size-8" />
             </div>
@@ -633,15 +674,15 @@ export function BookingModal({ open, onClose }: Props) {
             </button>
           </div>
         ) : (
-          <>
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain">
             {/* Steps indicator */}
-            <div className="flex items-center gap-3 px-6 pt-5">
+            <div className="flex items-center gap-2 px-4 pt-4 sm:gap-3 sm:px-6 sm:pt-5">
               <StepDot index={1} label="Даты и гости" active={step === 1} done={step === 2} />
               <div className="h-px flex-1 bg-border" />
               <StepDot index={2} label="Ваши контакты" active={step === 2} done={false} />
             </div>
 
-            <form onSubmit={handleSubmit} className="px-6 pb-6 pt-5">
+            <form onSubmit={handleSubmit} className="px-4 pb-safe pt-4 sm:px-6 sm:pb-6 sm:pt-5">
               {step === 1 ? (
                 <div className="flex flex-col gap-4">
                   {/* Availability status */}
@@ -788,7 +829,7 @@ export function BookingModal({ open, onClose }: Props) {
                     </div>
                     {Number(form.guests) > appSettings.base_guests && appSettings.extra_guest_price > 0 && (
                       <p className="text-xs text-amber-600 dark:text-amber-400">
-                        + {appSettings.extra_guest_price.toLocaleString("ru-RU")} ₽/гость/ночь за {Number(form.guests) - appSettings.base_guests} доп. {Number(form.guests) - appSettings.base_guests === 1 ? "гостя" : "гостей"}
+                        + {appSettings.extra_guest_price.toLocaleString("ru-RU")} ��/гость/ночь за {Number(form.guests) - appSettings.base_guests} доп. {Number(form.guests) - appSettings.base_guests === 1 ? "гостя" : "гостей"}
                       </p>
                     )}
                   </div>
@@ -796,7 +837,7 @@ export function BookingModal({ open, onClose }: Props) {
                   <button
                     type="submit"
                     disabled={!step1Valid || availLoading || !!availError}
-                    className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="mt-2 flex min-h-13 items-center justify-center gap-2 rounded-xl bg-primary px-6 font-semibold text-primary-foreground transition hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Далее
                     <ArrowRight className="size-4" />
@@ -862,7 +903,7 @@ export function BookingModal({ open, onClose }: Props) {
                       type="button"
                       onClick={() => setStep(1)}
                       disabled={loading}
-                      className="flex items-center justify-center gap-2 rounded-lg border border-input bg-background px-5 py-3 font-medium text-foreground transition hover:bg-secondary disabled:opacity-40"
+                      className="flex min-h-13 shrink-0 items-center justify-center gap-2 rounded-xl border border-input bg-background px-4 font-medium text-foreground transition hover:bg-secondary disabled:opacity-40"
                     >
                       <ArrowLeft className="size-4" />
                       Назад
@@ -870,7 +911,7 @@ export function BookingModal({ open, onClose }: Props) {
                     <button
                       type="submit"
                       disabled={!step2Valid || loading}
-                      className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="flex min-h-13 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 font-semibold text-primary-foreground transition hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       {loading ? "Отправляем..." : "Забронировать"}
                     </button>
@@ -878,7 +919,7 @@ export function BookingModal({ open, onClose }: Props) {
                 </div>
               )}
             </form>
-          </>
+          </div>
         )}
       </div>
     </div>
@@ -900,15 +941,17 @@ function StepDot({
   done: boolean
 }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex shrink-0 items-center gap-2">
       <span
-        className={`flex size-7 items-center justify-center rounded-full text-sm font-medium transition ${
+        className={`flex size-7 shrink-0 items-center justify-center rounded-full text-sm font-medium transition ${
           active || done ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
         }`}
       >
         {done ? <Check className="size-4" /> : index}
       </span>
-      <span className={`text-sm font-medium ${active || done ? "text-foreground" : "text-muted-foreground"}`}>
+      <span
+        className={`whitespace-nowrap text-[13px] font-medium sm:text-sm ${active || done ? "text-foreground" : "text-muted-foreground"}`}
+      >
         {label}
       </span>
     </div>
@@ -947,7 +990,7 @@ function Field({
           inputMode={inputMode}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full rounded-lg border border-input bg-background py-3 pl-9 pr-3 text-foreground outline-none transition placeholder:text-muted-foreground/70 focus:border-ring focus:ring-2 focus:ring-ring/30"
+          className="min-h-13 w-full rounded-xl border border-input bg-background pl-9 pr-3 text-base text-foreground outline-none transition placeholder:text-muted-foreground/70 focus:border-ring focus:ring-2 focus:ring-ring/30"
         />
       </div>
     </div>

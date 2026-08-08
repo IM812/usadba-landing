@@ -47,7 +47,53 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* ============================================================
+   «Тёмный лесной люкс» — основная тема публичного сайта.
+   Палитра из 5 цветов: угольно-зелёный фон, тёмная поверхность,
+   тёплый белый текст, шалфейно-серый и латунный акцент.
+   ============================================================ */
 :root {
+  color-scheme: dark;
+  /* Фон — глубокий хвойный уголь, чуть насыщеннее прежнего: перестал
+     выглядеть просто серым и держит тёплый акцент. */
+  --background: oklch(0.148 0.016 158);
+  --foreground: oklch(0.955 0.009 92);
+  --card: oklch(0.208 0.018 158);
+  --card-foreground: oklch(0.955 0.009 92);
+  --popover: oklch(0.192 0.017 158);
+  --popover-foreground: oklch(0.955 0.009 92);
+  /* Полированная латунь: тон уведён от горчичного (hue 82) к медно-шампанскому
+     (hue 66). Тёплый и живой, но не кричит жёлтым. */
+  --primary: oklch(0.815 0.072 66);
+  --primary-foreground: oklch(0.16 0.02 158);
+  --secondary: oklch(0.252 0.02 158);
+  --secondary-foreground: oklch(0.955 0.009 92);
+  --muted: oklch(0.228 0.018 158);
+  --muted-foreground: oklch(0.715 0.016 140);
+  --accent: oklch(0.815 0.072 66);
+  --accent-foreground: oklch(0.16 0.02 158);
+  --destructive: oklch(0.62 0.19 25);
+  --border: oklch(0.955 0.009 92 / 14%);
+  --input: oklch(0.955 0.009 92 / 18%);
+  --ring: oklch(0.815 0.072 66);
+  --chart-1: oklch(0.815 0.072 66);
+  --chart-2: oklch(0.6 0.07 150);
+  --chart-3: oklch(0.7 0.05 130);
+  --chart-4: oklch(0.45 0.05 155);
+  --chart-5: oklch(0.85 0.06 90);
+  --radius: 0.25rem;
+  --sidebar: oklch(0.192 0.017 158);
+  --sidebar-foreground: oklch(0.955 0.009 92);
+  --sidebar-primary: oklch(0.815 0.072 66);
+  --sidebar-primary-foreground: oklch(0.16 0.02 158);
+  --sidebar-accent: oklch(0.252 0.02 158);
+  --sidebar-accent-foreground: oklch(0.955 0.009 92);
+  --sidebar-border: oklch(0.955 0.009 92 / 14%);
+  --sidebar-ring: oklch(0.815 0.072 66);
+}
+
+/* Панель управления остаётся светлой и утилитарной */
+.theme-admin {
   color-scheme: light;
   --background: oklch(0.98 0.008 110);
   --foreground: oklch(0.24 0.02 145);
@@ -67,92 +113,7 @@
   --border: oklch(0.88 0.02 120);
   --input: oklch(0.88 0.02 120);
   --ring: oklch(0.42 0.07 150);
-  --chart-1: oklch(0.42 0.07 150);
-  --chart-2: oklch(0.55 0.08 140);
-  --chart-3: oklch(0.72 0.1 85);
-  --chart-4: oklch(0.65 0.06 110);
-  --chart-5: oklch(0.35 0.05 155);
   --radius: 0.5rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  color-scheme: dark;
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    color-scheme: dark;
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
-  }
 }
 
 @layer base {
@@ -170,6 +131,21 @@
     /* никакого горизонтального «люфта» на телефоне */
     overflow-x: hidden;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Плёночное зерно поверх всей страницы. Именно его отсутствие делает
+     тёмные интерфейсы «цифровыми и плоскими»: ровная заливка не бывает
+     в природе. Слой не ловит курсор и не влияет на разметку.
+     В светлой админке не нужен. */
+  body:not(.theme-admin)::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.055;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
   }
   /* на телефоне ссылки/кнопки не должны быть меньше 44px по высоте */
   button,
@@ -198,8 +174,158 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* ===== Scroll reveal ===== */
-[data-reveal] {
+/* ===== Подписной знак дизайна: арочные фотографии =====
+   Форма повторяет кирпичную арку камина в усадьбе. */
+@utility arch {
+  border-radius: 999px 999px var(--radius) var(--radius);
+}
+
+@utility arch-sm {
+  border-radius: 14rem 14rem var(--radius) var(--radius);
+}
+
+/* Мелкий капительный надзаголовок */
+@utility eyebrow {
+  font-size: 0.6875rem;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   Глубина: свет, тень, зерно.
+   На тёмной теме плоскость лечится не «добавить тень», а
+   последовательным светом: поверхность светлее сверху, по верхней
+   кромке — тонкий отблеск (как на лакированном дереве), под объектом
+   мягкая тень. Тени намеренно тёплые (hue 158), а не чисто чёрные:
+   чистый чёрный на хвойном фоне выглядит грязным провалом.
+   ============================================================ */
+@theme inline {
+  --shadow-elev-1:
+    0 1px 2px oklch(0.06 0.012 158 / 40%), 0 2px 6px oklch(0.06 0.012 158 / 26%);
+  /* elev-2/3 несут собственный внутренний отблеск: они применяются к тем же
+     элементам, что и surface, а box-shadow не складывается — без inset-слоя
+     здесь свет верхней кромки просто исчезал. */
+  --shadow-elev-2:
+    inset 0 1px 0 oklch(0.955 0.009 92 / 11%), 0 2px 4px oklch(0.06 0.012 158 / 42%),
+    0 10px 26px oklch(0.06 0.012 158 / 34%);
+  --shadow-elev-3:
+    inset 0 1px 0 oklch(0.955 0.009 92 / 14%), 0 4px 10px oklch(0.06 0.012 158 / 44%),
+    0 22px 54px oklch(0.06 0.012 158 / 42%);
+}
+
+/* Поднятая поверхность: верхний отблеск + собственная тень.
+   Работает БЕЗ hover — на телефоне глубина должна быть видна сразу. */
+@utility surface {
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--foreground) 6%, transparent),
+    transparent 40%
+  );
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--foreground) 10%, transparent),
+    var(--shadow-elev-1);
+}
+
+@utility surface-2 {
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--foreground) 7%, transparent),
+    transparent 45%
+  );
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--foreground) 12%, transparent),
+    var(--shadow-elev-2);
+}
+
+/* Тональная полоса секции как физическая плита: светлая кромка сверху и
+   снизу + тень, отброшенная на секцию выше. Раньше смена цвета фона давала
+   стык встык — два плоских прямоугольника без намёка на слои. */
+@utility slab {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--foreground) 9%, transparent),
+    inset 0 -1px 0 color-mix(in oklab, var(--foreground) 6%, transparent),
+    0 -16px 38px oklch(0.06 0.012 158 / 32%);
+}
+
+/* Затемнение по краям кадра: фото перестаёт быть наклейкой и уходит в фон */
+@utility photo-vignette {
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        118% 96% at 50% 8%,
+        transparent 42%,
+        oklch(0.06 0.012 158 / 34%) 100%
+      ),
+      linear-gradient(to top, oklch(0.06 0.012 158 / 52%), transparent 58%);
+  }
+}
+
+/* Тонкая латунная линейка */
+@utility rule-brass {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    color-mix(in oklab, var(--accent) 70%, transparent),
+    transparent
+  );
+}
+
+/* ===== Кинематографичные появления ===== */
+@keyframes lux-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lux-ken-burns {
+  from {
+    transform: scale(1.04);
+  }
+  to {
+    transform: scale(1.14);
+  }
+}
+
+.lux-rise {
+  animation: lux-rise 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.lux-ken-burns {
+  animation: lux-ken-burns 22s ease-out both;
+}
+
+/* На телефоне бесконечный наезд на полноэкранный кадр стоит слишком дорого:
+   оставляем статичную крупную композицию. */
+@media (max-width: 640px) {
+  .lux-ken-burns {
+    animation: none;
+    transform: scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lux-rise,
+  .lux-ken-burns {
+    animation: none;
+  }
+}
+
+/* ===== Scroll reveal =====
+   Скрываем блок ТОЛЬКО когда точно известно, что JS работает и сможет его
+   проявить: класс reveal-ready ставит инлайн-скрипт в <head>. Если бандл не
+   догрузился или JS отключён, правило не применяется и страница видна. */
+.reveal-ready [data-reveal] {
   opacity: 0;
   transform: translateY(28px);
   transition:
@@ -211,12 +337,15 @@
 [data-reveal].revealed {
   opacity: 1;
   transform: translateY(0);
+  /* слой сбрасывается сразу после появления — иначе на телефоне
+     десятки композитных слоёв висят до к��нца сессии и скролл дёргается */
+  will-change: auto;
 }
 
-[data-reveal="left"] {
+.reveal-ready [data-reveal="left"] {
   transform: translateX(-32px);
 }
-[data-reveal="right"] {
+.reveal-ready [data-reveal="right"] {
   transform: translateX(32px);
 }
 [data-reveal="left"].revealed,
@@ -225,6 +354,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .reveal-ready [data-reveal],
   [data-reveal] {
     opacity: 1;
     transform: none;

@@ -32,8 +32,11 @@ export async function fetchAvitoRanges(
         'Accept': 'text/calendar, text/plain, */*',
         'Accept-Language': 'ru-RU,ru;q=0.9,en;q=0.8',
       },
-      next: { revalidate: 0 },
-      cache: 'no-store',
+      // Кеш на 5 минут вместо no-store: календарь Авито не меняется чаще,
+      // а на каждый рендер страницы ждать внешний сервис нельзя.
+      next: { revalidate: 300 },
+      // Авито иногда отвечает секундами — обрываем, чтобы не блокировать рендер.
+      signal: AbortSignal.timeout(3500),
     })
     if (!res.ok) {
       return { ranges: [], error: `ICS fetch failed: ${res.status}`, fetchedAt: null }
