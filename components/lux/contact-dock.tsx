@@ -41,14 +41,20 @@ export function ContactDock() {
   return (
     <div
       className={cn(
-        "fixed right-4 bottom-4 z-40 flex flex-col items-end gap-2 transition-all duration-500 sm:right-6 sm:bottom-6",
-        visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0",
+        // Контейнер выше кнопки на высоту свёрнутой панели и раньше перехватывал
+        // нажатия на невидимой области ~154x208 px: ссылки и кнопки под правым
+        // нижним углом было не нажать. Клики принимают только сама кнопка и
+        // раскрытые ссылки, поэтому контейнер всегда прозрачен для указателя.
+        "pointer-events-none fixed right-4 bottom-4 z-40 flex flex-col items-end gap-2 transition-all duration-500 sm:right-6 sm:bottom-6",
+        visible ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0",
       )}
     >
       <div
         className={cn(
           "flex flex-col items-end gap-2 transition-all duration-300",
-          open ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0",
+          open && visible
+            ? "pointer-events-auto translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-2 opacity-0",
         )}
       >
         {links.map((l) => (
@@ -70,7 +76,10 @@ export function ContactDock() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label={open ? "Скрыть способы связи" : "Показать способы связи"}
-        className="flex size-13 items-center justify-center rounded-full border border-accent/50 bg-card text-accent shadow-lg shadow-background/60 transition-colors hover:bg-accent hover:text-accent-foreground"
+        className={cn(
+          "flex size-13 items-center justify-center rounded-full border border-accent/50 bg-card text-accent shadow-lg shadow-background/60 transition-colors hover:bg-accent hover:text-accent-foreground",
+          visible ? "pointer-events-auto" : "pointer-events-none",
+        )}
       >
         {open ? (
           <X className="size-5" aria-hidden="true" />
