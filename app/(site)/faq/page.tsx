@@ -42,7 +42,7 @@ export default async function FaqPage() {
                 className="group border-b border-border py-6 first:border-t"
               >
                 <summary className="flex cursor-pointer list-none items-start justify-between gap-6 [&::-webkit-details-marker]:hidden">
-                  <h2 className="text-pretty font-serif text-xl font-light leading-snug text-foreground transition-colors group-open:text-accent sm:text-2xl">
+                  <h2 className="text-pretty font-display text-xl font-semibold leading-snug text-foreground transition-colors group-open:text-accent sm:text-2xl">
                     {item.question}
                   </h2>
                   <span

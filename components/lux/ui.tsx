@@ -7,10 +7,12 @@ import { cn } from "@/lib/utils"
    Серверные компоненты без состояния — можно использовать везде.
    ============================================================ */
 
+/** Надзаголовок-чип. Лаймовая пилюля вместо тонкой линейки — от неё
+    считывается вся тональность сайта. */
 export function Eyebrow({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <p className={cn("eyebrow flex items-center gap-3 text-accent", className)}>
-      <span aria-hidden="true" className="inline-block h-px w-8 bg-accent/60" />
+    <p className={cn("eyebrow chip w-fit", className)}>
+      <span aria-hidden="true" className="inline-block size-1.5 rounded-full bg-accent" />
       {children}
     </p>
   )
@@ -90,7 +92,7 @@ export function SectionHeading({
       )}
     >
       {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-      <h2 className="max-w-3xl text-balance font-serif text-[2rem] font-light leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+      <h2 className="max-w-3xl text-balance font-display text-[2rem] font-semibold leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
         {title}
       </h2>
       {lead ? (
@@ -104,11 +106,13 @@ export function SectionHeading({
 
 /* ---------- Кнопки ---------- */
 
+/* Кнопки-пилюли обычным кеглем вместо разряженной капители: капитель
+   читалась «отельно», строчная и скругление до круга — молодо. */
 const buttonBase =
-  "inline-flex min-h-12 items-center justify-center gap-2.5 px-7 text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+  "inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full px-7 text-[15px] font-semibold tracking-[-0.01em] transition-all duration-300 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50"
 
 const buttonVariants = {
-  brass: "bg-accent text-accent-foreground hover:bg-accent/85",
+  brass: "bg-accent text-accent-foreground hover:brightness-110",
   outline: "border border-foreground/25 text-foreground hover:border-accent hover:text-accent",
   quiet: "text-foreground/80 hover:text-accent",
 } as const
@@ -121,7 +125,7 @@ export function LuxButton({
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: keyof typeof buttonVariants }) {
   return (
     <button
-      className={cn(buttonBase, "rounded-sm", buttonVariants[variant], className)}
+      className={cn(buttonBase, "rounded-full", buttonVariants[variant], className)}
       {...props}
     >
       {children}
@@ -139,7 +143,7 @@ export function LuxLink({
   return (
     <Link
       href={href}
-      className={cn(buttonBase, "rounded-sm", buttonVariants[variant], className)}
+      className={cn(buttonBase, "rounded-full", buttonVariants[variant], className)}
       {...props}
     >
       {children}
@@ -224,7 +228,7 @@ export function FrameImage({
   return (
     <div
       className={cn(
-        "photo-vignette relative overflow-hidden rounded-sm bg-secondary shadow-elev-2",
+        "photo-vignette relative overflow-hidden rounded-2xl bg-secondary shadow-elev-2",
         className,
       )}
     >
@@ -257,7 +261,7 @@ export function FactList({
     <dl className={cn("grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4", className)}>
       {items.map((f) => (
         <div key={f.label} className="border-t border-border pt-4">
-          <dt className="font-serif text-4xl font-light leading-none text-accent sm:text-5xl">
+          <dt className="font-display text-4xl font-semibold leading-none text-accent sm:text-5xl">
             {f.value}
             {f.unit ? <span className="ml-1 text-2xl sm:text-3xl">{f.unit}</span> : null}
           </dt>

@@ -29,7 +29,7 @@ export function HomeHero() {
         </p>
 
         <h1
-          className="lux-rise mt-5 max-w-3xl text-balance font-serif text-[2.75rem] font-light leading-[0.94] tracking-tight text-foreground sm:mt-7 sm:text-7xl lg:text-[5.5rem]"
+          className="lux-rise mt-5 max-w-3xl text-balance font-display text-[2.75rem] font-semibold leading-[0.94] tracking-tight text-foreground sm:mt-7 sm:text-7xl lg:text-[5.5rem]"
           style={{ animationDelay: "220ms" }}
         >
           Усадьба между
@@ -71,7 +71,7 @@ export function HomeHero() {
           ].map((f) => (
             <div key={f.k}>
               <dt className="eyebrow text-muted-foreground">{f.k}</dt>
-              <dd className="mt-1.5 flex items-center gap-1.5 font-serif text-xl font-light text-foreground sm:mt-2.5 sm:text-3xl">
+              <dd className="mt-1.5 flex items-center gap-1.5 font-display text-xl font-semibold text-foreground sm:mt-2.5 sm:text-3xl">
                 {f.v}
                 {f.k === "Рейтинг" ? (
                   <Star className="size-3.5 fill-accent text-accent sm:size-4" aria-hidden />

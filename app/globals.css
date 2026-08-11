@@ -5,7 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-serif: var(--font-cormorant);
+  /* Заголовки — плотный современный гротеск, тело — Inter.
+     Засечки убраны сознательно: они и делали сайт «старше». */
+  --font-display: var(--font-manrope);
   --font-sans: var(--font-inter);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -48,48 +50,51 @@
 }
 
 /* ============================================================
-   «Тёмный лесной люкс» — основная тема публичного сайта.
-   Палитра из 5 цветов: угольно-зелёный фон, тёмная поверхность,
-   тёплый белый текст, шалфейно-серый и латунный акцент.
+   «Тёмный лес, свежий свет» — основная тема публичного сайта.
+   Палитра из 5 цветов: почти чёрный хвойный фон, поверхность,
+   почти белый текст, шалфейно-серый и один сочный лаймовый акцент.
+   Лайм вместо латуни: тот же тёмный лес, но тон читается молодым,
+   а не «отельным».
    ============================================================ */
 :root {
   color-scheme: dark;
-  /* Фон — глубокий хвойный уголь, чуть насыщеннее прежнего: перестал
-     выглядеть просто серым и держит тёплый акцент. */
-  --background: oklch(0.148 0.016 158);
-  --foreground: oklch(0.955 0.009 92);
-  --card: oklch(0.208 0.018 158);
-  --card-foreground: oklch(0.955 0.009 92);
-  --popover: oklch(0.192 0.017 158);
-  --popover-foreground: oklch(0.955 0.009 92);
-  /* Полированная латунь: тон уведён от горчичного (hue 82) к медно-шампанскому
-     (hue 66). Тёплый и живой, но не кричит жёлтым. */
-  --primary: oklch(0.815 0.072 66);
-  --primary-foreground: oklch(0.16 0.02 158);
-  --secondary: oklch(0.252 0.02 158);
-  --secondary-foreground: oklch(0.955 0.009 92);
-  --muted: oklch(0.228 0.018 158);
-  --muted-foreground: oklch(0.715 0.016 140);
-  --accent: oklch(0.815 0.072 66);
-  --accent-foreground: oklch(0.16 0.02 158);
+  /* Фон — глубокая хвоя, уведён в холод (hue 168): на нём лайм звенит,
+     а тёплая латунь звучала бы грязно. */
+  --background: oklch(0.152 0.021 168);
+  --foreground: oklch(0.968 0.008 130);
+  --card: oklch(0.212 0.026 168);
+  --card-foreground: oklch(0.968 0.008 130);
+  --popover: oklch(0.196 0.024 168);
+  --popover-foreground: oklch(0.968 0.008 130);
+  /* Свежий лайм — единственный яркий цвет на сайте. Держим его светлым и
+     насыщенным, чтобы текст на нём был тёмным, а не белым. */
+  --primary: oklch(0.855 0.196 128);
+  --primary-foreground: oklch(0.19 0.04 160);
+  --secondary: oklch(0.258 0.028 168);
+  --secondary-foreground: oklch(0.968 0.008 130);
+  --muted: oklch(0.234 0.026 168);
+  --muted-foreground: oklch(0.735 0.022 150);
+  --accent: oklch(0.855 0.196 128);
+  --accent-foreground: oklch(0.19 0.04 160);
   --destructive: oklch(0.62 0.19 25);
-  --border: oklch(0.955 0.009 92 / 14%);
-  --input: oklch(0.955 0.009 92 / 18%);
-  --ring: oklch(0.815 0.072 66);
-  --chart-1: oklch(0.815 0.072 66);
-  --chart-2: oklch(0.6 0.07 150);
-  --chart-3: oklch(0.7 0.05 130);
-  --chart-4: oklch(0.45 0.05 155);
-  --chart-5: oklch(0.85 0.06 90);
-  --radius: 0.25rem;
-  --sidebar: oklch(0.192 0.017 158);
-  --sidebar-foreground: oklch(0.955 0.009 92);
-  --sidebar-primary: oklch(0.815 0.072 66);
-  --sidebar-primary-foreground: oklch(0.16 0.02 158);
-  --sidebar-accent: oklch(0.252 0.02 158);
-  --sidebar-accent-foreground: oklch(0.955 0.009 92);
-  --sidebar-border: oklch(0.955 0.009 92 / 14%);
-  --sidebar-ring: oklch(0.815 0.072 66);
+  --border: oklch(0.968 0.008 130 / 14%);
+  --input: oklch(0.968 0.008 130 / 18%);
+  --ring: oklch(0.855 0.196 128);
+  --chart-1: oklch(0.855 0.196 128);
+  --chart-2: oklch(0.62 0.11 165);
+  --chart-3: oklch(0.74 0.09 140);
+  --chart-4: oklch(0.45 0.06 170);
+  --chart-5: oklch(0.9 0.12 118);
+  /* Крупное скругление — главный «молодой» приём после цвета */
+  --radius: 1rem;
+  --sidebar: oklch(0.196 0.024 168);
+  --sidebar-foreground: oklch(0.968 0.008 130);
+  --sidebar-primary: oklch(0.855 0.196 128);
+  --sidebar-primary-foreground: oklch(0.19 0.04 160);
+  --sidebar-accent: oklch(0.258 0.028 168);
+  --sidebar-accent-foreground: oklch(0.968 0.008 130);
+  --sidebar-border: oklch(0.968 0.008 130 / 14%);
+  --sidebar-ring: oklch(0.855 0.196 128);
 }
 
 /* Панель управления остаётся светлой и утилитарной */
@@ -107,8 +112,8 @@
   --secondary-foreground: oklch(0.3 0.04 150);
   --muted: oklch(0.94 0.015 120);
   --muted-foreground: oklch(0.5 0.03 140);
-  --accent: oklch(0.68 0.12 80);
-  --accent-foreground: oklch(0.22 0.03 150);
+  --accent: oklch(0.8 0.16 128);
+  --accent-foreground: oklch(0.24 0.04 160);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.88 0.02 120);
   --input: oklch(0.88 0.02 120);
@@ -184,13 +189,27 @@
   border-radius: 14rem 14rem var(--radius) var(--radius);
 }
 
-/* Мелкий капительный надзаголовок */
+/* Мелкий капительный надзаголовок. Трекинг сбавлен и вес добавлен:
+   разряженная капитель на 0.22em — самый «взрослый» приём в наборе. */
 @utility eyebrow {
   font-size: 0.6875rem;
   line-height: 1;
-  font-weight: 500;
-  letter-spacing: 0.22em;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+/* Тег-«пилюля»: надзаголовки и метки живут в них вместо тонкой линейки.
+   Это второй по силе сигнал молодой подачи после цвета. */
+@utility chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.4375rem 0.875rem;
+  background: color-mix(in oklab, var(--accent) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 28%, transparent);
+  color: var(--accent);
 }
 
 /* ============================================================
@@ -198,21 +217,21 @@
    На тёмной теме плоскость лечится не «добавить тень», а
    последовательным светом: поверхность светлее сверху, по верхней
    кромке — тонкий отблеск (как на лакированном дереве), под объектом
-   мягкая тень. Тени намеренно тёплые (hue 158), а не чисто чёрные:
+   мягкая тень. Тени намеренн�� тёплые (hue 158), а не чисто чёрные:
    чистый чёрный на хвойном фоне выглядит грязным провалом.
    ============================================================ */
 @theme inline {
   --shadow-elev-1:
-    0 1px 2px oklch(0.06 0.012 158 / 40%), 0 2px 6px oklch(0.06 0.012 158 / 26%);
+    0 1px 2px oklch(0.055 0.018 168 / 40%), 0 2px 6px oklch(0.055 0.018 168 / 26%);
   /* elev-2/3 несут собственный внутренний отблеск: они применяются к тем же
      элементам, что и surface, а box-shadow не складывается — без inset-слоя
      здесь свет верхней кромки просто исчезал. */
   --shadow-elev-2:
-    inset 0 1px 0 oklch(0.955 0.009 92 / 11%), 0 2px 4px oklch(0.06 0.012 158 / 42%),
-    0 10px 26px oklch(0.06 0.012 158 / 34%);
+    inset 0 1px 0 oklch(0.968 0.008 130 / 11%), 0 2px 4px oklch(0.055 0.018 168 / 42%),
+    0 10px 26px oklch(0.055 0.018 168 / 34%);
   --shadow-elev-3:
-    inset 0 1px 0 oklch(0.955 0.009 92 / 14%), 0 4px 10px oklch(0.06 0.012 158 / 44%),
-    0 22px 54px oklch(0.06 0.012 158 / 42%);
+    inset 0 1px 0 oklch(0.968 0.008 130 / 14%), 0 4px 10px oklch(0.055 0.018 168 / 44%),
+    0 22px 54px oklch(0.055 0.018 168 / 42%);
 }
 
 /* Поднятая поверхность: верхний отблеск + собственная тень.
@@ -246,7 +265,7 @@
   box-shadow:
     inset 0 1px 0 color-mix(in oklab, var(--foreground) 9%, transparent),
     inset 0 -1px 0 color-mix(in oklab, var(--foreground) 6%, transparent),
-    0 -16px 38px oklch(0.06 0.012 158 / 32%);
+    0 -16px 38px oklch(0.055 0.018 168 / 32%);
 }
 
 /* Затемнение по краям кадра: фото перестаёт быть наклейкой и уходит в фон */
@@ -260,9 +279,9 @@
       radial-gradient(
         118% 96% at 50% 8%,
         transparent 42%,
-        oklch(0.06 0.012 158 / 34%) 100%
+        oklch(0.055 0.018 168 / 34%) 100%
       ),
-      linear-gradient(to top, oklch(0.06 0.012 158 / 52%), transparent 58%);
+      linear-gradient(to top, oklch(0.055 0.018 168 / 52%), transparent 58%);
   }
 }
 

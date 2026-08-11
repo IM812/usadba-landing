@@ -15,7 +15,7 @@ export async function SiteFooter() {
           {/* Лого и подпись */}
           <div className="flex flex-col gap-6">
             <Link href="/" className="flex flex-col leading-none">
-              <span className="font-serif text-3xl font-light text-foreground">Усадьба</span>
+              <span className="font-display text-3xl font-semibold text-foreground">Усадьба</span>
               <span className="eyebrow mt-2 text-accent">в Антропково</span>
             </Link>
             <p className="max-w-xs text-pretty text-sm leading-relaxed text-muted-foreground">

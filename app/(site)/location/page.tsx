@@ -49,7 +49,7 @@ export default function LocationPage() {
                     ) : null}
                   </div>
                   <div className="mt-6 flex items-end gap-3">
-                    <span className="font-serif text-4xl font-light leading-none text-foreground">
+                    <span className="font-display text-4xl font-semibold leading-none text-foreground">
                       {r.duration.replace("≈ ", "")}
                     </span>
                     <span className="pb-1 text-sm text-muted-foreground">{r.distance}</span>
@@ -83,7 +83,7 @@ export default function LocationPage() {
       <Section tone="raised">
         <Container>
           <div className="grid gap-10 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
-            <div className="relative order-2 h-[360px] overflow-hidden rounded-sm border border-border bg-secondary sm:h-[460px] lg:order-1">
+            <div className="relative order-2 h-[360px] overflow-hidden rounded-2xl border border-border bg-secondary sm:h-[460px] lg:order-1">
               <iframe
                 src={contacts.mapWidget}
                 title="Расположение усадьбы на карте"
@@ -108,7 +108,7 @@ export default function LocationPage() {
                       <span className="text-pretty text-foreground">{n.place}</span>
                       <span className="text-sm text-muted-foreground">{n.note}</span>
                     </dt>
-                    <dd className="shrink-0 font-serif text-2xl font-light text-accent">
+                    <dd className="shrink-0 font-display text-2xl font-semibold text-accent">
                       {n.value}
                     </dd>
                   </div>

@@ -66,7 +66,7 @@ export default async function BookingPage() {
             {steps.map((s) => (
               <div key={s.title} className="flex flex-col items-center text-center">
                 <s.icon className="size-6 text-accent" aria-hidden="true" />
-                <h3 className="mt-6 font-serif text-2xl font-light text-foreground">{s.title}</h3>
+                <h3 className="mt-6 font-display text-2xl font-semibold text-foreground">{s.title}</h3>
                 <p className="mt-3 max-w-xs text-pretty text-[15px] leading-relaxed text-muted-foreground">
                   {s.text}
                 </p>
@@ -79,7 +79,7 @@ export default async function BookingPage() {
       <Section tone="deep">
         <Container size="narrow" className="text-center">
           <Eyebrow className="justify-center">Нужна помощь</Eyebrow>
-          <h2 className="mt-6 text-balance font-serif text-[2rem] font-light leading-tight text-foreground sm:text-4xl">
+          <h2 className="mt-6 text-balance font-display text-[2rem] font-semibold leading-tight text-foreground sm:text-4xl">
             Проще спросить — ответим лично
           </h2>
           <p className="mx-auto mt-5 max-w-lg text-pretty text-[15px] leading-relaxed text-muted-foreground">
@@ -90,7 +90,7 @@ export default async function BookingPage() {
           <div className="mt-10 flex flex-col items-center justify-center gap-6 sm:flex-row sm:gap-10">
             <a
               href={contacts.phoneHref}
-              className="font-serif text-2xl font-light text-foreground transition-colors hover:text-accent sm:text-3xl"
+              className="font-display text-2xl font-semibold text-foreground transition-colors hover:text-accent sm:text-3xl"
             >
               {contacts.phoneLabel}
             </a>

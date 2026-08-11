@@ -66,7 +66,7 @@ export default function SpaPage() {
                   i % 2 === 1 ? "lg:[&>figure]:order-2" : ""
                 }`}
               >
-                <figure className="relative aspect-4/3 w-full overflow-hidden rounded-sm bg-secondary lg:aspect-3/2">
+                <figure className="relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-secondary lg:aspect-3/2">
                   <Image
                     src={r.image || "/placeholder.svg"}
                     alt={`${r.name} в усадьбе`}
@@ -78,7 +78,7 @@ export default function SpaPage() {
 
                 <div className="flex flex-col gap-5">
                   <Eyebrow>{r.duration}</Eyebrow>
-                  <h3 className="text-balance font-serif text-[1.75rem] font-light leading-tight text-foreground sm:text-4xl">
+                  <h3 className="text-balance font-display text-[1.75rem] font-semibold leading-tight text-foreground sm:text-4xl">
                     {r.name}
                   </h3>
                   <p className="max-w-lg text-pretty text-[15px] leading-relaxed text-muted-foreground sm:text-base">
@@ -115,7 +115,7 @@ export default function SpaPage() {
                   key={s.time}
                   className="grid gap-2 border-t border-border py-6 sm:grid-cols-[6rem_1fr] sm:gap-8"
                 >
-                  <span className="font-serif text-xl font-light text-accent">{s.time}</span>
+                  <span className="font-display text-xl font-semibold text-accent">{s.time}</span>
                   <div className="flex flex-col gap-2">
                     <h3 className="text-[15px] font-medium tracking-wide text-foreground">
                       {s.title}

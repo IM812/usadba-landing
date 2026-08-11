@@ -16,7 +16,7 @@ function Wordmark({ className }: { className?: string }) {
       className={cn("group flex flex-col items-center leading-none", className)}
       aria-label={`${site.name} — на главную`}
     >
-      <span className="font-serif text-[1.35rem] font-light tracking-[0.02em] text-foreground sm:text-2xl">
+      <span className="font-display text-[1.35rem] font-semibold tracking-[0.02em] text-foreground sm:text-2xl">
         Усадьба
       </span>
       <span className="eyebrow mt-1 text-[0.5rem] text-accent transition-colors sm:text-[0.5625rem]">
@@ -131,7 +131,7 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
             <button
               type="button"
               onClick={() => openBooking()}
-              className="inline-flex min-h-10 shrink-0 items-center rounded-sm border border-accent/70 px-3 text-[10px] font-medium uppercase tracking-[0.12em] text-accent transition-colors hover:bg-accent hover:text-accent-foreground sm:min-h-11 sm:px-6 sm:text-[12px] sm:tracking-[0.16em]"
+              className="inline-flex min-h-10 shrink-0 items-center rounded-full border border-accent/70 px-3 text-[10px] font-medium uppercase tracking-[0.12em] text-accent transition-colors hover:bg-accent hover:text-accent-foreground sm:min-h-11 sm:px-6 sm:text-[12px] sm:tracking-[0.16em]"
             >
               Забронировать
             </button>
@@ -181,7 +181,7 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
                     >
                       <span
                         className={cn(
-                          "font-serif text-[1.75rem] font-light leading-none transition-colors sm:text-4xl lg:text-[2.75rem]",
+                          "font-display text-[1.75rem] font-semibold leading-none transition-colors sm:text-4xl lg:text-[2.75rem]",
                           active ? "text-accent" : "text-foreground group-hover:text-accent",
                         )}
                       >
@@ -199,7 +199,7 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
             <div className="flex flex-col justify-between gap-8">
               {/* Кадр грузится только после первого открытия меню — телефон
                   не тратит трафик и память на скрытую картинку */}
-              <div className="relative hidden aspect-4/5 w-full max-w-sm overflow-hidden rounded-sm bg-secondary sm:block lg:ml-auto">
+              <div className="relative hidden aspect-4/5 w-full max-w-sm overflow-hidden rounded-2xl bg-secondary sm:block lg:ml-auto">
                 {everOpened ? (
                   <Image
                     src="/images/real/photo2.jpg"
@@ -229,7 +229,7 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
                 <div className="rule-brass w-full lg:rotate-180" />
                 <a
                   href={contacts.phoneHref}
-                  className="font-serif text-2xl font-light text-foreground transition-colors hover:text-accent sm:text-3xl"
+                  className="font-display text-2xl font-semibold text-foreground transition-colors hover:text-accent sm:text-3xl"
                 >
                   {contacts.phoneLabel}
                 </a>

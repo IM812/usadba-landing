@@ -46,7 +46,7 @@ export default function GalleryPage() {
           <div data-reveal className="mt-14 grid gap-8 sm:grid-cols-2">
             {seasons.map((s) => (
               <article key={s.id} className="group flex flex-col">
-                <div className="relative aspect-16/10 w-full overflow-hidden rounded-sm bg-secondary">
+                <div className="relative aspect-16/10 w-full overflow-hidden rounded-2xl bg-secondary">
                   <Image
                     src={s.image || "/placeholder.svg"}
                     alt={`Усадьба в сезон: ${s.name.toLowerCase()}`}
@@ -56,7 +56,7 @@ export default function GalleryPage() {
                   />
                 </div>
                 <div className="mt-5 flex items-baseline justify-between gap-4">
-                  <h3 className="font-serif text-2xl font-light text-foreground">{s.name}</h3>
+                  <h3 className="font-display text-2xl font-semibold text-foreground">{s.name}</h3>
                   <span className="eyebrow text-accent">{s.months}</span>
                 </div>
                 <p className="mt-3 text-pretty text-[15px] leading-relaxed text-muted-foreground">

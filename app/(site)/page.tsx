@@ -75,7 +75,7 @@ export default async function HomePage() {
 
             <div className="flex flex-col gap-8">
               <Eyebrow>Гостям с {site.established} года</Eyebrow>
-              <h2 className="max-w-2xl text-balance font-serif text-[2rem] font-light leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+              <h2 className="max-w-2xl text-balance font-display text-[2rem] font-semibold leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                 Дом, который отдают вам целиком
               </h2>
               <div className="flex max-w-xl flex-col gap-5 text-pretty text-[15px] leading-relaxed text-muted-foreground sm:text-base">
@@ -119,7 +119,7 @@ export default async function HomePage() {
           <div data-reveal className="mt-14 grid gap-10 sm:gap-8 md:grid-cols-3 lg:gap-12">
             {chapters.map((c) => (
               <Link key={c.href} href={c.href} className="group flex flex-col">
-                <div className="relative aspect-4/5 w-full overflow-hidden rounded-sm bg-secondary">
+                <div className="relative aspect-4/5 w-full overflow-hidden rounded-2xl bg-secondary">
                   <Image
                     src={c.image || "/placeholder.svg"}
                     alt={c.alt}
@@ -132,7 +132,7 @@ export default async function HomePage() {
                   aria-hidden
                   className="mt-6 h-px w-10 bg-accent/60 transition-all duration-500 group-hover:w-20"
                 />
-                <h3 className="mt-4 font-serif text-2xl font-light text-foreground transition-colors group-hover:text-accent sm:text-3xl">
+                <h3 className="mt-4 font-display text-2xl font-semibold text-foreground transition-colors group-hover:text-accent sm:text-3xl">
                   {c.label}
                 </h3>
                 <p className="mt-3 text-pretty text-[15px] leading-relaxed text-muted-foreground">
@@ -208,7 +208,7 @@ export default async function HomePage() {
                     href={n.href}
                     className="group flex flex-col gap-1 py-4 transition-colors hover:text-accent"
                   >
-                    <span className="font-serif text-xl font-light text-foreground transition-colors group-hover:text-accent">
+                    <span className="font-display text-xl font-semibold text-foreground transition-colors group-hover:text-accent">
                       {n.label}
                     </span>
                     <span className="text-xs leading-snug text-muted-foreground">{n.note}</span>

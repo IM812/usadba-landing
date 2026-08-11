@@ -51,7 +51,7 @@ export default async function PricesPage() {
             lead="Цена указана за весь дом при базовом размещении. Выходные — с вечера пятницы по воскресенье."
           />
 
-          <div className="mt-14 overflow-hidden rounded-sm border border-border">
+          <div className="mt-14 overflow-hidden rounded-2xl border border-border">
             {/* Заголовок таблицы — только на планшете и шире */}
             <div className="hidden grid-cols-[1.4fr_1fr_1fr] gap-6 border-b border-border bg-secondary/60 px-7 py-4 sm:grid">
               <span className="eyebrow text-muted-foreground">Сезон</span>
@@ -65,18 +65,18 @@ export default async function PricesPage() {
                 className="grid gap-3 border-b border-border px-5 py-6 last:border-0 sm:grid-cols-[1.4fr_1fr_1fr] sm:items-baseline sm:gap-6 sm:px-7"
               >
                 <div>
-                    <p className="font-serif text-2xl font-light text-foreground">
+                    <p className="font-display text-2xl font-semibold text-foreground">
                       {seasonTitle(s.name)}
                     </p>
                   <p className="mt-1 text-[13px] text-muted-foreground">
                     {formatMonthDay(s.date_from)} — {formatMonthDay(s.date_to)}
                   </p>
                 </div>
-                <p className="font-serif text-xl font-light text-accent sm:text-2xl">
+                <p className="font-display text-xl font-semibold text-accent sm:text-2xl">
                   <span className="eyebrow mr-2 text-muted-foreground sm:hidden">Будни</span>
                   {formatMoney(s.base_price)} ₽
                 </p>
-                <p className="font-serif text-xl font-light text-foreground sm:text-2xl">
+                <p className="font-display text-xl font-semibold text-foreground sm:text-2xl">
                   <span className="eyebrow mr-2 text-muted-foreground sm:hidden">Выходные</span>
                   {formatMoney(s.weekend_price)} ₽
                 </p>
@@ -147,7 +147,7 @@ export default async function PricesPage() {
                 <dt className="text-[13px] uppercase tracking-[0.14em] text-muted-foreground">
                   {r.label}
                 </dt>
-                <dd className="mt-2 font-serif text-2xl font-light text-foreground">{r.value}</dd>
+                <dd className="mt-2 font-display text-2xl font-semibold text-foreground">{r.value}</dd>
               </div>
             ))}
           </dl>

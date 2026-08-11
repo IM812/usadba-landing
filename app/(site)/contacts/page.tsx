@@ -86,7 +86,7 @@ export default async function ContactsPage() {
                 </span>
                 <span className="flex min-w-0 flex-col gap-1">
                   <Eyebrow className="text-muted-foreground">{c.label}</Eyebrow>
-                  <span className="truncate font-serif text-xl font-light text-foreground">
+                  <span className="truncate font-display text-xl font-semibold text-foreground">
                     {c.value}
                   </span>
                 </span>
@@ -126,7 +126,7 @@ export default async function ContactsPage() {
               </div>
             </div>
 
-            <div className="relative h-[340px] overflow-hidden rounded-sm border border-border bg-secondary sm:h-[440px]">
+            <div className="relative h-[340px] overflow-hidden rounded-2xl border border-border bg-secondary sm:h-[440px]">
               <iframe
                 src={contacts.mapWidget}
                 title="Усадьба в Антропково на карте"

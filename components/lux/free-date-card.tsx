@@ -54,7 +54,7 @@ export function FreeDateCard({
         // surface даёт верхний отблеск и собственную тень БЕЗ hover: на
         // телефоне наведения не бывает, а прежняя тень висела только на
         // hover — поэтому все карточки там выглядели плоскими наклейками.
-        "group relative flex w-full flex-col overflow-hidden rounded-sm border bg-card p-5 text-left transition-all duration-500 sm:p-6",
+        "group relative flex w-full flex-col overflow-hidden rounded-2xl border bg-card p-5 text-left transition-all duration-500 sm:p-6",
         "surface hover:-translate-y-0.5 hover:shadow-elev-3",
         featured ? "border-accent/45 shadow-elev-2" : "border-border hover:border-accent/40",
       )}
@@ -76,7 +76,7 @@ export function FreeDateCard({
       </div>
 
       {/* Крупные числа — главный носитель смысла, месяц подписью */}
-      <span className="mt-5 font-serif text-[2.6rem] font-light leading-[0.95] tracking-tight text-foreground transition-colors group-hover:text-accent sm:text-[3rem]">
+      <span className="mt-5 font-display text-[2.6rem] font-semibold leading-[0.95] tracking-tight text-foreground transition-colors group-hover:text-accent sm:text-[3rem]">
         {range.days}
       </span>
       <span className="mt-2 text-[13px] lowercase tracking-wide text-muted-foreground">
@@ -93,7 +93,7 @@ export function FreeDateCard({
           <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
             За всё проживание
           </span>
-          <span className="mt-1 font-serif text-[1.6rem] font-light leading-none text-foreground">
+          <span className="mt-1 font-display text-[1.6rem] font-semibold leading-none text-foreground">
             {money(w.total)} ₽
           </span>
         </span>

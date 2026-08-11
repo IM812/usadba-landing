@@ -59,7 +59,7 @@ function MonthGrid({
 
   return (
     <div>
-      <p className="mb-5 text-center font-serif text-xl font-light text-foreground">
+      <p className="mb-5 text-center font-display text-xl font-semibold text-foreground">
         {MONTHS[month]} <span className="text-muted-foreground">{year}</span>
       </p>
 
@@ -272,19 +272,19 @@ export function BookingCalendar() {
 
       {/* Сводка */}
       <aside className="lg:sticky lg:top-28 lg:self-start">
-        <div className="surface-2 rounded-sm border border-border bg-card p-7">
+        <div className="surface-2 rounded-2xl border border-border bg-card p-7">
           <p className="eyebrow text-accent">Ваша поездка</p>
 
           <dl className="mt-7 flex flex-col gap-5">
             <div className="flex items-baseline justify-between gap-4 border-b border-border pb-4">
               <dt className="text-[13px] uppercase tracking-[0.12em] text-muted-foreground">Заезд</dt>
-              <dd className="font-serif text-lg font-light text-foreground">
+              <dd className="font-display text-lg font-semibold text-foreground">
                 {checkIn ? longDate(checkIn) : "—"}
               </dd>
             </div>
             <div className="flex items-baseline justify-between gap-4 border-b border-border pb-4">
               <dt className="text-[13px] uppercase tracking-[0.12em] text-muted-foreground">Выезд</dt>
-              <dd className="font-serif text-lg font-light text-foreground">
+              <dd className="font-display text-lg font-semibold text-foreground">
                 {checkOut ? longDate(checkOut) : "—"}
               </dd>
             </div>
@@ -302,7 +302,7 @@ export function BookingCalendar() {
               >
                 <Minus className="size-4" />
               </button>
-              <span className="min-w-10 text-center font-serif text-3xl font-light text-foreground">
+              <span className="min-w-10 text-center font-display text-3xl font-semibold text-foreground">
                 {guests}
               </span>
               <button
@@ -350,7 +350,7 @@ export function BookingCalendar() {
                   <span className="text-[13px] uppercase tracking-[0.12em] text-muted-foreground">
                     Итого
                   </span>
-                  <span className="font-serif text-4xl font-light text-accent">
+                  <span className="font-display text-4xl font-semibold text-accent">
                     {money(quote.total)} ₽
                   </span>
                 </div>

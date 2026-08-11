@@ -56,7 +56,7 @@ export default async function ReviewsPage() {
         <Container>
           <div className="flex flex-col items-start gap-10 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-6">
-              <span className="font-serif text-6xl font-light leading-none text-accent sm:text-7xl">
+              <span className="font-display text-6xl font-semibold leading-none text-accent sm:text-7xl">
                 {site.rating.value}
               </span>
               <div className="flex flex-col gap-2">
@@ -90,7 +90,7 @@ export default async function ReviewsPage() {
             {themes.map((t) => (
               <div key={t.title} className="flex flex-col gap-4 bg-background p-8 lg:p-10">
                 <span aria-hidden className="h-px w-10 bg-accent/60" />
-                <h3 className="text-pretty font-serif text-xl font-light leading-snug text-foreground">
+                <h3 className="text-pretty font-display text-xl font-semibold leading-snug text-foreground">
                   {t.title}
                 </h3>
                 <p className="text-pretty text-[15px] leading-relaxed text-muted-foreground">

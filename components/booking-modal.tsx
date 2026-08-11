@@ -640,7 +640,7 @@ export function BookingModal({ open, onClose, prefill }: Props) {
           <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-accent/70" />
           <div>
             <p className="eyebrow text-accent">Усадьба в Антропково</p>
-            <p className="mt-2 font-serif text-xl font-light leading-tight sm:text-2xl">
+            <p className="mt-2 font-display text-xl font-semibold leading-tight sm:text-2xl">
               Бронирование усадьбы
             </p>
           </div>
@@ -659,7 +659,7 @@ export function BookingModal({ open, onClose, prefill }: Props) {
             <div className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
               <Check className="size-8" />
             </div>
-            <h3 className="font-serif text-2xl text-foreground">Заявка отправлена!</h3>
+            <h3 className="font-display text-2xl text-foreground">Заявка отправлена!</h3>
             <p className="max-w-sm text-pretty text-muted-foreground leading-relaxed">
               Спасибо, {form.name.trim() || "гость"}! Мы свяжемся с вами по номеру {form.phone}{" "}
               для подтверждения бронирования с {formatDate(form.arrival)} по{" "}
