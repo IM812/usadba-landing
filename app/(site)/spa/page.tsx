@@ -3,12 +3,12 @@ import Image from "next/image"
 import { BookingCta } from "@/components/lux/booking-cta"
 import { PageHero } from "@/components/lux/page-hero"
 import { Container, Divider, Eyebrow, Section, SectionHeading } from "@/components/lux/ui"
-import { spaRituals } from "@/lib/site"
+import { spaRituals, spaSurcharge } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "Баня и сибирский чан",
   description:
-    "Баня на дровах с купелью и комнатой отдыха, чугунный сибирский чан под открытым небом. Дрова, веники и полотенца включены в проживание.",
+    "Баня на дровах с купелью и комнатой отдыха, чугунный сибирский чан под открытым небом. Баня и чан вместе — 7 000 ₽ за топку, дрова и веники включены.",
 }
 
 const ritualSteps = [
@@ -43,7 +43,7 @@ export default function SpaPage() {
         lead="Два ритуала, за которыми к нам приезжают повторно: настоящая дровяная баня с купелью и чугунный сибирский чан, где вода греется живым огнём."
         image="/images/real/photo4.jpg"
         imageAlt="Баня на дровах среди высоких сосен"
-        meta={["Дрова включены", "Веники дубовые и берёзовые", "Купель", "Чан до 40°"]}
+        meta={[spaSurcharge.short, "Веники дубовые и берёзовые", "Купель", "Чан до 40°"]}
       />
 
       {/* ===== Ритуалы ===== */}
@@ -53,7 +53,7 @@ export default function SpaPage() {
             <SectionHeading
               eyebrow="Ритуалы"
               title="Три способа согреться"
-              lead="Всё это уже входит в стоимость проживания — доплачивать за баню или чан отдельно не нужно."
+              lead={`Баня и чан оплачиваются вместе — ${spaSurcharge.priceLabel} ${spaSurcharge.unit}, сколько бы гостей ни парилось. Дрова, веники и полотенца в эту сумму уже входят.`}
             />
           </div>
 

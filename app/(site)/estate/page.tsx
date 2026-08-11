@@ -11,7 +11,7 @@ import {
   SectionHeading,
   TextLink,
 } from "@/components/lux/ui"
-import { estateFacts, includedInStay, rooms } from "@/lib/site"
+import { estateFacts, includedInStay, rooms, spaSurcharge } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "Усадьба",
@@ -150,7 +150,11 @@ export default function EstatePage() {
         <Container size="wide">
           <div data-reveal className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
             <div className="flex flex-col gap-8">
-              <SectionHeading eyebrow="Включено" title="Без скрытых доплат" />
+              <SectionHeading
+                eyebrow="Включено"
+                title="Без скрытых доплат"
+                lead={`Единственная услуга сверх проживания — баня с чаном, ${spaSurcharge.priceLabel} ${spaSurcharge.unit}.`}
+              />
               <TextLink href="/prices">Смотреть цены</TextLink>
             </div>
 
@@ -171,7 +175,7 @@ export default function EstatePage() {
 
       <BookingCta
         title="Посмотрите дом своими глазами"
-        lead="Расскажите, сколько вас и на какие даты — подберём подходящий сезон и пришлём подробные фотографии всех комнат."
+        lead="Расскажите, сколько вас и на какие даты — подберём подходящий сезон и пришлём подробные фотографии всех ��омнат."
         image="/images/real/photo9.jpg"
         imageAlt="Кирпичный камин в гостиной усадьбы"
       />

@@ -19,7 +19,7 @@ import {
 import { LodgingJsonLd } from "@/components/json-ld"
 import { getRates } from "@/lib/rates"
 import { getReviews } from "@/lib/reviews"
-import { estateFacts, includedInStay, navigation, site } from "@/lib/site"
+import { estateFacts, includedInStay, navigation, site, spaSurcharge } from "@/lib/site"
 
 const chapters = [
   {
@@ -155,7 +155,11 @@ export default async function HomePage() {
         <Container size="wide">
           <div data-reveal className="grid gap-14 lg:grid-cols-[1fr_1fr] lg:gap-24">
             <div className="flex flex-col gap-8">
-              <SectionHeading eyebrow="Включено в проживание" title="Ничего не нужно доплачивать" />
+              <SectionHeading
+                eyebrow="Включено в проживание"
+                title="Уже в стоимости"
+                lead={`Отдельно оплачиваются только баня с чаном — ${spaSurcharge.priceLabel} ${spaSurcharge.unit}.`}
+              />
               <ul className="flex flex-col">
                 {includedInStay.map((item) => (
                   <li

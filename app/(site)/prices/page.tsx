@@ -6,12 +6,12 @@ import { BookingCta } from "@/components/lux/booking-cta"
 import { BookButton } from "@/components/lux/book-button"
 import { Container, Section, SectionHeading, Eyebrow, LuxLink, Divider } from "@/components/lux/ui"
 import { getRates, formatMonthDay, formatMoney, seasonTitle } from "@/lib/rates"
-import { includedInStay } from "@/lib/site"
+import { includedInStay, spaSurcharge } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "Цены и тарифы",
   description:
-    "Стоимость аренды усадьбы целиком: сезонные тарифы, цена будних и выходных дней, доплата за гостей сверх базового размещения. Всё включено — баня, чан, лодка и сапы.",
+    "Стоимость аренды усадьбы целиком: сезонные тарифы, цена будних и выходных дней, доплата за гостей сверх базового размещения. Баня и чан — 7 000 ₽ за топку, лодка и сапы включены.",
 }
 
 export const revalidate = 300
@@ -96,6 +96,7 @@ export default async function PricesPage() {
             ) : (
               <p>Уборка после выезда входит в стоимость — доплачивать ничего не нужно.</p>
             )}
+            <p>{spaSurcharge.full}</p>
             <p>Праздничные даты считаются по тарифу выходного дня.</p>
           </div>
 
@@ -114,14 +115,15 @@ export default async function PricesPage() {
           <div className="grid gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-24">
             <div>
               <SectionHeading
-                eyebrow="Без доплат"
+                eyebrow="Что уже оплачено"
                 title="Что входит в стоимость"
-                lead="Мы не берём отдельных денег за баню, дрова или сапы — иначе отдых превращается в счёт из мини-бара."
+                lead="Дрова для камина, лодка и сапы — без отдельного счёта: иначе отдых превращается в счёт из мини-бара."
               />
               <Divider className="mt-10" />
               <p className="mt-6 max-w-md text-[15px] leading-relaxed text-muted-foreground">
-                Единственная доплата — гости сверх базового размещения. Всё остальное уже готово к
-                вашему приезду: баня протоплена, чан набран, дрова сложены.
+                Доплачивают только за баню с чаном ({spaSurcharge.priceLabel} {spaSurcharge.unit}) и
+                за гостей сверх базового размещения. К вашему приезду всё уже готово: баня
+                протоплена, чан набран, дрова сложены.
               </p>
             </div>
 
