@@ -73,7 +73,7 @@ export default async function ContactsPage() {
             lead="Обычно отвечаем в течение часа в рабочее время."
           />
 
-          <div className="mt-14 grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2">
+          <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden border border-border bg-border sm:grid-cols-2">
             {channels.map((c) => (
               <a
                 key={c.label}
