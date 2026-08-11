@@ -63,7 +63,7 @@ export function ContactDock() {
             href={l.href}
             target={l.href.startsWith("http") ? "_blank" : undefined}
             rel={l.href.startsWith("http") ? "noopener noreferrer" : undefined}
-            className="flex min-h-11 items-center gap-3 rounded-full border border-border bg-card px-4 text-[12px] font-medium uppercase tracking-[0.14em] text-foreground transition-colors hover:border-accent hover:text-accent"
+            className="flex min-h-11 items-center gap-3 rounded-full border border-border bg-card px-4 text-[14px] font-semibold tracking-[-0.01em] text-foreground transition-colors hover:border-accent hover:text-accent"
           >
             <l.icon className="size-4 text-accent" aria-hidden="true" />
             {l.label}

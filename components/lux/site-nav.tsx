@@ -16,7 +16,7 @@ function Wordmark({ className }: { className?: string }) {
       className={cn("group flex flex-col items-center leading-none", className)}
       aria-label={`${site.name} — на главную`}
     >
-      <span className="font-display text-[1.35rem] font-semibold tracking-[0.02em] text-foreground sm:text-2xl">
+      <span className="font-display text-[1.35rem] font-extrabold tracking-[-0.03em] text-foreground sm:text-2xl">
         Усадьба
       </span>
       <span className="eyebrow mt-1 text-[0.5rem] text-accent transition-colors sm:text-[0.5625rem]">
@@ -131,7 +131,9 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
             <button
               type="button"
               onClick={() => openBooking()}
-              className="inline-flex min-h-10 shrink-0 items-center rounded-full border border-accent/70 px-3 text-[10px] font-medium uppercase tracking-[0.12em] text-accent transition-colors hover:bg-accent hover:text-accent-foreground sm:min-h-11 sm:px-6 sm:text-[12px] sm:tracking-[0.16em]"
+              /* Залитая лаймовая пилюля обычным кеглем — главное действие
+                 должно читаться как кнопка, а не как капительная надпись. */
+              className="inline-flex min-h-10 shrink-0 items-center rounded-full bg-accent px-4 text-[13px] font-semibold tracking-[-0.01em] text-accent-foreground transition-all duration-200 hover:brightness-110 active:scale-[0.97] sm:min-h-11 sm:px-6 sm:text-[14px]"
             >
               Забронировать
             </button>

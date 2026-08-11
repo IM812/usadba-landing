@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -92,7 +93,7 @@ export function SectionHeading({
       )}
     >
       {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-      <h2 className="max-w-3xl text-balance font-display text-[2rem] font-semibold leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+      <h2 className="max-w-3xl text-balance font-display text-[2rem] font-extrabold leading-[1.02] tracking-[-0.035em] text-foreground sm:text-5xl lg:text-6xl">
         {title}
       </h2>
       {lead ? (
@@ -113,7 +114,8 @@ const buttonBase =
 
 const buttonVariants = {
   brass: "bg-accent text-accent-foreground hover:brightness-110",
-  outline: "border border-foreground/25 text-foreground hover:border-accent hover:text-accent",
+  outline:
+    "border border-foreground/25 text-foreground hover:border-accent hover:bg-accent/10 hover:text-accent",
   quiet: "text-foreground/80 hover:text-accent",
 } as const
 
@@ -151,7 +153,7 @@ export function LuxLink({
   )
 }
 
-/** Текстовая ссылка с подчёркиванием, которое растёт при наведении. */
+/** Ссылка-«пилюля»: обводка обводится лаймом и заливается при наведении. */
 export function TextLink({
   children,
   href,
@@ -165,12 +167,15 @@ export function TextLink({
     <Link
       href={href}
       className={cn(
-        "group inline-flex items-center gap-2 text-[13px] font-medium uppercase tracking-[0.14em] text-accent",
+        "group inline-flex w-fit items-center gap-2 rounded-full border border-accent/35 px-4 py-2 text-sm font-semibold tracking-[-0.01em] text-accent transition-colors duration-300 hover:bg-accent hover:text-accent-foreground",
         className,
       )}
     >
       {children}
-      <span aria-hidden="true" className="inline-block h-px w-6 bg-accent transition-all duration-300 group-hover:w-10" />
+      <ArrowUpRight
+        aria-hidden="true"
+        className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+      />
     </Link>
   )
 }
@@ -261,7 +266,7 @@ export function FactList({
     <dl className={cn("grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4", className)}>
       {items.map((f) => (
         <div key={f.label} className="border-t border-border pt-4">
-          <dt className="font-display text-4xl font-semibold leading-none text-accent sm:text-5xl">
+          <dt className="font-display text-4xl font-extrabold leading-none tracking-[-0.03em] text-accent sm:text-5xl">
             {f.value}
             {f.unit ? <span className="ml-1 text-2xl sm:text-3xl">{f.unit}</span> : null}
           </dt>

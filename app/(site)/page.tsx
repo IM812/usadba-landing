@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { HomeHero } from "@/components/lux/home-hero"
@@ -128,12 +129,14 @@ export default async function HomePage() {
                     className="object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-[1.06]"
                   />
                 </div>
-                <span
-                  aria-hidden
-                  className="mt-6 h-px w-10 bg-accent/60 transition-all duration-500 group-hover:w-20"
-                />
-                <h3 className="mt-4 font-display text-2xl font-semibold text-foreground transition-colors group-hover:text-accent sm:text-3xl">
+                {/* Заголовок с лаймовой стрелкой вместо хайрлайна: линейка была
+                    тем самым «взрослым» декором, который нигде не работал. */}
+                <h3 className="mt-5 flex items-center gap-2 font-display text-2xl font-extrabold tracking-[-0.03em] text-foreground transition-colors group-hover:text-accent sm:text-3xl">
                   {c.label}
+                  <ArrowUpRight
+                    aria-hidden
+                    className="size-5 text-accent transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
+                  />
                 </h3>
                 <p className="mt-3 text-pretty text-[15px] leading-relaxed text-muted-foreground">
                   {c.line}

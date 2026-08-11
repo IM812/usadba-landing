@@ -43,13 +43,13 @@ export function BookingCta({
           <button
             type="button"
             onClick={() => openBooking()}
-            className="inline-flex min-h-13 items-center justify-center rounded-full bg-accent px-8 text-[12px] font-medium uppercase tracking-[0.16em] text-accent-foreground transition-colors hover:bg-accent/85"
+            className="inline-flex min-h-13 items-center justify-center rounded-full bg-accent px-8 text-[15px] font-semibold tracking-[-0.01em] text-accent-foreground transition-colors hover:bg-accent/85"
           >
             Проверить даты
           </button>
           <Link
             href="/booking"
-            className="inline-flex min-h-13 items-center justify-center rounded-full border border-foreground/25 px-8 text-[12px] font-medium uppercase tracking-[0.16em] text-foreground transition-colors hover:border-accent hover:text-accent"
+            className="inline-flex min-h-13 items-center justify-center rounded-full border border-foreground/25 px-8 text-[15px] font-semibold tracking-[-0.01em] text-foreground transition-colors hover:border-accent hover:text-accent"
           >
             Календарь и расчёт
           </Link>

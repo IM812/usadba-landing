@@ -118,7 +118,7 @@ export default async function ContactsPage() {
                   href={contacts.mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.14em] text-foreground/80 transition-colors hover:text-accent"
+                  className="inline-flex items-center gap-2 text-[15px] font-semibold tracking-[-0.01em] text-foreground/80 transition-colors hover:text-accent"
                 >
                   <MapPin className="size-4" />
                   Проложить маршрут

@@ -118,7 +118,7 @@ export default function LocationPage() {
                 href={contacts.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-8 inline-flex items-center gap-2 self-start text-sm uppercase tracking-[0.14em] text-foreground/80 transition-colors hover:text-accent"
+                className="mt-8 inline-flex items-center gap-2 self-start text-[15px] font-semibold tracking-[-0.01em] text-foreground/80 transition-colors hover:text-accent"
               >
                 Открыть на Яндекс Картах
                 <ArrowUpRight className="size-4" />
