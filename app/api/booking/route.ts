@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { fetchAvitoRanges, rangesOverlap } from '@/lib/ics'
+import { spaSurcharge } from '@/lib/site'
+
+/** Больше двадцати топок за заезд — явная ошибка ввода, а не заказ. */
+const MAX_SPA_SESSIONS = 20
 
 function formatDate(iso: string) {
   if (!iso) return '—'
@@ -124,11 +128,17 @@ async function sendTelegramMessage(
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { arrival, departure, guests, name, phone, email, comment } = body
+    const { arrival, departure, guests, name, phone, email, comment, spaSessions } = body
 
     if (!arrival || !departure || !name || !phone) {
       return NextResponse.json({ ok: false, error: 'missing_fields' }, { status: 400 })
     }
+
+    // Количество топок бани приходит от клиента, поэтому нормализуем его сами:
+    // целое число в разумных границах, цену берём только серверную.
+    const spaCount = Number.isFinite(Number(spaSessions))
+      ? Math.min(MAX_SPA_SESSIONS, Math.max(0, Math.trunc(Number(spaSessions))))
+      : 0
 
     const supabase = createServiceClient()
 
@@ -201,7 +211,13 @@ export async function POST(req: Request) {
     )
     const extraGuests = Math.max(0, guestsCount - baseGuests)
     const extraGuestTotal = extraGuests * extraGuestPrice * nights
-    const total = accommodationTotal + extraGuestTotal
+    const spaTotal = spaCount * spaSurcharge.price
+    const total = accommodationTotal + extraGuestTotal + spaTotal
+
+    // Баня — допуслуга, отдельного поля в bookings нет, поэтому дописываем её
+    // в комментарий: так заказ виден и в админке, и в выгрузке.
+    const spaNote = spaCount > 0 ? `Баня и чан: ${spaCount} × ${formatRub(spaSurcharge.price)} = ${formatRub(spaTotal)}` : null
+    const fullComment = [comment?.trim() || null, spaNote].filter(Boolean).join('\n') || null
 
     // --- Save to Supabase ---
     const { data: booking, error: insertError } = await supabase
@@ -214,7 +230,7 @@ export async function POST(req: Request) {
         check_in: arrival,
         check_out: departure,
         total_price: total,
-        comment: comment?.trim() || null,
+        comment: fullComment,
         source: 'site',
         status: 'pending',
       })
@@ -235,6 +251,9 @@ export async function POST(req: Request) {
       extraGuests > 0
         ? `   Доп. гостей: ${extraGuests} × ${formatRub(extraGuestPrice)} × ${nights} н. = ${formatRub(extraGuestTotal)}`
         : null,
+      spaCount > 0
+        ? `   Баня и чан: ${spaCount} × ${formatRub(spaSurcharge.price)} = ${formatRub(spaTotal)}`
+        : null,
       `   Итого за ${nights} ${nightsWord(nights)}: *${formatRub(total)}*`,
     ].filter(Boolean)
 
@@ -244,6 +263,7 @@ export async function POST(req: Request) {
       `📅 Заезд: *${formatDate(arrival)}*`,
       `📅 Выезд: *${formatDate(departure)}*`,
       `👥 Гостей: *${guests}*`,
+      spaCount > 0 ? `🔥 Баня и чан: *${spaCount} ${spaCount === 1 ? 'топка' : spaCount < 5 ? 'топки' : 'топок'}*` : null,
       '',
       ...priceLines,
       '',
