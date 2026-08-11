@@ -319,7 +319,7 @@ export const galleryPhotos = [
   {
     src: '/images/estate/house-autumn.jpg',
     alt: 'Дом усадьбы в окружении золотого осеннего леса',
-    caption: 'Осен����ю лес вокруг дома становится золотым',
+    caption: 'Осенью лес вокруг дома становится золотым',
   },
   {
     src: '/images/estate/dining-window.jpg',

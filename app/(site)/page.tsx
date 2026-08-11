@@ -25,15 +25,15 @@ const chapters = [
   {
     href: "/estate",
     label: "Усадьба",
-    image: "/images/estate/fireplace.jpg",
-    alt: "Гостиная усадьбы с кирпичным камином",
+    image: "/images/estate/living-sofas.jpg",
+    alt: "Гостиная усадьбы: большие диваны, книжные полки и бревенчатые стены",
     line: "Четыре спальни, каждая со своим санузлом, и гостиная, где помещается вся компания.",
   },
   {
     href: "/spa",
     label: "Баня и чан",
-    image: "/images/estate/banya-fire.jpg",
-    alt: "Баня на дровах среди сосен",
+    image: "/images/estate/chan-night.jpg",
+    alt: "Чугунный чан с горячей водой парит вечером у подсвеченной бани",
     line: "Парная на дровах, купель и чугунный чан под открытым небом.",
   },
   {
