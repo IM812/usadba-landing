@@ -90,7 +90,7 @@ export default async function BookingPage() {
           <div className="mt-10 flex flex-col items-center justify-center gap-6 sm:flex-row sm:gap-10">
             <a
               href={contacts.phoneHref}
-              className="font-display text-2xl font-semibold text-foreground transition-colors hover:text-accent sm:text-3xl"
+              className="inline-flex min-h-11 items-center font-display text-2xl font-semibold text-foreground transition-colors hover:text-accent sm:text-3xl"
             >
               {contacts.phoneLabel}
             </a>

@@ -93,7 +93,7 @@ export const rooms = [
     kind: 'Спальни',
     area: '18 м² каждая',
     capacity: 'по 2–4 гостя',
-    image: '/images/real/photo10.jpg',
+    image: '/images/estate/room-beds.jpg',
     description:
       'Под скатом крыши, с окнами в кроны сосен. Любимые комнаты детей и подростков: свой этаж, свои правила, свой шум дождя по крыше.',
     features: ['Двуспальные и односпальные', 'Санузел на этаже', 'Окна в кроны', 'Отдельный этаж'],
@@ -105,7 +105,7 @@ export const spaRituals = [
     id: 'banya',
     name: 'Баня на дровах',
     duration: '3–4 часа',
-    image: '/images/real/photo4.jpg',
+    image: '/images/estate/banya-fire.jpg',
     description:
       'Настоящая парная на дровах: пока топится — час, пока держит жар — весь вечер. Дубовые и берёзовые веники, купель с холодной водой, комната отдыха с самоваром.',
     includes: ['Дрова и разогрев', 'Веники дубовые и берёзовые', 'Купель', 'Комната отдыха'],
@@ -114,7 +114,7 @@ export const spaRituals = [
     id: 'chan',
     name: 'Сибирский чан',
     duration: '2–3 часа',
-    image: '/images/real/photo3.jpg',
+    image: '/images/estate/chan-night.jpg',
     description:
       'Чугунный чан под открытым небом, вода греется живым огнём до 40°. Сидишь в горячей воде, над головой сосны и звёзды, рядом дым от костра — этот кадр гости увозят чаще всего.',
     includes: ['Нагрев до 40°', 'Травяные сборы', 'Полотенца', 'Подсветка вечером'],
@@ -123,7 +123,7 @@ export const spaRituals = [
     id: 'winter',
     name: 'Зимний контраст',
     duration: 'по погоде',
-    image: '/images/real/photo2.jpg',
+    image: '/images/estate/banya-winter.jpg',
     description:
       'Из парной — в снег, из снега — в чан. Зимой это главный ритуал усадьбы: тропинка от бани к чану протоплена, а лес вокруг стоит совершенно белый и беззвучный.',
     includes: ['Протопленные дорожки', 'Тёплая веранда', 'Горячий чай', 'Ночная подсветка'],
@@ -135,7 +135,7 @@ export const groundExperiences = [
     id: 'pier',
     name: 'Свой причал',
     season: 'Май — октябрь',
-    image: '/images/real/photo6.jpg',
+    image: '/images/estate/lake-steam.jpg',
     description:
       'Деревянный причал в двух минутах от дома. Утром здесь туман по воде, днём — купание, вечером — закат ровно напротив.',
   },
@@ -143,7 +143,7 @@ export const groundExperiences = [
     id: 'boat',
     name: 'Лодка и сап-борды',
     season: 'Май — сентябрь',
-    image: '/images/real/photo5.jpg',
+    image: '/images/estate/lake-wide.jpg',
     description:
       'Гребная лодка и два сап-борда включены в проживание. Озеро тихое, без моторных лодок — можно уйти на другой берег и никого не встретить.',
   },
@@ -151,7 +151,7 @@ export const groundExperiences = [
     id: 'fishing',
     name: 'Рыбалка',
     season: 'Весь год',
-    image: '/images/real/photo12.jpg',
+    image: '/images/estate/lake-aerial.jpg',
     description:
       'Окунь, щука, лещ и линь. Зимой — подлёдная рыбалка в сотне метров от дома. Снасти привозите свои, места покажем.',
   },
@@ -159,7 +159,7 @@ export const groundExperiences = [
     id: 'forest',
     name: 'Лес и грибные места',
     season: 'Июль — октябрь',
-    image: '/images/real/photo1.jpg',
+    image: '/images/estate/autumn-berries.jpg',
     description:
       'Сосновый бор начинается сразу за домом: белые, лисички, черника и брусника. Расскажем маршруты, из которых точно возвращаются с корзиной.',
   },
@@ -223,14 +223,14 @@ export const seasons = [
     id: 'winter',
     name: 'Зима',
     months: 'декабрь — февраль',
-    image: '/images/real/photo2.jpg',
+    image: '/images/estate/winter-lights.jpg',
     line: 'Снег по колено, чан под звёздами и камин, который не гаснет.',
   },
   {
     id: 'spring',
     name: 'Весна',
     months: 'март — май',
-    image: '/images/real/photo4.jpg',
+    image: '/images/estate/house-lawn.jpg',
     line: 'Лёд уходит с озера, лес просыпается, вечера уже тёплые.',
   },
   {
