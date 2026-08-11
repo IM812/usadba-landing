@@ -60,7 +60,7 @@ export const rooms = [
     kind: 'Общее пространство',
     area: '70 м²',
     capacity: 'до 15 человек',
-    image: '/images/real/photo9.jpg',
+    image: '/images/estate/fireplace.jpg',
     description:
       'Сердце дома: кирпичный камин с открытым огнём, длинный стол на всю компанию и панорамные окна в сосны. Здесь собираются вечером — с чаем, вином и разговорами до полуночи.',
     features: ['Кирпичный камин', 'Стол на 15 персон', 'Проектор и колонка', 'Панорамные окна'],
@@ -71,7 +71,7 @@ export const rooms = [
     kind: 'Спальня',
     area: '24 м²',
     capacity: '2 гостя',
-    image: '/images/real/photo7.jpg',
+    image: '/images/estate/room-green.jpg',
     description:
       'Бревенчатые стены, широкая кровать и своё окно в лес. Утром сюда приходит солнце, а вечером — тишина, которой в городе не бывает.',
     features: ['Кровать 180×200', 'Свой санузел', 'Вид на лес', 'Плотные шторы'],
@@ -82,7 +82,7 @@ export const rooms = [
     kind: 'Спальня',
     area: '20 м²',
     capacity: '2–3 гостя',
-    image: '/images/real/photo8.jpg',
+    image: '/images/estate/room-twin.jpg',
     description:
       'Тёплое дерево, мягкий текстиль и вид в сторону озера. Подходит для пары или семьи с ребёнком — есть место для дополнительной кровати.',
     features: ['Кровать 160×200', 'Свой санузел', 'Место для доп. кровати', 'Вид к озеру'],
@@ -93,7 +93,7 @@ export const rooms = [
     kind: 'Спальни',
     area: '18 м² каждая',
     capacity: 'по 2–4 гостя',
-    image: '/images/real/photo10.jpg',
+    image: '/images/estate/room-beds.jpg',
     description:
       'Под скатом крыши, с окнами в кроны сосен. Любимые комнаты детей и подростков: свой этаж, свои правила, свой шум дождя по крыше.',
     features: ['Двуспальные и односпальные', 'Санузел на этаже', 'Окна в кроны', 'Отдельный этаж'],
@@ -105,7 +105,7 @@ export const spaRituals = [
     id: 'banya',
     name: 'Баня на дровах',
     duration: '3–4 часа',
-    image: '/images/real/photo4.jpg',
+    image: '/images/estate/banya-fire.jpg',
     description:
       'Настоящая парная на дровах: пока топится — час, пока держит жар — весь вечер. Дубовые и берёзовые веники, купель с холодной водой, комната отдыха с самоваром.',
     includes: ['Дрова и разогрев', 'Веники дубовые и берёзовые', 'Купель', 'Комната отдыха'],
@@ -114,7 +114,7 @@ export const spaRituals = [
     id: 'chan',
     name: 'Сибирский чан',
     duration: '2–3 часа',
-    image: '/images/real/photo3.jpg',
+    image: '/images/estate/chan-night.jpg',
     description:
       'Чугунный чан под открытым небом, вода греется живым огнём до 40°. Сидишь в горячей воде, над головой сосны и звёзды, рядом дым от костра — этот кадр гости увозят чаще всего.',
     includes: ['Нагрев до 40°', 'Травяные сборы', 'Полотенца', 'Подсветка вечером'],
@@ -123,7 +123,7 @@ export const spaRituals = [
     id: 'winter',
     name: 'Зимний контраст',
     duration: 'по погоде',
-    image: '/images/real/photo2.jpg',
+    image: '/images/estate/winter-forest.jpg',
     description:
       'Из парной — в снег, из снега — в чан. Зимой это главный ритуал усадьбы: тропинка от бани к чану протоплена, а лес вокруг стоит совершенно белый и беззвучный.',
     includes: ['Протопленные дорожки', 'Тёплая веранда', 'Горячий чай', 'Ночная подсветка'],
@@ -135,7 +135,7 @@ export const groundExperiences = [
     id: 'pier',
     name: 'Свой причал',
     season: 'Май — октябрь',
-    image: '/images/real/photo6.jpg',
+    image: '/images/estate/lake-aerial.jpg',
     description:
       'Деревянный причал в двух минутах от дома. Утром здесь туман по воде, днём — купание, вечером — закат ровно напротив.',
   },
@@ -143,7 +143,7 @@ export const groundExperiences = [
     id: 'boat',
     name: 'Лодка и сап-борды',
     season: 'Май — сентябрь',
-    image: '/images/real/photo5.jpg',
+    image: '/images/estate/lake-wide.jpg',
     description:
       'Гребная лодка и два сап-борда включены в проживание. Озеро тихое, без моторных лодок — можно уйти на другой берег и никого не встретить.',
   },
@@ -151,7 +151,7 @@ export const groundExperiences = [
     id: 'fishing',
     name: 'Рыбалка',
     season: 'Весь год',
-    image: '/images/real/photo12.jpg',
+    image: '/images/estate/chan-lake.jpg',
     description:
       'Окунь, щука, лещ и линь. Зимой — подлёдная рыбалка в сотне метров от дома. Снасти привозите свои, места покажем.',
   },
@@ -159,17 +159,31 @@ export const groundExperiences = [
     id: 'forest',
     name: 'Лес и грибные места',
     season: 'Июль — октябрь',
-    image: '/images/real/photo1.jpg',
+    image: '/images/estate/autumn-berries.jpg',
     description:
       'Сосновый бор начинается сразу за домом: белые, лисички, черника и брусника. Расскажем маршруты, из которых точно возвращаются с корзиной.',
   },
 ] as const
 
+/**
+ * Баня и чан — единственная услуга сверх проживания.
+ * Одна цена за комплект (баня + чан) и за одну топку, поэтому держим
+ * её здесь, чтобы страницы цен, спа и FAQ не расходились между собой.
+ */
+export const spaSurcharge = {
+  price: 7000,
+  priceLabel: '7 000 ₽',
+  unit: 'за одну топку',
+  short: 'Баня и чан — 7 000 ₽ за одну топку',
+  full:
+    'Баня и чан оплачиваются вместе: 7 000 ₽ за одну топку, независимо от числа гостей. Дрова, веники, полотенца и подготовка входят в эту сумму.',
+} as const
+
 export const includedInStay = [
   'Дом сдаётся целиком — других гостей не будет',
   'Постельное белье, полотенца и банные халаты',
   'Полностью оборудованная кухня и посудомоечная машина',
-  'Дрова для камина, бани и чана',
+  'Дрова для камина',
   'Лодка и два сап-борда в сезон',
   'Парковка на 4 автомобиля во дворе',
   'Wi-Fi по всему дому',
@@ -209,28 +223,28 @@ export const seasons = [
     id: 'winter',
     name: 'Зима',
     months: 'декабрь — февраль',
-    image: '/images/real/photo2.jpg',
+    image: '/images/estate/winter-lights.jpg',
     line: 'Снег по колено, чан под звёздами и камин, который не гаснет.',
   },
   {
     id: 'spring',
     name: 'Весна',
     months: 'март — май',
-    image: '/images/real/photo4.jpg',
+    image: '/images/estate/house-lawn.jpg',
     line: 'Лёд уходит с озера, лес просыпается, вечера уже тёплые.',
   },
   {
     id: 'summer',
     name: 'Лето',
     months: 'июнь — август',
-    image: '/images/real/photo12.jpg',
+    image: '/images/estate/terrace-lounge.jpg',
     line: 'Купание с причала, сапы до другого берега, белые ночи.',
   },
   {
     id: 'autumn',
     name: 'Осень',
     months: 'сентябрь — ноябрь',
-    image: '/images/real/photo10.jpg',
+    image: '/images/estate/house-autumn.jpg',
     line: 'Грибы, туман по воде и самый красивый свет в году.',
   },
 ] as const
@@ -238,64 +252,144 @@ export const seasons = [
 /** Фотографии усадьбы для галереи и лайтбокса. */
 export const galleryPhotos = [
   {
-    src: '/images/real/photo11.jpg',
-    alt: 'Бревенчатый дом усадьбы среди сосен',
+    src: '/images/estate/house-facade.jpg',
+    alt: 'Бревенчатый фасад усадьбы среди сосен',
     caption: 'Дом целиком — 250 м² бревенчатых стен и панорамных окон',
   },
   {
-    src: '/images/real/photo3.jpg',
-    alt: 'Сибирский чан с дымом на фоне осеннего леса',
+    src: '/images/estate/lake-wide.jpg',
+    alt: 'Усадьба, лес и озеро с высоты',
+    caption: 'Усадьба стоит между двумя озёрами, в сосновом бору',
+  },
+  {
+    src: '/images/estate/chan-night.jpg',
+    alt: 'Сибирский чан с живым огнём в вечерних сумерках',
     caption: 'Сибирский чан греется живым огнём до 40°',
   },
   {
-    src: '/images/real/photo9.jpg',
-    alt: 'Кирпичный камин в большой гостиной',
-    caption: 'Гостиная с камином и столом на всю компанию',
+    src: '/images/estate/fireplace.jpg',
+    alt: 'Кирпичный камин с горящими дровами в гостиной',
+    caption: 'Камин в гостиной топится дровами — они включены',
   },
   {
-    src: '/images/real/photo4.jpg',
-    alt: 'Баня на дровах весной на фоне соснового леса',
-    caption: 'Баня на дровах — топится к вашему приезду',
+    src: '/images/estate/chan-lake.jpg',
+    alt: 'Чан на берегу озера среди сосен',
+    caption: 'Чан стоит у самой воды — из горячего сразу в озеро',
   },
   {
-    src: '/images/real/photo6.jpg',
-    alt: 'Вид на озеро сквозь стволы сосен',
-    caption: 'До воды — две минуты пешком',
+    src: '/images/estate/banya-fire.jpg',
+    alt: 'Растопленная печь в бревенчатой бане',
+    caption: 'Баня на дровах — протопим к вашему приезду',
   },
   {
-    src: '/images/real/photo1.jpg',
+    src: '/images/estate/terrace-lounge.jpg',
     alt: 'Терраса с подвесным креслом в золотую осень',
     caption: 'Терраса, на которой проходит половина отпуска',
   },
   {
-    src: '/images/real/photo2.jpg',
-    alt: 'Ночная подсветка соснового леса зимой',
-    caption: 'Зимой лес подсвечен и совершенно беззвучен',
+    src: '/images/estate/room-green.jpg',
+    alt: 'Спальня с широкой кроватью и деревянными стенами',
+    caption: 'Хозяйская спальня — своя в каждой комнате',
   },
   {
-    src: '/images/real/photo7.jpg',
-    alt: 'Спальня с бревенчатыми стенами и широкой кроватью',
-    caption: 'Хозяйская спальня с окном в лес',
+    src: '/images/estate/kitchen.jpg',
+    alt: 'Кухня с кирпичной стеной и полным набором техники',
+    caption: 'Кухня со всей техникой — готовить удобно на компанию',
   },
   {
-    src: '/images/real/photo5.jpg',
-    alt: 'Чан и лодка на берегу озера',
-    caption: 'Лодка и сап-борды включены в проживание',
+    src: '/images/estate/winter-lights.jpg',
+    alt: 'Подсвеченный дом усадьбы зимним вечером',
+    caption: 'Зимой двор подсвечен, а лес вокруг беззвучен',
   },
   {
-    src: '/images/real/photo8.jpg',
-    alt: 'Спальня «Озёрная» с тёплым деревянным интерьером',
+    src: '/images/estate/fireplace-reading.jpg',
+    alt: 'Кресло с книгой у горящего камина',
+    caption: 'Угол для чтения прямо у огня',
+  },
+  {
+    src: '/images/estate/lake-aerial.jpg',
+    alt: 'Озеро в сосновом лесу с высоты',
+    caption: 'Озеро тихое, без моторных лодок',
+  },
+  {
+    src: '/images/estate/living-sofas.jpg',
+    alt: 'Гостиная с диванами и книжными полками',
+    caption: 'Общая гостиная собирает всю компанию вечером',
+  },
+  {
+    src: '/images/estate/house-autumn.jpg',
+    alt: 'Дом усадьбы в окружении золотого осеннего леса',
+    caption: 'Осен����ю лес вокруг дома становится золотым',
+  },
+  {
+    src: '/images/estate/dining-window.jpg',
+    alt: 'Обеденный стол у панорамных окон',
+    caption: 'Завтрак за столом с видом на сосны',
+  },
+  {
+    src: '/images/estate/chan-day.jpg',
+    alt: 'Чан и дом усадьбы днём',
+    caption: 'Чан во дворе — видно прямо из окон дома',
+  },
+  {
+    src: '/images/estate/room-twin.jpg',
+    alt: 'Спальня с двумя раздельными кроватями',
     caption: 'Спальня «Озёрная» — свой санузел в каждой комнате',
   },
   {
-    src: '/images/real/photo12.jpg',
-    alt: 'Дорожка от дома к озеру летом',
-    caption: 'Тропинка от дома к причалу',
+    src: '/images/estate/string-lights.jpg',
+    alt: 'Гирлянды над двором усадьбы в осенний вечер',
+    caption: 'Вечером во дворе включается тёплая подсветка',
   },
   {
-    src: '/images/real/photo10.jpg',
-    alt: 'Закат над озером и подсвеченная баня на берегу',
-    caption: 'Закат над озером — до воды две минуты пешком',
+    src: '/images/estate/room-lamp.jpg',
+    alt: 'Спальня с торшером и деревянной мебелью',
+    caption: 'Пять спален — компании до 15 человек',
+  },
+  {
+    src: '/images/estate/winter-forest.jpg',
+    alt: 'Заснеженный сосновый лес вокруг усадьбы',
+    caption: 'Зимой лес вокруг стоит совершенно белый',
+  },
+  {
+    src: '/images/estate/copper-shelf.jpg',
+    alt: 'Полка с медной посудой на кирпичной стене',
+    caption: 'Дом собирали руками — из деталей, а не из каталога',
+  },
+  {
+    src: '/images/estate/house-yard.jpg',
+    alt: 'Дом усадьбы и двор с парковкой',
+    caption: 'Парковка на четыре машины прямо во дворе',
+  },
+  {
+    src: '/images/estate/terrace-table.jpg',
+    alt: 'Стол на террасе на фоне осенних деревьев',
+    caption: 'Ужины на террасе, пока не стемнеет',
+  },
+  {
+    src: '/images/estate/autumn-berries.jpg',
+    alt: 'Красные ягоды у бревенчатой стены дома',
+    caption: 'Грибы и ягоды — в сотне метров от дома',
+  },
+  {
+    src: '/images/estate/chan-close.jpg',
+    alt: 'Чугунный чан крупным планом на фоне осеннего леса',
+    caption: 'Чан чугунный, вода греется живым огнём снизу',
+  },
+  {
+    src: '/images/estate/chan-steam.jpg',
+    alt: 'Пар над чаном во дворе усадьбы',
+    caption: 'Пар над чаном виден со всего двора',
+  },
+  {
+    src: '/images/estate/room-lake-view.jpg',
+    alt: 'Спальня с окном, выходящим на озеро',
+    caption: 'Из окон спален видно воду и сосны',
+  },
+  {
+    src: '/images/estate/house-night.jpg',
+    alt: 'Светящаяся фигура и гирлянды во дворе усадьбы ночью',
+    caption: 'Ночью двор превращается в отдельную декорацию',
   },
 ] as const
 

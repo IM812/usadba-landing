@@ -25,8 +25,8 @@ export default function LocationPage() {
         eyebrow="Как добраться"
         title="5 часов от Москвы — и другая жизнь"
         lead="Усадьба стоит в сосновом лесу Новосокольнического района Псковской области. Дорога асфальтовая до самых ворот."
-        image="/images/real/photo12.jpg"
-        imageAlt="Дорога к усадьбе через сосновый лес"
+        image="/images/estate/house-lawn.jpg"
+        imageAlt="Усадьба на своём участке среди сосен"
         meta={[contacts.addressShort, "56.3746, 29.9030"]}
       />
 
@@ -38,7 +38,7 @@ export default function LocationPage() {
             title="Выберите свой маршрут"
             lead="Нажмите на карточку с машиной — построится маршрут в Яндекс Картах прямо до ворот."
           />
-          <div className="mt-14 grid gap-px overflow-hidden border border-border bg-border lg:grid-cols-3">
+          <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden border border-border bg-border lg:grid-cols-3">
             {routes.map((r) => {
               const body = (
                 <>
@@ -49,7 +49,7 @@ export default function LocationPage() {
                     ) : null}
                   </div>
                   <div className="mt-6 flex items-end gap-3">
-                    <span className="font-serif text-4xl font-light leading-none text-foreground">
+                    <span className="font-display text-4xl font-semibold leading-none text-foreground">
                       {r.duration.replace("≈ ", "")}
                     </span>
                     <span className="pb-1 text-sm text-muted-foreground">{r.distance}</span>
@@ -83,7 +83,7 @@ export default function LocationPage() {
       <Section tone="raised">
         <Container>
           <div className="grid gap-10 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
-            <div className="relative order-2 h-[360px] overflow-hidden rounded-sm border border-border bg-secondary sm:h-[460px] lg:order-1">
+            <div className="relative order-2 h-[360px] overflow-hidden rounded-2xl border border-border bg-secondary sm:h-[460px] lg:order-1">
               <iframe
                 src={contacts.mapWidget}
                 title="Расположение усадьбы на карте"
@@ -108,7 +108,7 @@ export default function LocationPage() {
                       <span className="text-pretty text-foreground">{n.place}</span>
                       <span className="text-sm text-muted-foreground">{n.note}</span>
                     </dt>
-                    <dd className="shrink-0 font-serif text-2xl font-light text-accent">
+                    <dd className="shrink-0 font-display text-2xl font-semibold text-accent">
                       {n.value}
                     </dd>
                   </div>
@@ -118,7 +118,7 @@ export default function LocationPage() {
                 href={contacts.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-8 inline-flex items-center gap-2 self-start text-sm uppercase tracking-[0.14em] text-foreground/80 transition-colors hover:text-accent"
+                className="mt-8 inline-flex min-h-11 items-center gap-2 self-start text-[15px] font-semibold tracking-[-0.01em] text-foreground/80 transition-colors hover:text-accent"
               >
                 Открыть на Яндекс Картах
                 <ArrowUpRight className="size-4" />
@@ -129,7 +129,7 @@ export default function LocationPage() {
       </Section>
 
       <BookingCta
-        image="/images/real/photo5.jpg"
+        image="/images/estate/chan-lake.jpg"
         imageAlt="Чан и лодка на берегу озера"
         title="Готовы приехать?"
         lead="Подскажем удобный маршрут и организуем трансфер от станции Новосокольники."

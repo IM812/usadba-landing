@@ -1,13 +1,13 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond, Inter } from 'next/font/google'
+import { Inter, Manrope } from 'next/font/google'
 import { SITE_URL } from '@/lib/site'
 import './globals.css'
 
-const cormorant = Cormorant_Garamond({
+// Заголовочный гротеск: плотный, с широким диапазоном веса и кириллицей.
+const manrope = Manrope({
   subsets: ['latin', 'cyrillic'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-cormorant',
+  variable: '--font-manrope',
 })
 
 const inter = Inter({
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     title: 'Усадьба в Антропково — частная усадьба между двух озёр',
     description:
       'Бревенчатый дом 250 м² в сосновом лесу между двумя озёрами. Баня на дровах, сибирский чан, свой причал. Дом сдаётся целиком.',
-    images: [{ url: '/images/real/photo11.jpg', width: 1024, height: 768 }],
+    images: [{ url: '/images/estate/house-facade.jpg', width: 1024, height: 768 }],
   },
   icons: {
     icon: '/favicon.ico',
@@ -65,7 +65,7 @@ export default function RootLayout({
     <html
       lang="ru"
       suppressHydrationWarning
-      className={`bg-background ${cormorant.variable} ${inter.variable}`}
+      className={`bg-background ${manrope.variable} ${inter.variable}`}
     >
       <head>
         {/*

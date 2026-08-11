@@ -12,7 +12,7 @@ export function ReviewCard({ review, className }: { review: GuestReview; classNa
           <Star key={i} className="size-3 fill-current" aria-hidden />
         ))}
       </div>
-      <blockquote className="mt-5 flex-1 text-pretty font-serif text-lg font-light leading-relaxed text-foreground/85 sm:text-xl">
+      <blockquote className="mt-5 flex-1 text-pretty font-display text-lg font-semibold leading-relaxed text-foreground/85 sm:text-xl">
         {review.text}
       </blockquote>
       <figcaption className="mt-6 flex items-baseline justify-between gap-4 text-[13px]">
@@ -53,7 +53,7 @@ export function ReviewsRail({ reviews }: { reviews: GuestReview[] }) {
           type="button"
           onClick={() => scrollBy(-1)}
           aria-label="Предыдущие отзывы"
-          className="flex size-11 items-center justify-center rounded-sm border border-border text-foreground transition-colors hover:border-accent hover:text-accent"
+          className="flex size-11 items-center justify-center rounded-2xl border border-border text-foreground transition-colors hover:border-accent hover:text-accent"
         >
           <ChevronLeft className="size-4" aria-hidden />
         </button>
@@ -61,7 +61,7 @@ export function ReviewsRail({ reviews }: { reviews: GuestReview[] }) {
           type="button"
           onClick={() => scrollBy(1)}
           aria-label="Следующие отзывы"
-          className="flex size-11 items-center justify-center rounded-sm border border-border text-foreground transition-colors hover:border-accent hover:text-accent"
+          className="flex size-11 items-center justify-center rounded-2xl border border-border text-foreground transition-colors hover:border-accent hover:text-accent"
         >
           <ChevronRight className="size-4" aria-hidden />
         </button>

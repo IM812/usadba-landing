@@ -59,8 +59,8 @@ export default async function ContactsPage() {
         eyebrow="Контакты"
         title="Напишите нам напрямую"
         lead="Усадьбой занимаются хозяева, а не отдел бронирования. Ответим на любой вопрос — от свободных дат до того, какие сапоги брать в ноябре."
-        image="/images/real/photo7.jpg"
-        imageAlt="Хозяйская спальня с окном в сосновый лес"
+        image="/images/estate/house-yard.jpg"
+        imageAlt="Усадьба и подъезд к дому"
         size="short"
       />
 
@@ -73,20 +73,20 @@ export default async function ContactsPage() {
             lead="Обычно отвечаем в течение часа в рабочее время."
           />
 
-          <div className="mt-14 grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2">
+          <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden border border-border bg-border sm:grid-cols-2">
             {channels.map((c) => (
               <a
                 key={c.label}
                 href={c.href}
                 {...(c.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                className="group flex items-center gap-5 bg-background p-8 transition-colors hover:bg-card lg:p-10"
+                className="group flex min-w-0 items-center gap-4 bg-background p-6 transition-colors hover:bg-card sm:gap-5 sm:p-8 lg:p-10"
               >
                 <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-accent/40 text-accent transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
                   <c.icon className="size-5" />
                 </span>
                 <span className="flex min-w-0 flex-col gap-1">
                   <Eyebrow className="text-muted-foreground">{c.label}</Eyebrow>
-                  <span className="truncate font-serif text-xl font-light text-foreground">
+                  <span className="truncate font-display text-xl font-semibold text-foreground">
                     {c.value}
                   </span>
                 </span>
@@ -118,7 +118,7 @@ export default async function ContactsPage() {
                   href={contacts.mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.14em] text-foreground/80 transition-colors hover:text-accent"
+                  className="inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold tracking-[-0.01em] text-foreground/80 transition-colors hover:text-accent"
                 >
                   <MapPin className="size-4" />
                   Проложить маршрут
@@ -126,7 +126,7 @@ export default async function ContactsPage() {
               </div>
             </div>
 
-            <div className="relative h-[340px] overflow-hidden rounded-sm border border-border bg-secondary sm:h-[440px]">
+            <div className="relative h-[340px] overflow-hidden rounded-2xl border border-border bg-secondary sm:h-[440px]">
               <iframe
                 src={contacts.mapWidget}
                 title="Усадьба в Антропково на карте"

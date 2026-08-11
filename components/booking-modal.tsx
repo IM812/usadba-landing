@@ -15,9 +15,11 @@ import {
   ArrowLeft,
   Loader2,
   AlertTriangle,
+  Flame,
 } from "lucide-react"
 import type { BusyRange } from "@/app/api/availability/route"
 import { todayKey } from "@/lib/date"
+import { spaSurcharge } from "@/lib/site"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -39,6 +41,8 @@ type FormState = {
   arrival: string   // YYYY-MM-DD
   departure: string // YYYY-MM-DD
   guests: string
+  /** Сколько топок бани с чаном заказал гость. 0 — не нужна. */
+  spaSessions: number
   name: string
   phone: string
   email: string
@@ -48,6 +52,7 @@ const emptyForm: FormState = {
   arrival: "",
   departure: "",
   guests: "2",
+  spaSessions: 0,
   name: "",
   phone: "",
   email: "",
@@ -169,6 +174,7 @@ interface PriceBreakdown {
   subtotal: number
   extraGuestFee: number
   cleaningFee: number
+  spaFee: number
   total: number
 }
 
@@ -179,6 +185,7 @@ function calculatePrice(
   settings: AppSettings,
   seasons: SeasonalPrice[],
   guests = 1,
+  spaSessions = 0,
 ): PriceBreakdown | null {
   if (!arrival || !departure || departure <= arrival) return null
   const start = new Date(arrival)
@@ -214,9 +221,10 @@ function calculatePrice(
   const extraGuests = Math.max(0, guests - (settings.base_guests ?? 8))
   const extraGuestFee = extraGuests * nights * (settings.extra_guest_price ?? 0)
   const cleaningFee = settings.cleaning_fee ?? 0
-  const total = subtotal + extraGuestFee + cleaningFee
+  const spaFee = Math.max(0, spaSessions) * spaSurcharge.price
+  const total = subtotal + extraGuestFee + cleaningFee + spaFee
 
-  return { nights, lines, subtotal, extraGuestFee, cleaningFee, total }
+  return { nights, lines, subtotal, extraGuestFee, cleaningFee, spaFee, total }
 }
 
 function formatRub(n: number): string {
@@ -329,7 +337,7 @@ function Calendar({
           type="button"
           onClick={onPrev}
           aria-label="Предыдущий месяц"
-          className="flex size-7 items-center justify-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+          className="flex size-11 items-center justify-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground"
         >
           <ChevronLeft className="size-4" />
         </button>
@@ -340,7 +348,7 @@ function Calendar({
           type="button"
           onClick={onNext}
           aria-label="Следующий месяц"
-          className="flex size-7 items-center justify-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+          className="flex size-11 items-center justify-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground"
         >
           <ChevronRight className="size-4" />
         </button>
@@ -519,7 +527,8 @@ export function BookingModal({ open, onClose, prefill }: Props) {
 
   if (!open) return null
 
-  const update = (key: keyof FormState, value: string) => setForm((f) => ({ ...f, [key]: value }))
+  const update = <K extends keyof FormState>(key: K, value: FormState[K]) =>
+    setForm((f) => ({ ...f, [key]: value }))
 
   const handleDayClick = (iso: string) => {
     if (selecting === "arrival") {
@@ -640,7 +649,7 @@ export function BookingModal({ open, onClose, prefill }: Props) {
           <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-accent/70" />
           <div>
             <p className="eyebrow text-accent">Усадьба в Антропково</p>
-            <p className="mt-2 font-serif text-xl font-light leading-tight sm:text-2xl">
+            <p className="mt-2 font-display text-xl font-semibold leading-tight sm:text-2xl">
               Бронирование усадьбы
             </p>
           </div>
@@ -659,7 +668,7 @@ export function BookingModal({ open, onClose, prefill }: Props) {
             <div className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
               <Check className="size-8" />
             </div>
-            <h3 className="font-serif text-2xl text-foreground">Заявка отправлена!</h3>
+            <h3 className="font-display text-2xl text-foreground">Заявка отправлена!</h3>
             <p className="max-w-sm text-pretty text-muted-foreground leading-relaxed">
               Спасибо, {form.name.trim() || "гость"}! Мы свяжемся с вами по номеру {form.phone}{" "}
               для подтверждения бронирования с {formatDate(form.arrival)} по{" "}
@@ -674,15 +683,15 @@ export function BookingModal({ open, onClose, prefill }: Props) {
             </button>
           </div>
         ) : (
-          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain">
+          <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
             {/* Steps indicator */}
-            <div className="flex items-center gap-2 px-4 pt-4 sm:gap-3 sm:px-6 sm:pt-5">
+            <div className="flex shrink-0 items-center gap-2 px-4 pt-4 sm:gap-3 sm:px-6 sm:pt-5">
               <StepDot index={1} label="Даты и гости" active={step === 1} done={step === 2} />
               <div className="h-px flex-1 bg-border" />
               <StepDot index={2} label="Ваши контакты" active={step === 2} done={false} />
             </div>
 
-            <form onSubmit={handleSubmit} className="px-4 pb-safe pt-4 sm:px-6 sm:pb-6 sm:pt-5">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-4 sm:px-6 sm:pt-5">
               {step === 1 ? (
                 <div className="flex flex-col gap-4">
                   {/* Availability status */}
@@ -752,10 +761,104 @@ export function BookingModal({ open, onClose, prefill }: Props) {
                     </div>
                   )}
 
+                  {/* Guests */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-medium text-foreground">
+                      Количество гостей
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => update("guests", String(Math.max(1, Number(form.guests || 1) - 1)))}
+                        className="flex size-11 shrink-0 items-center justify-center rounded-full border border-input bg-background text-lg font-bold transition-colors hover:bg-muted"
+                        aria-label="Уменьшить"
+                      >−</button>
+                      <input
+                        type="number"
+                        min={1}
+                        max={appSettings.max_guests}
+                        value={form.guests === "" ? "" : form.guests}
+                        placeholder="2"
+                        onChange={(e) => {
+                          const v = e.target.value
+                          if (v === "") { update("guests", ""); return }
+                          const n = Math.min(appSettings.max_guests, Math.max(1, Number(v) || 1))
+                          update("guests", String(n))
+                        }}
+                        className="w-16 rounded-lg border border-input bg-background py-2 text-center text-lg font-medium text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => update("guests", String(Math.min(appSettings.max_guests, Number(form.guests || 1) + 1)))}
+                        className="flex size-11 shrink-0 items-center justify-center rounded-full border border-input bg-background text-lg font-bold transition-colors hover:bg-muted"
+                        aria-label="Увеличить"
+                      >+</button>
+                      <span className="text-xs text-muted-foreground">макс. {appSettings.max_guests}</span>
+                    </div>
+                    {Number(form.guests) > appSettings.base_guests && appSettings.extra_guest_price > 0 && (
+                      <p className="text-xs text-amber-600 dark:text-amber-400">
+                        + {appSettings.extra_guest_price.toLocaleString("ru-RU")} ₽/гость/ночь за {Number(form.guests) - appSettings.base_guests} доп. {Number(form.guests) - appSettings.base_guests === 1 ? "гостя" : "гостей"}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Баня и чан — допуслуга, предлагаем сразу при брони */}
+                  <div className="flex flex-col gap-3 rounded-xl border border-border bg-secondary/40 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex min-w-0 flex-col gap-1">
+                        <span className="flex items-center gap-2 text-sm font-medium text-foreground">
+                          <Flame className="size-4 shrink-0 text-primary" />
+                          Баня и чан
+                        </span>
+                        <span className="text-xs leading-relaxed text-muted-foreground">
+                          {spaSurcharge.priceLabel} {spaSurcharge.unit}. Дрова, веники и полотенца
+                          включены — протопим к вашему часу.
+                        </span>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => update("spaSessions", Math.max(0, form.spaSessions - 1))}
+                          disabled={form.spaSessions === 0}
+                          className="flex size-11 items-center justify-center rounded-full border border-input bg-background text-lg font-bold transition-colors hover:bg-muted disabled:opacity-40"
+                          aria-label="Убрать топку"
+                        >−</button>
+                        <span
+                          className="w-6 text-center text-lg font-semibold text-foreground tabular-nums"
+                          aria-live="polite"
+                        >
+                          {form.spaSessions}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => update("spaSessions", Math.min(20, form.spaSessions + 1))}
+                          className="flex size-11 items-center justify-center rounded-full border border-input bg-background text-lg font-bold transition-colors hover:bg-muted"
+                          aria-label="Добавить топку"
+                        >+</button>
+                      </div>
+                    </div>
+                    {form.spaSessions === 0 ? (
+                      <button
+                        type="button"
+                        onClick={() => update("spaSessions", 1)}
+                        className="inline-flex min-h-11 items-center self-start rounded-full bg-primary/15 px-4 text-xs font-medium text-primary transition hover:bg-primary/25"
+                      >
+                        Добавить к брони
+                      </button>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">
+                        {form.spaSessions} {form.spaSessions === 1 ? "топка" : form.spaSessions < 5 ? "топки" : "топок"} ·{" "}
+                        <span className="font-medium text-foreground">
+                          {formatRub(form.spaSessions * spaSurcharge.price)}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+
                   {/* Price breakdown */}
                   {(() => {
                     const guestsNum = Number(form.guests) || 1
-                    const price = calculatePrice(form.arrival, form.departure, appSettings, appSettings.price_mode === 'seasonal' ? seasonalPrices : [], guestsNum)
+                    const price = calculatePrice(form.arrival, form.departure, appSettings, appSettings.price_mode === 'seasonal' ? seasonalPrices : [], guestsNum, form.spaSessions)
                     if (!price) return null
                     return (
                       <div className="rounded-lg border border-border bg-secondary/50 px-4 py-3 text-sm">
@@ -784,6 +887,15 @@ export function BookingModal({ open, onClose, prefill }: Props) {
                               <span className="text-foreground">{formatRub(price.cleaningFee)}</span>
                             </div>
                           )}
+                          {price.spaFee > 0 && (
+                            <div className="flex justify-between">
+                              <span>
+                                Баня и чан ({form.spaSessions}{" "}
+                                {form.spaSessions === 1 ? "топка" : form.spaSessions < 5 ? "топки" : "топок"})
+                              </span>
+                              <span className="text-foreground">{formatRub(price.spaFee)}</span>
+                            </div>
+                          )}
                         </div>
                         <div className="mt-2 flex justify-between border-t border-border pt-2 font-semibold text-foreground">
                           <span>Итого за {price.nights} {price.nights === 1 ? "ночь" : price.nights < 5 ? "ночи" : "ночей"}</span>
@@ -793,55 +905,6 @@ export function BookingModal({ open, onClose, prefill }: Props) {
                     )
                   })()}
 
-                  {/* Guests */}
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-medium text-foreground">
-                      Количество гостей
-                    </label>
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => update("guests", String(Math.max(1, Number(form.guests || 1) - 1)))}
-                        className="flex size-10 shrink-0 items-center justify-center rounded-full border border-input bg-background text-lg font-bold hover:bg-muted transition-colors"
-                        aria-label="Уменьшить"
-                      >−</button>
-                      <input
-                        type="number"
-                        min={1}
-                        max={appSettings.max_guests}
-                        value={form.guests === "" ? "" : form.guests}
-                        placeholder="2"
-                        onChange={(e) => {
-                          const v = e.target.value
-                          if (v === "") { update("guests", ""); return }
-                          const n = Math.min(appSettings.max_guests, Math.max(1, Number(v) || 1))
-                          update("guests", String(n))
-                        }}
-                        className="w-16 rounded-lg border border-input bg-background py-2 text-center text-lg font-medium text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => update("guests", String(Math.min(appSettings.max_guests, Number(form.guests || 1) + 1)))}
-                        className="flex size-10 shrink-0 items-center justify-center rounded-full border border-input bg-background text-lg font-bold hover:bg-muted transition-colors"
-                        aria-label="Увеличить"
-                      >+</button>
-                      <span className="text-xs text-muted-foreground">макс. {appSettings.max_guests}</span>
-                    </div>
-                    {Number(form.guests) > appSettings.base_guests && appSettings.extra_guest_price > 0 && (
-                      <p className="text-xs text-amber-600 dark:text-amber-400">
-                        + {appSettings.extra_guest_price.toLocaleString("ru-RU")} ��/гость/ночь за {Number(form.guests) - appSettings.base_guests} доп. {Number(form.guests) - appSettings.base_guests === 1 ? "гостя" : "гостей"}
-                      </p>
-                    )}
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={!step1Valid || availLoading || !!availError}
-                    className="mt-2 flex min-h-13 items-center justify-center gap-2 rounded-xl bg-primary px-6 font-semibold text-primary-foreground transition hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    Далее
-                    <ArrowRight className="size-4" />
-                  </button>
                 </div>
               ) : (
                 <div className="flex flex-col gap-4">
@@ -877,9 +940,18 @@ export function BookingModal({ open, onClose, prefill }: Props) {
                       Заезд <strong>{formatDate(form.arrival)}</strong> · Выезд{" "}
                       <strong>{formatDate(form.departure)}</strong> · Гостей{" "}
                       <strong>{form.guests}</strong>
+                      {form.spaSessions > 0 && (
+                        <>
+                          {" · Баня и чан "}
+                          <strong>
+                            {form.spaSessions}{" "}
+                            {form.spaSessions === 1 ? "топка" : form.spaSessions < 5 ? "топки" : "топок"}
+                          </strong>
+                        </>
+                      )}
                     </div>
                     {(() => {
-                      const price = calculatePrice(form.arrival, form.departure, appSettings, seasonalPrices, Number(form.guests) || 1)
+                      const price = calculatePrice(form.arrival, form.departure, appSettings, appSettings.price_mode === 'seasonal' ? seasonalPrices : [], Number(form.guests) || 1, form.spaSessions)
                       if (!price) return null
                       return (
                         <div className="mt-1 border-t border-border/50 pt-1 font-medium text-foreground">
@@ -898,28 +970,67 @@ export function BookingModal({ open, onClose, prefill }: Props) {
                     </p>
                   )}
 
-                  <div className="mt-1 flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setStep(1)}
-                      disabled={loading}
-                      className="flex min-h-13 shrink-0 items-center justify-center gap-2 rounded-xl border border-input bg-background px-4 font-medium text-foreground transition hover:bg-secondary disabled:opacity-40"
-                    >
-                      <ArrowLeft className="size-4" />
-                      Назад
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={!step2Valid || loading}
-                      className="flex min-h-13 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 font-semibold text-primary-foreground transition hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      {loading ? "Отправляем..." : "Забронировать"}
-                    </button>
-                  </div>
                 </div>
               )}
-            </form>
-          </div>
+            </div>
+
+            {/* Закреплённая панель: итог и действие всегда под большим пальцем */}
+            <div className="shrink-0 border-t border-border bg-card px-4 pb-safe pt-3 sm:px-6">
+              {(() => {
+                const price = calculatePrice(
+                  form.arrival,
+                  form.departure,
+                  appSettings,
+                  appSettings.price_mode === "seasonal" ? seasonalPrices : [],
+                  Number(form.guests) || 1,
+                  form.spaSessions,
+                )
+                return (
+                  <div className="flex items-center gap-3 pb-3">
+                    <div className="flex min-w-0 shrink-0 flex-col">
+                      <span className="whitespace-nowrap text-xs text-muted-foreground">
+                        {price
+                          ? `${price.nights} ${price.nights === 1 ? "ночь" : price.nights < 5 ? "ночи" : "ночей"}${form.spaSessions > 0 ? ", баня" : ""}`
+                          : "Выберите даты"}
+                      </span>
+                      <span className="font-display text-lg font-semibold leading-tight text-foreground">
+                        {price ? formatRub(price.total) : "—"}
+                      </span>
+                    </div>
+                    {step === 1 ? (
+                      <button
+                        type="submit"
+                        disabled={!step1Valid || availLoading || !!availError}
+                        className="ml-auto flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-5 font-semibold text-primary-foreground transition hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
+                      >
+                        Далее
+                        <ArrowRight className="size-4" />
+                      </button>
+                    ) : (
+                      <div className="ml-auto flex flex-1 items-center gap-2 sm:flex-none">
+                        <button
+                          type="button"
+                          onClick={() => setStep(1)}
+                          disabled={loading}
+                          className="flex min-h-12 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-input bg-background px-3 font-medium text-foreground transition hover:bg-secondary disabled:opacity-40"
+                        >
+                          <ArrowLeft className="size-4" />
+                          Назад
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={!step2Valid || loading}
+                          className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 font-semibold text-primary-foreground transition hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          {loading ? "Отправляем…" : "Забронировать"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )
+              })()}
+            </div>
+          </form>
         )}
       </div>
     </div>

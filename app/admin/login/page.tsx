@@ -43,7 +43,7 @@ export default function AdminLoginPage() {
             <Lock className="size-6 text-primary-foreground" />
           </div>
           <div className="text-center">
-            <h1 className="font-serif text-2xl font-semibold text-foreground">Усадьба — Админ</h1>
+            <h1 className="font-display text-2xl font-semibold text-foreground">Усадьба — Админ</h1>
             <p className="text-sm text-muted-foreground mt-1">Войдите для доступа к панели управления</p>
           </div>
         </div>

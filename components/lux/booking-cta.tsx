@@ -9,7 +9,7 @@ import { Container, Eyebrow } from "@/components/lux/ui"
 export function BookingCta({
   title = "Дом свободен чаще, чем кажется",
   lead = "Напишите желаемые даты — ответим в течение часа и подскажем, какой сезон подойдёт вашей компании больше.",
-  image = "/images/real/photo3.jpg",
+  image = "/images/estate/chan-day.jpg",
   imageAlt = "Сибирский чан с дымом на фоне осеннего леса",
 }: {
   title?: string
@@ -32,7 +32,7 @@ export function BookingCta({
 
       <Container size="narrow" className="relative flex flex-col items-center text-center">
         <Eyebrow>Бронирование</Eyebrow>
-        <h2 className="mt-5 text-balance font-serif text-[2rem] font-light leading-[1.1] text-foreground sm:text-5xl">
+        <h2 className="mt-5 text-balance font-display text-[2rem] font-semibold leading-[1.1] text-foreground sm:text-5xl">
           {title}
         </h2>
         <p className="mt-5 max-w-xl text-pretty text-[15px] leading-relaxed text-muted-foreground sm:text-base">
@@ -43,13 +43,13 @@ export function BookingCta({
           <button
             type="button"
             onClick={() => openBooking()}
-            className="inline-flex min-h-13 items-center justify-center rounded-sm bg-accent px-8 text-[12px] font-medium uppercase tracking-[0.16em] text-accent-foreground transition-colors hover:bg-accent/85"
+            className="inline-flex min-h-13 items-center justify-center rounded-full bg-accent px-8 text-[15px] font-semibold tracking-[-0.01em] text-accent-foreground transition-colors hover:bg-accent/85"
           >
             Проверить даты
           </button>
           <Link
             href="/booking"
-            className="inline-flex min-h-13 items-center justify-center rounded-sm border border-foreground/25 px-8 text-[12px] font-medium uppercase tracking-[0.16em] text-foreground transition-colors hover:border-accent hover:text-accent"
+            className="inline-flex min-h-13 items-center justify-center rounded-full border border-foreground/25 px-8 text-[15px] font-semibold tracking-[-0.01em] text-foreground transition-colors hover:border-accent hover:text-accent"
           >
             Календарь и расчёт
           </Link>
@@ -57,7 +57,7 @@ export function BookingCta({
 
         <a
           href={contacts.phoneHref}
-          className="mt-8 font-serif text-xl font-light text-foreground/80 transition-colors hover:text-accent sm:text-2xl"
+          className="mt-8 inline-flex min-h-11 items-center font-display text-xl font-semibold text-foreground/80 transition-colors hover:text-accent sm:text-2xl"
         >
           {contacts.phoneLabel}
         </a>

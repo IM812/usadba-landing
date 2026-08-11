@@ -11,7 +11,7 @@ export function HomeHero() {
       {/* Кадр усадьбы на весь экран с медленным наездом */}
       <div className="absolute inset-0">
         <Image
-          src="/images/real/photo11.jpg"
+          src="/images/estate/house-facade.jpg"
           alt="Бревенчатая усадьба в сосновом лесу между двумя озёрами"
           fill
           priority
@@ -23,13 +23,15 @@ export function HomeHero() {
       </div>
 
       <div className="relative mx-auto w-full max-w-6xl px-5 pb-10 pt-28 sm:px-8 sm:pb-20 lg:px-12">
-        <p className="lux-rise eyebrow flex items-center gap-3 text-accent" style={{ animationDelay: "100ms" }}>
-          <span aria-hidden="true" className="inline-block h-px w-8 bg-accent/60" />
+        {/* Чип вместо хайрлайна: тонкая линейка-засечка была самой «взрослой»
+            деталью первого экрана. */}
+        <p className="lux-rise eyebrow chip w-fit" style={{ animationDelay: "100ms" }}>
+          <span aria-hidden="true" className="inline-block size-1.5 rounded-full bg-accent" />
           {site.region} · {site.shortName}
         </p>
 
         <h1
-          className="lux-rise mt-5 max-w-3xl text-balance font-serif text-[2.75rem] font-light leading-[0.94] tracking-tight text-foreground sm:mt-7 sm:text-7xl lg:text-[5.5rem]"
+          className="lux-rise mt-5 max-w-3xl text-balance font-display text-[2.75rem] font-extrabold leading-[0.9] tracking-[-0.045em] text-foreground sm:mt-7 sm:text-7xl lg:text-[5.5rem]"
           style={{ animationDelay: "220ms" }}
         >
           Усадьба между
@@ -60,7 +62,7 @@ export function HomeHero() {
         {/* Полоса ключевых фактов. На телефоне подписи убраны — крупные значения
             читаются и без них, а герой перестаёт вылезать за экран. */}
         <dl
-          className="lux-rise mt-8 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border pt-6 sm:mt-14 sm:grid-cols-4 sm:gap-x-8 sm:gap-y-6 sm:pt-8"
+          className="lux-rise mt-8 grid grid-cols-2 gap-x-6 gap-y-5 rounded-3xl border border-border bg-card/55 p-5 backdrop-blur-md sm:mt-12 sm:grid-cols-4 sm:gap-x-8 sm:p-7"
           style={{ animationDelay: "620ms" }}
         >
           {[
@@ -71,7 +73,7 @@ export function HomeHero() {
           ].map((f) => (
             <div key={f.k}>
               <dt className="eyebrow text-muted-foreground">{f.k}</dt>
-              <dd className="mt-1.5 flex items-center gap-1.5 font-serif text-xl font-light text-foreground sm:mt-2.5 sm:text-3xl">
+              <dd className="mt-1.5 flex items-center gap-1.5 font-display text-xl font-extrabold tracking-[-0.03em] text-foreground sm:mt-2.5 sm:text-3xl">
                 {f.v}
                 {f.k === "Рейтинг" ? (
                   <Star className="size-3.5 fill-accent text-accent sm:size-4" aria-hidden />

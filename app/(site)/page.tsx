@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { HomeHero } from "@/components/lux/home-hero"
@@ -18,27 +19,27 @@ import {
 import { LodgingJsonLd } from "@/components/json-ld"
 import { getRates } from "@/lib/rates"
 import { getReviews } from "@/lib/reviews"
-import { estateFacts, includedInStay, navigation, site } from "@/lib/site"
+import { estateFacts, includedInStay, navigation, site, spaSurcharge } from "@/lib/site"
 
 const chapters = [
   {
     href: "/estate",
     label: "Усадьба",
-    image: "/images/real/photo9.jpg",
+    image: "/images/estate/fireplace.jpg",
     alt: "Гостиная усадьбы с кирпичным камином",
     line: "Четыре спальни, каждая со своим санузлом, и гостиная, где помещается вся компания.",
   },
   {
     href: "/spa",
     label: "Баня и чан",
-    image: "/images/real/photo4.jpg",
+    image: "/images/estate/banya-fire.jpg",
     alt: "Баня на дровах среди сосен",
     line: "Парная на дровах, купель и чугунный чан под открытым небом.",
   },
   {
     href: "/grounds",
     label: "Территория",
-    image: "/images/real/photo6.jpg",
+    image: "/images/estate/lake-wide.jpg",
     alt: "Озеро, видимое сквозь сосны",
     line: "Два озера, свой причал, лодка, сап-борды и грибной бор за домом.",
   },
@@ -62,7 +63,7 @@ export default async function HomePage() {
           <div data-reveal className="grid gap-14 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-24">
             <div className="relative">
               <ArchImage
-                src="/images/real/photo1.jpg"
+                src="/images/estate/terrace-lounge.jpg"
                 alt="Терраса усадьбы с подвесным креслом в золотую осень"
                 className="aspect-3/4 w-full"
                 sizes="(max-width: 1024px) 100vw, 45vw"
@@ -75,7 +76,7 @@ export default async function HomePage() {
 
             <div className="flex flex-col gap-8">
               <Eyebrow>Гостям с {site.established} года</Eyebrow>
-              <h2 className="max-w-2xl text-balance font-serif text-[2rem] font-light leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+              <h2 className="max-w-2xl text-balance font-display text-[2rem] font-semibold leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                 Дом, который отдают вам целиком
               </h2>
               <div className="flex max-w-xl flex-col gap-5 text-pretty text-[15px] leading-relaxed text-muted-foreground sm:text-base">
@@ -119,7 +120,7 @@ export default async function HomePage() {
           <div data-reveal className="mt-14 grid gap-10 sm:gap-8 md:grid-cols-3 lg:gap-12">
             {chapters.map((c) => (
               <Link key={c.href} href={c.href} className="group flex flex-col">
-                <div className="relative aspect-4/5 w-full overflow-hidden rounded-sm bg-secondary">
+                <div className="relative aspect-4/5 w-full overflow-hidden rounded-2xl bg-secondary">
                   <Image
                     src={c.image || "/placeholder.svg"}
                     alt={c.alt}
@@ -128,12 +129,14 @@ export default async function HomePage() {
                     className="object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-[1.06]"
                   />
                 </div>
-                <span
-                  aria-hidden
-                  className="mt-6 h-px w-10 bg-accent/60 transition-all duration-500 group-hover:w-20"
-                />
-                <h3 className="mt-4 font-serif text-2xl font-light text-foreground transition-colors group-hover:text-accent sm:text-3xl">
+                {/* Заголовок с лаймовой стрелкой вместо хайрлайна: линейка была
+                    тем самым «взрослым» декором, который нигде не работал. */}
+                <h3 className="mt-5 flex items-center gap-2 font-display text-2xl font-extrabold tracking-[-0.03em] text-foreground transition-colors group-hover:text-accent sm:text-3xl">
                   {c.label}
+                  <ArrowUpRight
+                    aria-hidden
+                    className="size-5 text-accent transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
+                  />
                 </h3>
                 <p className="mt-3 text-pretty text-[15px] leading-relaxed text-muted-foreground">
                   {c.line}
@@ -152,7 +155,11 @@ export default async function HomePage() {
         <Container size="wide">
           <div data-reveal className="grid gap-14 lg:grid-cols-[1fr_1fr] lg:gap-24">
             <div className="flex flex-col gap-8">
-              <SectionHeading eyebrow="Включено в проживание" title="Ничего не нужно доплачивать" />
+              <SectionHeading
+                eyebrow="Включено в проживание"
+                title="Уже в стоимости"
+                lead={`Отдельно оплачиваются только баня с чаном — ${spaSurcharge.priceLabel} ${spaSurcharge.unit}.`}
+              />
               <ul className="flex flex-col">
                 {includedInStay.map((item) => (
                   <li
@@ -168,7 +175,7 @@ export default async function HomePage() {
             </div>
 
             <FrameImage
-              src="/images/real/photo3.jpg"
+              src="/images/estate/chan-day.jpg"
               alt="Сибирский чан с подсветкой вечером на фоне осеннего леса"
               className="aspect-4/5 w-full lg:aspect-auto lg:min-h-full"
               sizes="(max-width: 1024px) 100vw, 45vw"
@@ -208,7 +215,7 @@ export default async function HomePage() {
                     href={n.href}
                     className="group flex flex-col gap-1 py-4 transition-colors hover:text-accent"
                   >
-                    <span className="font-serif text-xl font-light text-foreground transition-colors group-hover:text-accent">
+                    <span className="font-display text-xl font-semibold text-foreground transition-colors group-hover:text-accent">
                       {n.label}
                     </span>
                     <span className="text-xs leading-snug text-muted-foreground">{n.note}</span>

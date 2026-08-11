@@ -54,7 +54,7 @@ export function PhotoGrid({ photos, className }: { photos: readonly Photo[]; cla
               onClick={() => setOpen(i)}
               aria-label={`Открыть фотографию: ${p.alt}`}
               className={cn(
-                "group relative overflow-hidden rounded-sm bg-secondary",
+                "group relative overflow-hidden rounded-2xl bg-secondary",
                 wide
                   ? "col-span-2 aspect-4/3 lg:col-span-4 lg:row-span-2 lg:aspect-auto lg:min-h-[28rem]"
                   : "aspect-square lg:col-span-2",
@@ -105,7 +105,7 @@ export function PhotoGrid({ photos, className }: { photos: readonly Photo[]; cla
               type="button"
               onClick={close}
               aria-label="Закрыть просмотр"
-              className="flex size-11 items-center justify-center rounded-sm border border-border text-foreground transition-colors hover:border-accent hover:text-accent"
+              className="flex size-11 items-center justify-center rounded-2xl border border-border text-foreground transition-colors hover:border-accent hover:text-accent"
             >
               <X className="size-5" aria-hidden />
             </button>
@@ -127,7 +127,7 @@ export function PhotoGrid({ photos, className }: { photos: readonly Photo[]; cla
               type="button"
               onClick={prev}
               aria-label="Предыдущая фотография"
-              className="flex size-12 items-center justify-center rounded-sm border border-border text-foreground transition-colors hover:border-accent hover:text-accent"
+              className="flex size-12 items-center justify-center rounded-2xl border border-border text-foreground transition-colors hover:border-accent hover:text-accent"
             >
               <ChevronLeft className="size-5" aria-hidden />
             </button>
@@ -138,7 +138,7 @@ export function PhotoGrid({ photos, className }: { photos: readonly Photo[]; cla
               type="button"
               onClick={next}
               aria-label="Следующая фотография"
-              className="flex size-12 items-center justify-center rounded-sm border border-border text-foreground transition-colors hover:border-accent hover:text-accent"
+              className="flex size-12 items-center justify-center rounded-2xl border border-border text-foreground transition-colors hover:border-accent hover:text-accent"
             >
               <ChevronRight className="size-5" aria-hidden />
             </button>

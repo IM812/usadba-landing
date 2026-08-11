@@ -26,8 +26,8 @@ export default async function FaqPage() {
         eyebrow="Вопросы и ответы"
         title="Всё, что спрашивают до приезда"
         lead="Собрали настоящие вопросы гостей. Если своего не нашли — напишите, ответим лично."
-        image="/images/real/photo2.jpg"
-        imageAlt="Ночная подсветка соснового леса зимой"
+        image="/images/estate/winter-lights.jpg"
+        imageAlt="Подсвеченная усадьба зимним вечером"
         size="short"
       />
 
@@ -42,7 +42,7 @@ export default async function FaqPage() {
                 className="group border-b border-border py-6 first:border-t"
               >
                 <summary className="flex cursor-pointer list-none items-start justify-between gap-6 [&::-webkit-details-marker]:hidden">
-                  <h2 className="text-pretty font-serif text-xl font-light leading-snug text-foreground transition-colors group-open:text-accent sm:text-2xl">
+                  <h2 className="text-pretty font-display text-xl font-semibold leading-snug text-foreground transition-colors group-open:text-accent sm:text-2xl">
                     {item.question}
                   </h2>
                   <span
@@ -71,7 +71,7 @@ export default async function FaqPage() {
       </Section>
 
       <BookingCta
-        image="/images/real/photo4.jpg"
+        image="/images/estate/banya-fire.jpg"
         imageAlt="Баня на дровах на фоне соснового леса"
         title="Проверим ваши даты"
         lead="Отправьте заявку — подтвердим свободные дни и пришлём условия."

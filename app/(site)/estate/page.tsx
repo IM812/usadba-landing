@@ -11,7 +11,7 @@ import {
   SectionHeading,
   TextLink,
 } from "@/components/lux/ui"
-import { estateFacts, includedInStay, rooms } from "@/lib/site"
+import { estateFacts, includedInStay, rooms, spaSurcharge } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "Усадьба",
@@ -45,7 +45,7 @@ export default function EstatePage() {
         eyebrow="Усадьба"
         title="Бревенчатый дом на 250 квадратных метров"
         lead="Двухэтажный дом из круглого бревна: большая гостиная с камином, четыре спальни со своими санузлами и кухня, на которой можно накрыть на пятнадцать человек."
-        image="/images/real/photo11.jpg"
+        image="/images/estate/house-facade.jpg"
         imageAlt="Фасад бревенчатого дома усадьбы среди сосен"
         meta={["250 м²", "4 спальни", "4 санузла", "до 15 гостей", "дом целиком"]}
       />
@@ -79,7 +79,7 @@ export default function EstatePage() {
                   i % 2 === 1 ? "lg:[&>figure]:order-2" : ""
                 }`}
               >
-                <figure className="relative aspect-4/3 w-full overflow-hidden rounded-sm bg-secondary lg:aspect-3/2">
+                <figure className="relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-secondary lg:aspect-3/2">
                   <Image
                     src={room.image || "/placeholder.svg"}
                     alt={`${room.name} — ${room.kind.toLowerCase()} в усадьбе`}
@@ -91,7 +91,7 @@ export default function EstatePage() {
 
                 <div className="flex flex-col gap-5">
                   <Eyebrow>{room.kind}</Eyebrow>
-                  <h3 className="text-balance font-serif text-[1.75rem] font-light leading-tight text-foreground sm:text-4xl">
+                  <h3 className="text-balance font-display text-[1.75rem] font-semibold leading-tight text-foreground sm:text-4xl">
                     {room.name}
                   </h3>
                   <p className="max-w-lg text-pretty text-[15px] leading-relaxed text-muted-foreground sm:text-base">
@@ -134,7 +134,7 @@ export default function EstatePage() {
             <div className="grid gap-x-12 gap-y-10 sm:grid-cols-2">
               {houseNotes.map((n) => (
                 <div key={n.title} className="flex flex-col gap-3 border-t border-border pt-5">
-                  <h3 className="font-serif text-xl font-light text-accent">{n.title}</h3>
+                  <h3 className="font-display text-xl font-semibold text-accent">{n.title}</h3>
                   <p className="text-pretty text-[15px] leading-relaxed text-muted-foreground">
                     {n.text}
                   </p>
@@ -150,7 +150,11 @@ export default function EstatePage() {
         <Container size="wide">
           <div data-reveal className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
             <div className="flex flex-col gap-8">
-              <SectionHeading eyebrow="Включено" title="Без скрытых доплат" />
+              <SectionHeading
+                eyebrow="Включено"
+                title="Без скрытых доплат"
+                lead={`Единственная услуга сверх проживания — баня с чаном, ${spaSurcharge.priceLabel} ${spaSurcharge.unit}.`}
+              />
               <TextLink href="/prices">Смотреть цены</TextLink>
             </div>
 
@@ -172,7 +176,7 @@ export default function EstatePage() {
       <BookingCta
         title="Посмотрите дом своими глазами"
         lead="Расскажите, сколько вас и на какие даты — подберём подходящий сезон и пришлём подробные фотографии всех комнат."
-        image="/images/real/photo9.jpg"
+        image="/images/estate/fireplace.jpg"
         imageAlt="Кирпичный камин в гостиной усадьбы"
       />
     </>
