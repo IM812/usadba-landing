@@ -11,7 +11,7 @@ export function HomeHero() {
       {/* Кадр усадьбы на весь экран с медленным наездом */}
       <div className="absolute inset-0">
         <Image
-          src="/images/real/photo11.jpg"
+          src="/images/estate/house-facade.jpg"
           alt="Бревенчатая усадьба в сосновом лесу между двумя озёрами"
           fill
           priority

@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     title: 'Усадьба в Антропково — частная усадьба между двух озёр',
     description:
       'Бревенчатый дом 250 м² в сосновом лесу между двумя озёрами. Баня на дровах, сибирский чан, свой причал. Дом сдаётся целиком.',
-    images: [{ url: '/images/real/photo11.jpg', width: 1024, height: 768 }],
+    images: [{ url: '/images/estate/house-facade.jpg', width: 1024, height: 768 }],
   },
   icons: {
     icon: '/favicon.ico',

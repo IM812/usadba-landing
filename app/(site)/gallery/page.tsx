@@ -19,7 +19,7 @@ export default function GalleryPage() {
         eyebrow="Галерея"
         title="Усадьба без ретуши"
         lead="Все фотографии сделаны здесь, в разные годы и сезоны. Мы не заказывали рендеры и не переставляли мебель ради кадра."
-        image="/images/real/photo6.jpg"
+        image="/images/estate/lake-wide.jpg"
         imageAlt="Вид на озеро сквозь стволы сосен"
         meta={[`${galleryPhotos.length} фотографий`, "4 сезона", "дом, баня, чан, озеро"]}
       />
@@ -71,8 +71,8 @@ export default function GalleryPage() {
       <BookingCta
         title="Хотите увидеть больше?"
         lead="Напишите нам — пришлём свежие фотографии и видео с территории, снятые на этой неделе."
-        image="/images/real/photo12.jpg"
-        imageAlt="Дорожка от дома к озеру летом"
+        image="/images/estate/house-lawn.jpg"
+        imageAlt="Усадьба и газон перед домом летом"
       />
     </>
   )

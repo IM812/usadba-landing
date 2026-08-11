@@ -37,8 +37,8 @@ export default function GroundsPage() {
         eyebrow="Территория"
         title="Два озера, бор и ни одного соседа"
         lead="Усадьба стоит на перемычке между двумя озёрами, в сосновом бору. Забор условный: за ним сразу начинается лес, в котором можно идти час и никого не встретить."
-        image="/images/real/photo12.jpg"
-        imageAlt="Дорожка от дома к озеру летом"
+        image="/images/estate/house-lawn.jpg"
+        imageAlt="Усадьба и газон перед домом летом"
         meta={["2 озера", "свой причал", "лодка и 2 сап-борда", "грибной бор"]}
       />
 
@@ -115,7 +115,7 @@ export default function GroundsPage() {
           <div data-reveal className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-20">
             <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-secondary">
               <Image
-                src="/images/real/photo5.jpg"
+                src="/images/estate/chan-lake.jpg"
                 alt="Чан и лодка на берегу озера"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -147,7 +147,7 @@ export default function GroundsPage() {
       <BookingCta
         title="Лодка и сапы уже на причале"
         lead="Скажите даты — расскажем, какая сейчас вода, что клюёт и где в этом сезоне лучше всего собирать грибы."
-        image="/images/real/photo6.jpg"
+        image="/images/estate/lake-wide.jpg"
         imageAlt="Вид на озеро сквозь стволы сосен"
       />
     </>

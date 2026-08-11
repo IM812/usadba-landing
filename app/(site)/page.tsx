@@ -25,21 +25,21 @@ const chapters = [
   {
     href: "/estate",
     label: "Усадьба",
-    image: "/images/real/photo9.jpg",
+    image: "/images/estate/fireplace.jpg",
     alt: "Гостиная усадьбы с кирпичным камином",
     line: "Четыре спальни, каждая со своим санузлом, и гостиная, где помещается вся компания.",
   },
   {
     href: "/spa",
     label: "Баня и чан",
-    image: "/images/real/photo4.jpg",
+    image: "/images/estate/banya-fire.jpg",
     alt: "Баня на дровах среди сосен",
     line: "Парная на дровах, купель и чугунный чан под открытым небом.",
   },
   {
     href: "/grounds",
     label: "Территория",
-    image: "/images/real/photo6.jpg",
+    image: "/images/estate/lake-wide.jpg",
     alt: "Озеро, видимое сквозь сосны",
     line: "Два озера, свой причал, лодка, сап-борды и грибной бор за домом.",
   },
@@ -63,7 +63,7 @@ export default async function HomePage() {
           <div data-reveal className="grid gap-14 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-24">
             <div className="relative">
               <ArchImage
-                src="/images/real/photo1.jpg"
+                src="/images/estate/terrace-lounge.jpg"
                 alt="Терраса усадьбы с подвесным креслом в золотую осень"
                 className="aspect-3/4 w-full"
                 sizes="(max-width: 1024px) 100vw, 45vw"
@@ -175,7 +175,7 @@ export default async function HomePage() {
             </div>
 
             <FrameImage
-              src="/images/real/photo3.jpg"
+              src="/images/estate/chan-day.jpg"
               alt="Сибирский чан с подсветкой вечером на фоне осеннего леса"
               className="aspect-4/5 w-full lg:aspect-auto lg:min-h-full"
               sizes="(max-width: 1024px) 100vw, 45vw"

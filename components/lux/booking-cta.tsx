@@ -9,7 +9,7 @@ import { Container, Eyebrow } from "@/components/lux/ui"
 export function BookingCta({
   title = "Дом свободен чаще, чем кажется",
   lead = "Напишите желаемые даты — ответим в течение часа и подскажем, какой сезон подойдёт вашей компании больше.",
-  image = "/images/real/photo3.jpg",
+  image = "/images/estate/chan-day.jpg",
   imageAlt = "Сибирский чан с дымом на фоне осеннего леса",
 }: {
   title?: string

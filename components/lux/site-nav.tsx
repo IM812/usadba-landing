@@ -208,7 +208,7 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
               <div className="relative hidden aspect-4/5 w-full max-w-sm overflow-hidden rounded-2xl bg-secondary sm:block lg:ml-auto">
                 {everOpened ? (
                   <Image
-                    src="/images/real/photo2.jpg"
+                    src="/images/estate/winter-lights.jpg"
                     alt="Ночная подсветка соснового леса вокруг усадьбы зимой"
                     fill
                     sizes="(max-width: 1024px) 60vw, 30vw"

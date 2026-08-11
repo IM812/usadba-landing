@@ -41,7 +41,7 @@ export default function SpaPage() {
         eyebrow="Баня и чан"
         title="Парная на дровах и чан под открытым небом"
         lead="Два ритуала, за которыми к нам приезжают повторно: настоящая дровяная баня с купелью и чугунный сибирский чан, где вода греется живым огнём."
-        image="/images/real/photo4.jpg"
+        image="/images/estate/banya-fire.jpg"
         imageAlt="Баня на дровах среди высоких сосен"
         meta={[spaSurcharge.short, "Веники дубовые и берёзовые", "Купель", "Чан до 40°"]}
       />
@@ -134,8 +134,8 @@ export default function SpaPage() {
       <BookingCta
         title="Затопим баню к вашему приезду"
         lead="Напишите время заезда — к вашему приезду парная будет прогрета, а под чаном уже будет гореть огонь."
-        image="/images/real/photo2.jpg"
-        imageAlt="Ночная подсветка соснового леса зимой"
+        image="/images/estate/winter-lights.jpg"
+        imageAlt="Подсвеченная усадьба зимним вечером"
       />
     </>
   )

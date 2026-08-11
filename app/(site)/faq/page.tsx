@@ -26,8 +26,8 @@ export default async function FaqPage() {
         eyebrow="Вопросы и ответы"
         title="Всё, что спрашивают до приезда"
         lead="Собрали настоящие вопросы гостей. Если своего не нашли — напишите, ответим лично."
-        image="/images/real/photo2.jpg"
-        imageAlt="Ночная подсветка соснового леса зимой"
+        image="/images/estate/winter-lights.jpg"
+        imageAlt="Подсвеченная усадьба зимним вечером"
         size="short"
       />
 
@@ -71,7 +71,7 @@ export default async function FaqPage() {
       </Section>
 
       <BookingCta
-        image="/images/real/photo4.jpg"
+        image="/images/estate/banya-fire.jpg"
         imageAlt="Баня на дровах на фоне соснового леса"
         title="Проверим ваши даты"
         lead="Отправьте заявку — подтвердим свободные дни и пришлём условия."

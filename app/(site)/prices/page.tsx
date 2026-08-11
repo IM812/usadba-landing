@@ -38,7 +38,7 @@ export default async function PricesPage() {
         eyebrow="Цены"
         title={<>От {formatMoney(minPrice)} ₽ за дом целиком</>}
         lead="Вы платите за усадьбу, а не за место в ней: 250 м², четыре спальни, баня и чан достаются одной компании. Тариф зависит только от сезона и дня недели."
-        image="/images/real/photo1.jpg"
+        image="/images/estate/terrace-lounge.jpg"
         imageAlt="Терраса усадьбы в золотую осень"
       />
 
@@ -161,7 +161,7 @@ export default async function PricesPage() {
       </Section>
 
       <BookingCta
-        image="/images/real/photo3.jpg"
+        image="/images/estate/chan-day.jpg"
         imageAlt="Сибирский чан на фоне осеннего леса"
         title="Посчитаем ваши даты"
         lead="Откройте календарь — свободные дни, точная сумма и минимальный срок появятся сразу."

@@ -25,8 +25,8 @@ export default function LocationPage() {
         eyebrow="Как добраться"
         title="5 часов от Москвы — и другая жизнь"
         lead="Усадьба стоит в сосновом лесу Новосокольнического района Псковской области. Дорога асфальтовая до самых ворот."
-        image="/images/real/photo12.jpg"
-        imageAlt="Дорога к усадьбе через сосновый лес"
+        image="/images/estate/house-lawn.jpg"
+        imageAlt="Усадьба на своём участке среди сосен"
         meta={[contacts.addressShort, "56.3746, 29.9030"]}
       />
 
@@ -129,7 +129,7 @@ export default function LocationPage() {
       </Section>
 
       <BookingCta
-        image="/images/real/photo5.jpg"
+        image="/images/estate/chan-lake.jpg"
         imageAlt="Чан и лодка на берегу озера"
         title="Готовы приехать?"
         lead="Подскажем удобный маршрут и организуем трансфер от станции Новосокольники."
