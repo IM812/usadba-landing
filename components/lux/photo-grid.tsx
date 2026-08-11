@@ -72,7 +72,7 @@ export function PhotoGrid({ photos, className }: { photos: readonly Photo[]; cla
                 className="absolute inset-0 bg-background/0 transition-colors duration-500 group-hover:bg-background/20"
               />
               {p.caption ? (
-                <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/90 to-transparent p-4 text-left text-[13px] text-foreground/90 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                <span className="on-dark absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/90 to-transparent p-4 text-left text-[13px] text-foreground/90 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                   {p.caption}
                 </span>
               ) : null}
@@ -86,7 +86,9 @@ export function PhotoGrid({ photos, className }: { photos: readonly Photo[]; cla
           role="dialog"
           aria-modal="true"
           aria-label="Просмотр фотографии"
-          className="fixed inset-0 z-70 flex flex-col bg-background/97 backdrop-blur-sm"
+          // Лайтбокс всегда тёмный: фотография должна светиться, а не
+          // соревноваться в яркости с песочным фоном страницы
+          className="on-dark fixed inset-0 z-70 flex flex-col bg-background/97 backdrop-blur-sm"
           onTouchStart={(e) => {
             touchStart.current = e.touches[0].clientX
           }}

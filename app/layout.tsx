@@ -1,13 +1,14 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond, Inter } from 'next/font/google'
+import { Inter, Manrope } from 'next/font/google'
 import { SITE_URL } from '@/lib/site'
 import './globals.css'
 
-const cormorant = Cormorant_Garamond({
+// Заголовочный шрифт: плотный геометрический гротеск с кириллицей.
+// Переменная ось даёт крупным строкам вес без второго файла.
+const manrope = Manrope({
   subsets: ['latin', 'cyrillic'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-cormorant',
+  variable: '--font-manrope',
 })
 
 const inter = Inter({
@@ -50,8 +51,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  colorScheme: 'dark',
-  themeColor: '#111a15',
+  colorScheme: 'light',
+  themeColor: '#f4efe2',
 }
 
 export default function RootLayout({
@@ -65,7 +66,7 @@ export default function RootLayout({
     <html
       lang="ru"
       suppressHydrationWarning
-      className={`bg-background ${cormorant.variable} ${inter.variable}`}
+      className={`bg-background ${manrope.variable} ${inter.variable}`}
     >
       <head>
         {/*

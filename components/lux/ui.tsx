@@ -104,12 +104,15 @@ export function SectionHeading({
 
 /* ---------- Кнопки ---------- */
 
+/* Капслок с трекингом 0.14em — самый «музейный» элемент прежнего набора.
+   Обычный регистр, плотный вес и форма таблетки читаются современнее и
+   заодно перестают растягивать русские слова на пол-экрана. */
 const buttonBase =
-  "inline-flex min-h-12 items-center justify-center gap-2.5 px-7 text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+  "inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full px-7 text-[15px] font-semibold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
 
 const buttonVariants = {
-  brass: "bg-accent text-accent-foreground hover:bg-accent/85",
-  outline: "border border-foreground/25 text-foreground hover:border-accent hover:text-accent",
+  brass: "bg-primary text-primary-foreground hover:bg-primary/88",
+  outline: "border border-foreground/20 text-foreground hover:border-accent hover:text-accent",
   quiet: "text-foreground/80 hover:text-accent",
 } as const
 
@@ -121,7 +124,7 @@ export function LuxButton({
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: keyof typeof buttonVariants }) {
   return (
     <button
-      className={cn(buttonBase, "rounded-sm", buttonVariants[variant], className)}
+      className={cn(buttonBase, buttonVariants[variant], className)}
       {...props}
     >
       {children}
@@ -139,7 +142,7 @@ export function LuxLink({
   return (
     <Link
       href={href}
-      className={cn(buttonBase, "rounded-sm", buttonVariants[variant], className)}
+      className={cn(buttonBase, buttonVariants[variant], className)}
       {...props}
     >
       {children}
@@ -161,7 +164,7 @@ export function TextLink({
     <Link
       href={href}
       className={cn(
-        "group inline-flex items-center gap-2 text-[13px] font-medium uppercase tracking-[0.14em] text-accent",
+        "group inline-flex items-center gap-2 text-[15px] font-semibold text-accent",
         className,
       )}
     >

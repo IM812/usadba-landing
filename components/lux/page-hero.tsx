@@ -25,7 +25,8 @@ export function PageHero({
   return (
     <section
       className={cn(
-        "relative flex items-end overflow-hidden pt-28",
+        // on-dark — тёмная логика токенов поверх фотографии, см. HomeHero
+        "on-dark relative flex items-end overflow-hidden bg-background pt-28",
         size === "default"
           ? "min-h-[62svh] pb-14 sm:min-h-[70svh] sm:pb-20"
           : "min-h-[46svh] pb-12 sm:min-h-[52svh] sm:pb-16",

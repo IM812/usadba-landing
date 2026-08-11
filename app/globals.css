@@ -5,7 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-serif: var(--font-cormorant);
+  /* Дисплейный слот. Класс font-serif по всему сайту означает «заголовочный
+     шрифт», а не «антиква»: раньше это был Cormorant, теперь плотный гротеск
+     Manrope. Имя утилиты сохранено, чтобы не трогать ~40 заголовков. */
+  --font-serif: var(--font-manrope);
   --font-sans: var(--font-inter);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -48,48 +51,86 @@
 }
 
 /* ============================================================
-   «Тёмный лесной люкс» — основная тема публичного сайта.
-   Палитра из 5 цветов: угольно-зелёный фон, тёмная поверхность,
-   тёплый белый текст, шалфейно-серый и латунный акцент.
+   «Светлый лес» — основная тема публичного сайта.
+   Пять цветов: тёплый песок (фон), бумажно-белая поверхность,
+   хвойные чернила (текст), густая зелень (основной) и свежий
+   лайм — он живёт только на тёмных вставках (.on-dark).
    ============================================================ */
 :root {
+  color-scheme: light;
+  /* Тёплый песок, а не серо-белый: у фона есть температура, поэтому зелень
+     на нём читается как трава, а не как «корпоративный зелёный». */
+  --background: oklch(0.958 0.017 92);
+  --foreground: oklch(0.255 0.038 152);
+  --card: oklch(0.988 0.008 95);
+  --card-foreground: oklch(0.255 0.038 152);
+  --popover: oklch(0.988 0.008 95);
+  --popover-foreground: oklch(0.255 0.038 152);
+  /* Густая хвойная зелень: достаточно тёмная, чтобы работать и как заливка
+     кнопки, и как цвет мелкого текста-акцента на песке. */
+  --primary: oklch(0.435 0.098 152);
+  --primary-foreground: oklch(0.975 0.012 95);
+  --secondary: oklch(0.922 0.024 92);
+  --secondary-foreground: oklch(0.255 0.038 152);
+  --muted: oklch(0.932 0.02 92);
+  --muted-foreground: oklch(0.5 0.03 150);
+  --accent: oklch(0.435 0.098 152);
+  --accent-foreground: oklch(0.975 0.012 95);
+  --destructive: oklch(0.55 0.19 25);
+  --border: oklch(0.255 0.038 152 / 13%);
+  --input: oklch(0.255 0.038 152 / 18%);
+  --ring: oklch(0.435 0.098 152);
+  --chart-1: oklch(0.435 0.098 152);
+  --chart-2: oklch(0.62 0.11 140);
+  --chart-3: oklch(0.78 0.13 128);
+  --chart-4: oklch(0.68 0.07 92);
+  --chart-5: oklch(0.32 0.05 155);
+  /* Заметно круглее прежних 0.25rem — главный «немузейный» сигнал формы. */
+  --radius: 0.75rem;
+  /* Блик по верхней кромке поверхности: на светлой теме это белый свет,
+     на тёмных вставках — приглушённый (переопределяется в .on-dark). */
+  --sheen: oklch(1 0 0 / 70%);
+  /* Тень одного тона с чернилами: чистый чёрный на песке выглядит грязью. */
+  --shade: oklch(0.3 0.04 152);
+  --sidebar: oklch(0.988 0.008 95);
+  --sidebar-foreground: oklch(0.255 0.038 152);
+  --sidebar-primary: oklch(0.435 0.098 152);
+  --sidebar-primary-foreground: oklch(0.975 0.012 95);
+  --sidebar-accent: oklch(0.922 0.024 92);
+  --sidebar-accent-foreground: oklch(0.255 0.038 152);
+  --sidebar-border: oklch(0.255 0.038 152 / 13%);
+  --sidebar-ring: oklch(0.435 0.098 152);
+}
+
+/* ============================================================
+   Тёмная вставка. Ставится на любую секцию, которая лежит на фото
+   или должна быть «якорем» страницы (герой, футер, CTA, лайтбокс):
+   внутри переопределены те же токены, поэтому bg-background/70,
+   text-foreground и text-accent продолжают работать без правок —
+   просто в тёмной логике. Здесь же живёт лаймовый акцент.
+   ============================================================ */
+.on-dark {
   color-scheme: dark;
-  /* Фон — глубокий хвойный уголь, чуть насыщеннее прежнего: перестал
-     выглядеть просто серым и держит тёплый акцент. */
-  --background: oklch(0.148 0.016 158);
-  --foreground: oklch(0.955 0.009 92);
-  --card: oklch(0.208 0.018 158);
-  --card-foreground: oklch(0.955 0.009 92);
-  --popover: oklch(0.192 0.017 158);
-  --popover-foreground: oklch(0.955 0.009 92);
-  /* Полированная латунь: тон уведён от горчичного (hue 82) к медно-шампанскому
-     (hue 66). Тёплый и живой, но не кричит жёлтым. */
-  --primary: oklch(0.815 0.072 66);
-  --primary-foreground: oklch(0.16 0.02 158);
-  --secondary: oklch(0.252 0.02 158);
-  --secondary-foreground: oklch(0.955 0.009 92);
-  --muted: oklch(0.228 0.018 158);
-  --muted-foreground: oklch(0.715 0.016 140);
-  --accent: oklch(0.815 0.072 66);
-  --accent-foreground: oklch(0.16 0.02 158);
-  --destructive: oklch(0.62 0.19 25);
-  --border: oklch(0.955 0.009 92 / 14%);
-  --input: oklch(0.955 0.009 92 / 18%);
-  --ring: oklch(0.815 0.072 66);
-  --chart-1: oklch(0.815 0.072 66);
-  --chart-2: oklch(0.6 0.07 150);
-  --chart-3: oklch(0.7 0.05 130);
-  --chart-4: oklch(0.45 0.05 155);
-  --chart-5: oklch(0.85 0.06 90);
-  --radius: 0.25rem;
-  --sidebar: oklch(0.192 0.017 158);
-  --sidebar-foreground: oklch(0.955 0.009 92);
-  --sidebar-primary: oklch(0.815 0.072 66);
-  --sidebar-primary-foreground: oklch(0.16 0.02 158);
-  --sidebar-accent: oklch(0.252 0.02 158);
-  --sidebar-accent-foreground: oklch(0.955 0.009 92);
-  --sidebar-border: oklch(0.955 0.009 92 / 14%);
-  --sidebar-ring: oklch(0.815 0.072 66);
+  --background: oklch(0.208 0.032 155);
+  --foreground: oklch(0.968 0.012 95);
+  --card: oklch(0.258 0.03 155);
+  --card-foreground: oklch(0.968 0.012 95);
+  --popover: oklch(0.258 0.03 155);
+  --popover-foreground: oklch(0.968 0.012 95);
+  --primary: oklch(0.855 0.14 128);
+  --primary-foreground: oklch(0.225 0.04 155);
+  --secondary: oklch(0.3 0.03 155);
+  --secondary-foreground: oklch(0.968 0.012 95);
+  --muted: oklch(0.278 0.028 155);
+  --muted-foreground: oklch(0.795 0.022 135);
+  --accent: oklch(0.855 0.14 128);
+  --accent-foreground: oklch(0.225 0.04 155);
+  --border: oklch(0.968 0.012 95 / 18%);
+  --input: oklch(0.968 0.012 95 / 22%);
+  --ring: oklch(0.855 0.14 128);
+  --sheen: oklch(1 0 0 / 12%);
+  --shade: oklch(0.12 0.02 155);
+  color: var(--foreground);
 }
 
 /* Панель управления остаётся светлой и утилитарной */
@@ -135,15 +176,15 @@
 
   /* Плёночное зерно поверх всей страницы. Именно его отсутствие делает
      тёмные интерфейсы «цифровыми и плоскими»: ровная заливка не бывает
-     в природе. Слой не ловит курсор и не влияет на разметку.
-     В светлой админке не нужен. */
+     в природе. На песочном фоне зерно читается как бумага, поэтому его
+     хватает почти вдвое меньше, чем на тёмном. В админке не нужно. */
   body:not(.theme-admin)::after {
     content: '';
     position: fixed;
     inset: 0;
     z-index: 100;
     pointer-events: none;
-    opacity: 0.055;
+    opacity: 0.032;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
     background-size: 200px 200px;
   }
@@ -155,6 +196,25 @@
   textarea {
     touch-action: manipulation;
   }
+}
+
+/* ============================================================
+   Дисплейный текст.
+   По всему сайту заголовки помечены `font-serif ... font-light` — это было
+   верно для антиквы Cormorant, но для гротеска Manrope даёт хилую строку.
+   Правило намеренно лежит ВНЕ @layer: в Tailwind v4 слой utilities всегда
+   перебивает base независимо от специфичности, а неслоёный CSS перебивает
+   любой слой. Так вес и трекинг заголовков правятся в одном месте,
+   а не в сорока файлах.
+   ============================================================ */
+.font-serif.font-serif {
+  font-weight: 600;
+  letter-spacing: -0.032em;
+}
+
+/* Крупные строки требуют более плотного трекинга, чем мелкие подписи */
+.font-serif.font-serif:where(.text-5xl, .text-6xl, .text-7xl, [class*="text-["]) {
+  letter-spacing: -0.042em;
 }
 
 @utility no-scrollbar {
@@ -194,25 +254,87 @@
 }
 
 /* ============================================================
-   Глубина: свет, тень, зерно.
-   На тёмной теме плоскость лечится не «добавить тень», а
-   последовательным светом: поверхность светлее сверху, по верхней
-   кромке — тонкий отблеск (как на лакированном дереве), под объектом
-   мягкая тень. Тени намеренно тёплые (hue 158), а не чисто чёрные:
-   чистый чёрный на хвойном фоне выглядит грязным провалом.
+   Глубина: свет и тень.
+   На светлой теме глубина живёт тенью, а не заливкой: тени мягкие,
+   широкие и одного тона с чернилами (--shade, hue 152). Чистый чёрный
+   на песке выглядит грязью, поэтому его здесь нет вообще.
    ============================================================ */
 @theme inline {
   --shadow-elev-1:
-    0 1px 2px oklch(0.06 0.012 158 / 40%), 0 2px 6px oklch(0.06 0.012 158 / 26%);
-  /* elev-2/3 несут собственный внутренний отблеск: они применяются к тем же
+    0 1px 2px color-mix(in oklab, var(--shade) 7%, transparent),
+    0 2px 8px color-mix(in oklab, var(--shade) 6%, transparent);
+  /* elev-2/3 несут собственный блик по верхней кромке: они применяются к тем же
      элементам, что и surface, а box-shadow не складывается — без inset-слоя
-     здесь свет верхней кромки просто исчезал. */
+     свет верхней кромки просто исчезал. */
   --shadow-elev-2:
-    inset 0 1px 0 oklch(0.955 0.009 92 / 11%), 0 2px 4px oklch(0.06 0.012 158 / 42%),
-    0 10px 26px oklch(0.06 0.012 158 / 34%);
+    inset 0 1px 0 var(--sheen), 0 2px 6px color-mix(in oklab, var(--shade) 7%, transparent),
+    0 14px 32px color-mix(in oklab, var(--shade) 10%, transparent);
   --shadow-elev-3:
-    inset 0 1px 0 oklch(0.955 0.009 92 / 14%), 0 4px 10px oklch(0.06 0.012 158 / 44%),
-    0 22px 54px oklch(0.06 0.012 158 / 42%);
+    inset 0 1px 0 var(--sheen), 0 6px 14px color-mix(in oklab, var(--shade) 9%, transparent),
+    0 28px 64px color-mix(in oklab, var(--shade) 14%, transparent);
+}
+
+/* Поднятая поверхность: блик по кромке + собственная тень.
+   Работает БЕЗ hover — на телефоне глубина должна быть видна сразу. */
+@utility surface {
+  background-image: linear-gradient(
+    to bottom,
+    var(--sheen),
+    transparent 45%
+  );
+  box-shadow:
+    inset 0 1px 0 var(--sheen),
+    var(--shadow-elev-1);
+}
+
+@utility surface-2 {
+  background-image: linear-gradient(
+    to bottom,
+    var(--sheen),
+    transparent 50%
+  );
+  box-shadow:
+    inset 0 1px 0 var(--sheen),
+    var(--shadow-elev-2);
+}
+
+/* Тональная полоса секции как физическая плита: кромка сверху и снизу плюс
+   мягкая тень, отброшенная на секцию выше. Иначе смена цвета фона даёт стык
+   встык — два плоских прямоугольника без намёка на слои. */
+@utility slab {
+  box-shadow:
+    inset 0 1px 0 var(--sheen),
+    inset 0 -1px 0 color-mix(in oklab, var(--shade) 8%, transparent),
+    0 -14px 34px color-mix(in oklab, var(--shade) 7%, transparent);
+}
+
+/* Затемнение по краям кадра: фото перестаёт быть наклейкой и уходит в фон.
+   Значения фиксированные и тёмные независимо от темы — они лежат на самой
+   фотографии, а не на фоне страницы. */
+@utility photo-vignette {
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        118% 96% at 50% 8%,
+        transparent 46%,
+        oklch(0.16 0.028 155 / 26%) 100%
+      ),
+      linear-gradient(to top, oklch(0.16 0.028 155 / 42%), transparent 55%);
+  }
+}
+
+/* Тонкая акцентная линейка */
+@utility rule-brass {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    color-mix(in oklab, var(--accent) 55%, transparent),
+    transparent
+  );
 }
 
 /* Поднятая поверхность: верхний отблеск + собственная тень.

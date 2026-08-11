@@ -87,7 +87,9 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
             ? // На телефоне blur отключён, поэтому фон должен быть полностью
               // непрозрачным — иначе текст страницы просвечивал сквозь полосу.
               "border-b border-border bg-background sm:bg-background/85 sm:backdrop-blur-lg"
-            : "border-b border-transparent",
+            : // Пока шапка висит на фото, она живёт в тёмной логике токенов:
+              // на светлой теме чернильный текст на кадре был бы нечитаем.
+              "on-dark border-b border-transparent",
         )}
       >
         {/* Пока шапка прозрачная, она лежит на фото. На светлых кадрах
@@ -97,7 +99,7 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
         {!solid ? (
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background/70 via-background/25 to-transparent"
+            className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background/80 via-background/35 to-transparent"
           />
         ) : null}
 
@@ -131,7 +133,7 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
             <button
               type="button"
               onClick={() => openBooking()}
-              className="inline-flex min-h-10 shrink-0 items-center rounded-sm border border-accent/70 px-3 text-[10px] font-medium uppercase tracking-[0.12em] text-accent transition-colors hover:bg-accent hover:text-accent-foreground sm:min-h-11 sm:px-6 sm:text-[12px] sm:tracking-[0.16em]"
+              className="inline-flex min-h-10 shrink-0 items-center rounded-full border border-accent/60 px-4 text-[13px] font-semibold text-accent transition-colors hover:bg-accent hover:text-accent-foreground sm:min-h-11 sm:px-6 sm:text-sm"
             >
               Забронировать
             </button>

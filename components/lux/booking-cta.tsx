@@ -20,7 +20,8 @@ export function BookingCta({
   const { openBooking } = useBooking()
 
   return (
-    <section className="relative overflow-hidden py-24 sm:py-32">
+    // Тёмный блок-якорь на светлой странице: фото под глубокой хвойной вуалью
+    <section className="on-dark relative overflow-hidden bg-background py-24 sm:py-32">
       <Image
         src={image || "/placeholder.svg"}
         alt={imageAlt}
@@ -43,13 +44,13 @@ export function BookingCta({
           <button
             type="button"
             onClick={() => openBooking()}
-            className="inline-flex min-h-13 items-center justify-center rounded-sm bg-accent px-8 text-[12px] font-medium uppercase tracking-[0.16em] text-accent-foreground transition-colors hover:bg-accent/85"
+            className="inline-flex min-h-13 items-center justify-center rounded-full bg-accent px-8 text-[15px] font-semibold text-accent-foreground transition-colors hover:bg-accent/88"
           >
             Проверить даты
           </button>
           <Link
             href="/booking"
-            className="inline-flex min-h-13 items-center justify-center rounded-sm border border-foreground/25 px-8 text-[12px] font-medium uppercase tracking-[0.16em] text-foreground transition-colors hover:border-accent hover:text-accent"
+            className="inline-flex min-h-13 items-center justify-center rounded-full border border-foreground/25 px-8 text-[15px] font-semibold text-foreground transition-colors hover:border-accent hover:text-accent"
           >
             Календарь и расчёт
           </Link>

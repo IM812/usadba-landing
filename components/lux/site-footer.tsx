@@ -9,7 +9,9 @@ export async function SiteFooter() {
   const { settings } = await getRates()
 
   return (
-    <footer className="border-t border-border bg-card">
+    // Футер — тёмная хвойная «земля» под светлой страницей: закрывает
+    // документ и не сливается с последней секцией, как раньше bg-card
+    <footer className="on-dark bg-background text-foreground">
       <Container size="wide" className="py-16 lg:py-24">
         <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr] lg:gap-16">
           {/* Лого и подпись */}

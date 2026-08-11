@@ -7,7 +7,11 @@ import { site } from "@/lib/site"
 
 export function HomeHero() {
   return (
-    <section className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden">
+    // on-dark: сайт светлый, но кадр на весь экран остаётся тёмным — иначе текст
+    // на фотографии не прочитать. Токены внутри секции переключены в тёмную
+    // логику, поэтому градиенты bg-background/xx сами становятся затемнением,
+    // а акцент — свежим лаймом.
+    <section className="on-dark relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-background">
       {/* Кадр усадьбы на весь экран с медленным наездом */}
       <div className="absolute inset-0">
         <Image
