@@ -151,7 +151,7 @@ export const groundExperiences = [
     id: 'fishing',
     name: 'Рыбалка',
     season: 'Весь год',
-    image: '/images/estate/lake-aerial.jpg',
+    image: '/images/estate/chan-lake.jpg',
     description:
       'Окунь, щука, лещ и линь. Зимой — подлёдная рыбалка в сотне метров от дома. Снасти привозите свои, места покажем.',
   },
@@ -319,7 +319,7 @@ export const galleryPhotos = [
   {
     src: '/images/estate/house-autumn.jpg',
     alt: 'Дом усадьбы в окружении золотого осеннего леса',
-    caption: 'Осен��ю лес вокруг дома становится золотым',
+    caption: 'Осен����ю лес вокруг дома становится золотым',
   },
   {
     src: '/images/estate/dining-window.jpg',
@@ -370,6 +370,26 @@ export const galleryPhotos = [
     src: '/images/estate/autumn-berries.jpg',
     alt: 'Красные ягоды у бревенчатой стены дома',
     caption: 'Грибы и ягоды — в сотне метров от дома',
+  },
+  {
+    src: '/images/estate/chan-close.jpg',
+    alt: 'Чугунный чан крупным планом на фоне осеннего леса',
+    caption: 'Чан чугунный, вода греется живым огнём снизу',
+  },
+  {
+    src: '/images/estate/chan-steam.jpg',
+    alt: 'Пар над чаном во дворе усадьбы',
+    caption: 'Пар над чаном виден со всего двора',
+  },
+  {
+    src: '/images/estate/room-lake-view.jpg',
+    alt: 'Спальня с окном, выходящим на озеро',
+    caption: 'Из окон спален видно воду и сосны',
+  },
+  {
+    src: '/images/estate/house-night.jpg',
+    alt: 'Светящаяся фигура и гирлянды во дворе усадьбы ночью',
+    caption: 'Ночью двор превращается в отдельную декорацию',
   },
 ] as const
 
