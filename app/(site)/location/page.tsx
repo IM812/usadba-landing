@@ -38,7 +38,7 @@ export default function LocationPage() {
             title="Выберите свой маршрут"
             lead="Нажмите на карточку с машиной — построится маршрут в Яндекс Картах прямо до ворот."
           />
-          <div className="mt-14 grid gap-px overflow-hidden border border-border bg-border lg:grid-cols-3">
+          <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden border border-border bg-border lg:grid-cols-3">
             {routes.map((r) => {
               const body = (
                 <>
@@ -118,7 +118,7 @@ export default function LocationPage() {
                 href={contacts.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-8 inline-flex items-center gap-2 self-start text-[15px] font-semibold tracking-[-0.01em] text-foreground/80 transition-colors hover:text-accent"
+                className="mt-8 inline-flex min-h-11 items-center gap-2 self-start text-[15px] font-semibold tracking-[-0.01em] text-foreground/80 transition-colors hover:text-accent"
               >
                 Открыть на Яндекс Картах
                 <ArrowUpRight className="size-4" />

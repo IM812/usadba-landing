@@ -79,7 +79,7 @@ export default async function ContactsPage() {
                 key={c.label}
                 href={c.href}
                 {...(c.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                className="group flex items-center gap-5 bg-background p-8 transition-colors hover:bg-card lg:p-10"
+                className="group flex min-w-0 items-center gap-4 bg-background p-6 transition-colors hover:bg-card sm:gap-5 sm:p-8 lg:p-10"
               >
                 <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-accent/40 text-accent transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
                   <c.icon className="size-5" />
@@ -118,7 +118,7 @@ export default async function ContactsPage() {
                   href={contacts.mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-[15px] font-semibold tracking-[-0.01em] text-foreground/80 transition-colors hover:text-accent"
+                  className="inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold tracking-[-0.01em] text-foreground/80 transition-colors hover:text-accent"
                 >
                   <MapPin className="size-4" />
                   Проложить маршрут

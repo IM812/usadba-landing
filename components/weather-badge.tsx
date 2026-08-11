@@ -25,7 +25,7 @@ export function WeatherBadge({ className }: { className?: string }) {
       rel="noopener noreferrer"
       className={className}
     >
-      <span className="inline-flex items-center gap-2.5">
+      <span className="inline-flex min-h-11 items-center gap-2.5">
         <span aria-hidden className="size-1.5 rounded-full bg-accent" />
         {`Сейчас в усадьбе ${sign}${data.temp}°${label}`}
       </span>

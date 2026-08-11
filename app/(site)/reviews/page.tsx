@@ -86,7 +86,7 @@ export default async function ReviewsPage() {
             eyebrow="Что отмечают чаще всего"
             title="Три вещи, о которых пишут почти все"
           />
-          <div className="mt-14 grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-3">
+          <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden border border-border bg-border sm:grid-cols-3">
             {themes.map((t) => (
               <div key={t.title} className="flex flex-col gap-4 bg-background p-8 lg:p-10">
                 <span aria-hidden className="h-px w-10 bg-accent/60" />

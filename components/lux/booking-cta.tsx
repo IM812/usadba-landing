@@ -57,7 +57,7 @@ export function BookingCta({
 
         <a
           href={contacts.phoneHref}
-          className="mt-8 font-display text-xl font-semibold text-foreground/80 transition-colors hover:text-accent sm:text-2xl"
+          className="mt-8 inline-flex min-h-11 items-center font-display text-xl font-semibold text-foreground/80 transition-colors hover:text-accent sm:text-2xl"
         >
           {contacts.phoneLabel}
         </a>
