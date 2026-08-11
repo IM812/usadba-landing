@@ -48,7 +48,10 @@ export function PageHero({
         <nav aria-label="Хлебные крошки" className="mb-6">
           <ol className="eyebrow flex items-center gap-2 text-muted-foreground">
             <li>
-              <Link href="/" className="transition-colors hover:text-accent">
+              <Link
+                href="/"
+                className="inline-flex min-h-11 items-center transition-colors hover:text-accent"
+              >
                 Главная
               </Link>
             </li>

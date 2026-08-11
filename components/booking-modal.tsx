@@ -337,7 +337,7 @@ function Calendar({
           type="button"
           onClick={onPrev}
           aria-label="Предыдущий месяц"
-          className="flex size-7 items-center justify-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+          className="flex size-11 items-center justify-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground"
         >
           <ChevronLeft className="size-4" />
         </button>
@@ -348,7 +348,7 @@ function Calendar({
           type="button"
           onClick={onNext}
           aria-label="Следующий месяц"
-          className="flex size-7 items-center justify-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+          className="flex size-11 items-center justify-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground"
         >
           <ChevronRight className="size-4" />
         </button>
@@ -841,7 +841,7 @@ export function BookingModal({ open, onClose, prefill }: Props) {
                       <button
                         type="button"
                         onClick={() => update("spaSessions", 1)}
-                        className="self-start rounded-full bg-primary/15 px-3 py-1.5 text-xs font-medium text-primary transition hover:bg-primary/25"
+                        className="inline-flex min-h-11 items-center self-start rounded-full bg-primary/15 px-4 text-xs font-medium text-primary transition hover:bg-primary/25"
                       >
                         Добавить к брони
                       </button>

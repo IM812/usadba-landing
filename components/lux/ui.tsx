@@ -167,7 +167,7 @@ export function TextLink({
     <Link
       href={href}
       className={cn(
-        "group inline-flex w-fit items-center gap-2 rounded-full border border-accent/35 px-4 py-2 text-sm font-semibold tracking-[-0.01em] text-accent transition-colors duration-300 hover:bg-accent hover:text-accent-foreground",
+        "group inline-flex min-h-11 w-fit items-center gap-2 rounded-full border border-accent/35 px-4 py-2 text-sm font-semibold tracking-[-0.01em] text-accent transition-colors duration-300 hover:bg-accent hover:text-accent-foreground",
         className,
       )}
     >

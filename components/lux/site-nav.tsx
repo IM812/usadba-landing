@@ -13,7 +13,7 @@ function Wordmark({ className }: { className?: string }) {
   return (
     <Link
       href="/"
-      className={cn("group flex flex-col items-center leading-none", className)}
+      className={cn("group flex min-h-11 flex-col items-center justify-center leading-none", className)}
       aria-label={`${site.name} — на главную`}
     >
       <span className="font-display text-[1.35rem] font-extrabold tracking-[-0.03em] text-foreground sm:text-2xl">
@@ -106,7 +106,9 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
             type="button"
             onClick={openMenu}
             aria-expanded={menuOpen}
-            className="group flex items-center gap-3 text-foreground transition-colors hover:text-accent"
+            aria-label="Открыть меню"
+            /* -ml-2 + px-2: зона нажатия дорастает до 44px, штрих остаётся на месте */
+            className="group -ml-2 flex min-h-11 items-center gap-3 px-2 text-foreground transition-colors hover:text-accent"
           >
             <span aria-hidden="true" className="flex w-6 flex-col gap-[5px]">
               <span className="h-px w-full bg-current transition-all duration-300 group-hover:w-4" />
@@ -156,7 +158,9 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
             <button
               type="button"
               onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-3 text-foreground transition-colors hover:text-accent"
+              aria-label="Закрыть меню"
+              /* -ml-3 + px-3: иконка 20px, зона нажатия дорастает до 44px */
+              className="-ml-3 flex min-h-11 items-center gap-3 px-3 text-foreground transition-colors hover:text-accent"
             >
               <X className="size-5" aria-hidden="true" />
               <span className="eyebrow hidden sm:inline">Закрыть</span>
@@ -217,12 +221,12 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
               </div>
 
               <div className="flex flex-col gap-5 lg:ml-auto lg:max-w-sm lg:text-right">
-                <div className="flex flex-wrap gap-x-6 gap-y-2 lg:justify-end">
+                <div className="flex flex-wrap gap-x-6 lg:justify-end">
                   {secondaryNavigation.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
-                      className="text-[13px] tracking-wide text-muted-foreground transition-colors hover:text-accent"
+                      className="inline-flex min-h-11 items-center text-[13px] tracking-wide text-muted-foreground transition-colors hover:text-accent"
                     >
                       {item.label}
                     </Link>
@@ -231,7 +235,7 @@ export function SiteNav({ transparent = true }: { transparent?: boolean }) {
                 <div className="rule-brass w-full lg:rotate-180" />
                 <a
                   href={contacts.phoneHref}
-                  className="font-display text-2xl font-semibold text-foreground transition-colors hover:text-accent sm:text-3xl"
+                  className="inline-flex min-h-11 items-center font-display text-2xl font-semibold text-foreground transition-colors hover:text-accent sm:text-3xl lg:justify-end"
                 >
                   {contacts.phoneLabel}
                 </a>

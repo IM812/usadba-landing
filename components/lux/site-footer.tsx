@@ -31,12 +31,14 @@ export async function SiteFooter() {
           {/* Разделы */}
           <nav aria-label="Разделы сайта" className="flex flex-col gap-5">
             <Eyebrow className="text-muted-foreground">Разделы</Eyebrow>
-            <ul className="flex flex-col gap-3">
+            {/* На телефоне список — основной способ навигации, поэтому
+                строки разведены до 44px; на широких экранах шаг прежний. */}
+            <ul className="flex flex-col sm:gap-3">
               {[...navigation, ...secondaryNavigation].map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-sm text-foreground/75 transition-colors hover:text-accent"
+                    className="flex min-h-11 items-center text-sm text-foreground/75 transition-colors hover:text-accent sm:min-h-0"
                   >
                     {item.label}
                   </Link>
@@ -50,25 +52,25 @@ export async function SiteFooter() {
             <Eyebrow className="text-muted-foreground">Связаться</Eyebrow>
             <a
               href={contacts.phoneHref}
-              className="flex items-start gap-3 text-sm text-foreground/75 transition-colors hover:text-accent"
+              className="flex min-h-11 items-center gap-3 text-sm text-foreground/75 transition-colors hover:text-accent sm:min-h-0 sm:items-start"
             >
-              <Phone className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden="true" />
+              <Phone className="size-4 shrink-0 text-accent sm:mt-0.5" aria-hidden="true" />
               {contacts.phoneLabel}
             </a>
             <a
               href={contacts.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-start gap-3 text-sm text-foreground/75 transition-colors hover:text-accent"
+              className="flex min-h-11 items-center gap-3 text-sm text-foreground/75 transition-colors hover:text-accent sm:min-h-0 sm:items-start"
             >
-              <Send className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden="true" />
+              <Send className="size-4 shrink-0 text-accent sm:mt-0.5" aria-hidden="true" />
               WhatsApp и Telegram
             </a>
             <a
               href={contacts.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-start gap-3 text-sm leading-relaxed text-foreground/75 transition-colors hover:text-accent"
+              className="flex items-start gap-3 py-2 text-sm leading-relaxed text-foreground/75 transition-colors hover:text-accent sm:py-0"
             >
               <MapPin className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden="true" />
               {contacts.addressFull}
