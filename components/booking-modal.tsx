@@ -913,6 +913,7 @@ export function BookingModal({ open, onClose, prefill }: Props) {
                     label="Ваше имя"
                     id="name"
                     placeholder="Иван Иванов"
+                    autoComplete="name"
                     value={form.name}
                     onChange={(v) => update("name", v)}
                   />
@@ -922,6 +923,8 @@ export function BookingModal({ open, onClose, prefill }: Props) {
                     id="phone"
                     placeholder="+7 (___) ___-__-__"
                     inputMode="tel"
+                    type="tel"
+                    autoComplete="tel"
                     value={form.phone}
                     onChange={(v) => update("phone", v)}
                   />
@@ -931,6 +934,8 @@ export function BookingModal({ open, onClose, prefill }: Props) {
                     id="email"
                     placeholder="you@example.com"
                     inputMode="email"
+                    type="email"
+                    autoComplete="email"
                     value={form.email}
                     onChange={(v) => update("email", v)}
                   />
@@ -1077,6 +1082,8 @@ function Field({
   value,
   onChange,
   inputMode,
+  type = "text",
+  autoComplete,
 }: {
   icon: React.ReactNode
   label: string
@@ -1085,6 +1092,8 @@ function Field({
   value: string
   onChange: (value: string) => void
   inputMode?: "numeric" | "tel" | "email" | "text"
+  type?: "text" | "tel" | "email"
+  autoComplete?: string
 }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -1098,7 +1107,9 @@ function Field({
         <input
           id={id}
           value={value}
+          type={type}
           inputMode={inputMode}
+          autoComplete={autoComplete}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
           className="min-h-13 w-full rounded-xl border border-input bg-background pl-9 pr-3 text-base text-foreground outline-none transition placeholder:text-muted-foreground/70 focus:border-ring focus:ring-2 focus:ring-ring/30"

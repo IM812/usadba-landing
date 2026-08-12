@@ -21,26 +21,37 @@ import { getRates } from "@/lib/rates"
 import { getReviews } from "@/lib/reviews"
 import { estateFacts, includedInStay, navigation, site, spaSurcharge } from "@/lib/site"
 
-const chapters = [
+const chapters: {
+  href: string
+  label: string
+  image: string
+  alt: string
+  line: string
+  /** Класс object-position, когда центральная обрезка портит кадр. */
+  focus?: string
+}[] = [
   {
     href: "/estate",
     label: "Усадьба",
-    image: "/images/estate/fireplace.jpg",
-    alt: "Гостиная усадьбы с кирпичным камином",
+    image: "/images/estate/living-sofas.jpg",
+    alt: "Гостиная усадьбы: большие диваны, книжные полки и бревенчатые стены",
     line: "Четыре спальни, каждая со своим санузлом, и гостиная, где помещается вся компания.",
   },
   {
     href: "/spa",
     label: "Баня и чан",
-    image: "/images/estate/banya-fire.jpg",
-    alt: "Баня на дровах среди сосен",
+    image: "/images/estate/chan-night.jpg",
+    alt: "Чугунный чан с горячей водой парит вечером у подсвеченной бани",
     line: "Парная на дровах, купель и чугунный чан под открытым небом.",
   },
   {
     href: "/grounds",
     label: "Территория",
-    image: "/images/estate/lake-wide.jpg",
-    alt: "Озеро, видимое сквозь сосны",
+    image: "/images/estate/lake-aerial.jpg",
+    alt: "Лесное озеро с высоты: вода отражает облака, вокруг сосновый бор",
+    // Кадр широкий, а карточка вертикальная: центральная обрезка съедала
+    // берег с горизонтом и оставляла одну воду. Тянем кадр к верху.
+    focus: "object-top",
     line: "Два озера, свой причал, лодка, сап-борды и грибной бор за домом.",
   },
 ]
@@ -126,7 +137,7 @@ export default async function HomePage() {
                     alt={c.alt}
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-[1.06]"
+                    className={`object-cover ${c.focus ?? "object-center"} transition-transform duration-[1.2s] ease-out group-hover:scale-[1.06]`}
                   />
                 </div>
                 {/* Заголовок с лаймовой стрелкой вместо хайрлайна: линейка была
