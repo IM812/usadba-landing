@@ -543,7 +543,7 @@ export function BookingModal({ open, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center isolate sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-label="Форма бронирования"
@@ -552,10 +552,10 @@ export function BookingModal({ open, onClose }: Props) {
         type="button"
         aria-label="Закрыть"
         onClick={close}
-        className="absolute inset-0 h-full w-full cursor-default bg-foreground/60 backdrop-blur-sm"
+        className="absolute inset-0 h-full w-full [transform:translateZ(0)] [will-change:backdrop-filter] cursor-default bg-foreground/60 backdrop-blur-sm"
       />
 
-      <div className="relative z-10 w-full max-h-[92dvh] overflow-y-auto rounded-t-2xl bg-card shadow-2xl sm:max-w-lg sm:rounded-2xl">
+      <div className="relative z-10 w-full max-h-[92dvh] overflow-y-auto overscroll-contain [transform:translateZ(0)] rounded-t-2xl bg-card shadow-2xl sm:max-w-lg sm:rounded-2xl">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b border-border bg-primary px-6 py-5 text-primary-foreground">
           <div>
