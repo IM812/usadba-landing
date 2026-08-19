@@ -17,7 +17,8 @@ import {
   AlertTriangle,
 } from "lucide-react"
 import type { BusyRange } from "@/app/api/availability/route"
-import { todayKey } from "@/lib/date"
+import { todayKey, parseDateKey } from "@/lib/date"
+import { calculateStayPrice, type SeasonalPrice as SeasonalPriceRule } from "@/lib/pricing"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -91,11 +92,7 @@ function selectionOverlapsBusy(arrival: string, departure: string, ranges: BusyR
 // Pricing
 // ---------------------------------------------------------------------------
 
-type SeasonalPrice = {
-  date_from: string  // MM-DD
-  date_to: string    // MM-DD
-  base_price: number
-  weekend_price: number
+type SeasonalPrice = SeasonalPriceRule & {
   active: boolean
 }
 
@@ -110,49 +107,11 @@ type AppSettings = {
   price_mode: string
 }
 
-/** Returns true if the given Date is Fri/Sat (weekend pricing). */
-function isWeekendNight(d: Date): boolean {
-  const day = d.getDay()
-  return day === 5 || day === 6
-}
-
-/** Width of a season in days (for priority: narrower = higher priority) */
-function seasonWidth(from: string, to: string): number {
-  const [fm, fd] = from.split("-").map(Number)
-  const [tm, td] = to.split("-").map(Number)
-  const fromDay = fm * 31 + fd
-  const toDay = tm * 31 + td
-  return toDay >= fromDay ? toDay - fromDay : (12 * 31 + 31) - fromDay + toDay
-}
-
-function getSeasonalNightPrice(
-  d: Date,
-  seasons: SeasonalPrice[],
-  fallbackBase: number,
-  fallbackWeekend: number,
-): number {
-  const mm = String(d.getMonth() + 1).padStart(2, "0")
-  const dd = String(d.getDate()).padStart(2, "0")
-  const key = `${mm}-${dd}`
-
-  // Sort by narrowest range first — most specific season wins
-  const sorted = [...seasons].sort(
-    (a, b) => seasonWidth(a.date_from, a.date_to) - seasonWidth(b.date_from, b.date_to)
-  )
-
-  for (const s of sorted) {
-    const from = s.date_from
-    const to = s.date_to
-    const inRange = from <= to ? key >= from && key <= to : key >= from || key <= to
-    if (inRange) return isWeekendNight(d) ? s.weekend_price : s.base_price
-  }
-  return isWeekendNight(d) ? fallbackWeekend : fallbackBase
-}
-
 interface NightLine {
   label: string
   price: number
   count: number
+  singleNightSurcharge: boolean
 }
 
 interface PriceBreakdown {
@@ -173,36 +132,31 @@ function calculatePrice(
   guests = 1,
 ): PriceBreakdown | null {
   if (!arrival || !departure || departure <= arrival) return null
-  const start = new Date(arrival)
-  const end = new Date(departure)
-  const nights = Math.round((end.getTime() - start.getTime()) / 86_400_000)
 
-  // Accumulate per-night prices, group into lines
-  const nightPrices: number[] = []
-  for (let i = 0; i < nights; i++) {
-    const d = new Date(start)
-    d.setDate(d.getDate() + i)
-    nightPrices.push(
-      getSeasonalNightPrice(d, seasons, settings.base_price, settings.weekend_price)
-    )
-  }
+  const { nights, subtotal, nightsList } = calculateStayPrice(
+    parseDateKey(arrival),
+    parseDateKey(departure),
+    settings.base_price,
+    settings.weekend_price,
+    seasons,
+  )
 
-  // Group consecutive nights with the same price
+  // Group consecutive nights with the same price into lines
   const lines: NightLine[] = []
-  for (const p of nightPrices) {
+  for (const n of nightsList) {
     const last = lines[lines.length - 1]
-    if (last && last.price === p) {
+    if (last && last.price === n.price && last.singleNightSurcharge === n.singleNightSurcharge) {
       last.count++
     } else {
-      lines.push({ label: "", price: p, count: 1 })
+      lines.push({ label: "", price: n.price, count: 1, singleNightSurcharge: n.singleNightSurcharge })
     }
   }
   // Build human labels
   lines.forEach((l) => {
-    l.label = `${l.count} ${l.count === 1 ? "ночь" : l.count < 5 ? "ночи" : "ночей"} × ${formatRub(l.price)}`
+    const base = `${l.count} ${l.count === 1 ? "ночь" : l.count < 5 ? "ночи" : "ночей"} × ${formatRub(l.price)}`
+    l.label = l.singleNightSurcharge ? `${base} (надбавка за 1 ночь на выходных)` : base
   })
 
-  const subtotal = nightPrices.reduce((s, p) => s + p, 0)
   const extraGuests = Math.max(0, guests - (settings.base_guests ?? 8))
   const extraGuestFee = extraGuests * nights * (settings.extra_guest_price ?? 0)
   const cleaningFee = settings.cleaning_fee ?? 0
@@ -454,7 +408,7 @@ export function BookingModal({ open, onClose }: Props) {
       if (Array.isArray(data.seasonalPrices)) setSeasonalPrices(data.seasonalPrices)
     } catch {
       setBusyRanges([])
-      setAvailError("Занятые даты временно недоступны — уточните у нас перед бронированием.")
+      setAvailError("Занятые даты временно недоступны — уточните у нас пер��д бронированием.")
     } finally {
       setAvailLoading(false)
     }
@@ -838,7 +792,7 @@ export function BookingModal({ open, onClose }: Props) {
                       <strong>{form.guests}</strong>
                     </div>
                     {(() => {
-                      const price = calculatePrice(form.arrival, form.departure, appSettings, seasonalPrices, Number(form.guests) || 1)
+                      const price = calculatePrice(form.arrival, form.departure, appSettings, appSettings.price_mode === 'seasonal' ? seasonalPrices : [], Number(form.guests) || 1)
                       if (!price) return null
                       return (
                         <div className="mt-1 border-t border-border/50 pt-1 font-medium text-foreground">

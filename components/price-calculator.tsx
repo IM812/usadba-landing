@@ -2,58 +2,16 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { ChevronLeft, ChevronRight, Users, CalendarDays, ArrowRight } from "lucide-react"
-import { addDays, nightsBetween as daysBetween, toDateKey } from "@/lib/date"
+import { addDays, toDateKey } from "@/lib/date"
+import { calculateStayPrice, type SeasonalPrice as SeasonalPriceRule } from "@/lib/pricing"
 
 const MONTHS_RU = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"]
 const DAYS_RU = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"]
 
-function isWeekend(d: Date) {
-  const day = d.getDay()
-  return day === 5 || day === 6 // пт-сб как "выходные" для цены
-}
-
-type SeasonalPrice = {
+type SeasonalPrice = SeasonalPriceRule & {
   id: string
   name: string
-  date_from: string // MM-DD
-  date_to: string   // MM-DD
-  base_price: number
-  weekend_price: number
   active: boolean
-}
-
-/** Width of a season in approximate days — used to sort narrowest-first */
-function seasonWidth(from: string, to: string): number {
-  const [fm, fd] = from.split('-').map(Number)
-  const [tm, td] = to.split('-').map(Number)
-  const fromDay = fm * 31 + fd
-  const toDay = tm * 31 + td
-  return toDay >= fromDay ? toDay - fromDay : (12 * 31 + 31) - fromDay + toDay
-}
-
-function getSeasonalPrice(
-  d: Date,
-  seasons: SeasonalPrice[],
-  fallbackBase: number,
-  fallbackWeekend: number,
-): number {
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  const key = `${mm}-${dd}`
-
-  // Narrowest season wins — sort ascending by width so specific overrides broad
-  const sorted = [...seasons].sort(
-    (a, b) => seasonWidth(a.date_from, a.date_to) - seasonWidth(b.date_from, b.date_to)
-  )
-
-  for (const s of sorted) {
-    const from = s.date_from
-    const to = s.date_to
-    const inRange = from <= to ? key >= from && key <= to : key >= from || key <= to
-    if (inRange) return isWeekend(d) ? s.weekend_price : s.base_price
-  }
-
-  return isWeekend(d) ? fallbackWeekend : fallbackBase
 }
 
 export function PriceCalculator({ onBook }: { onBook: () => void }) {
@@ -110,17 +68,19 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
 
   const calcPrice = () => {
     if (!checkIn || !checkOut) return null
-    const nights = daysBetween(checkIn, checkOut)
-    let subtotal = 0
-    for (let i = 0; i < nights; i++) {
-      const d = addDays(checkIn, i)
-      subtotal += getSeasonalPrice(d, seasonalPrices, settings.base_price, settings.weekend_price)
-    }
+    const { nights, subtotal, nightsList } = calculateStayPrice(
+      checkIn,
+      checkOut,
+      settings.base_price,
+      settings.weekend_price,
+      seasonalPrices,
+    )
     const extraGuests = Math.max(0, guests - BASE_GUESTS)
     const extraGuestFee = extraGuests * nights * (settings.extra_guest_price ?? 0)
     const cleaningFee = settings.cleaning_fee ?? 0
     const total = subtotal + extraGuestFee + cleaningFee
-    return { nights, subtotal, extraGuestFee, cleaningFee, total }
+    const singleNightSurcharge = nightsList.length === 1 && nightsList[0].singleNightSurcharge
+    return { nights, subtotal, extraGuestFee, cleaningFee, total, singleNightSurcharge }
   }
 
   const price = calcPrice()
@@ -278,6 +238,11 @@ export function PriceCalculator({ onBook }: { onBook: () => void }) {
                     <span>
                       {price.nights} {price.nights === 1 ? "ночь" : price.nights < 5 ? "ночи" : "ночей"} — {price.subtotal.toLocaleString("ru-RU")} ₽
                     </span>
+                    {price.singleNightSurcharge && (
+                      <span className="text-amber-600 dark:text-amber-400">
+                        При заезде на 1 ночь в выходные действует надбавка
+                      </span>
+                    )}
                     {price.extraGuestFee > 0 && (
                       <span className="text-amber-600 dark:text-amber-400">
                         + доп. гости — {price.extraGuestFee.toLocaleString("ru-RU")} ₽
