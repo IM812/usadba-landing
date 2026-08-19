@@ -18,7 +18,7 @@ import {
 } from "lucide-react"
 import type { BusyRange } from "@/app/api/availability/route"
 import { todayKey, parseDateKey } from "@/lib/date"
-import { calculateStayPrice, type SeasonalPrice as SeasonalPriceRule } from "@/lib/pricing"
+import { calculateStayPrice, type SeasonalPrice as SeasonalPriceRule, SAUNA_ADDON_PRICE, SAUNA_ADDON_LABEL } from "@/lib/pricing"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -35,6 +35,7 @@ type FormState = {
   name: string
   phone: string
   email: string
+  saunaAddon: boolean
 }
 
 const emptyForm: FormState = {
@@ -44,6 +45,7 @@ const emptyForm: FormState = {
   name: "",
   phone: "",
   email: "",
+  saunaAddon: false,
 }
 
 // ---------------------------------------------------------------------------
@@ -120,6 +122,7 @@ interface PriceBreakdown {
   subtotal: number
   extraGuestFee: number
   cleaningFee: number
+  addonFee: number
   total: number
 }
 
@@ -130,6 +133,7 @@ function calculatePrice(
   settings: AppSettings,
   seasons: SeasonalPrice[],
   guests = 1,
+  saunaAddon = false,
 ): PriceBreakdown | null {
   if (!arrival || !departure || departure <= arrival) return null
 
@@ -160,9 +164,10 @@ function calculatePrice(
   const extraGuests = Math.max(0, guests - (settings.base_guests ?? 8))
   const extraGuestFee = extraGuests * nights * (settings.extra_guest_price ?? 0)
   const cleaningFee = settings.cleaning_fee ?? 0
-  const total = subtotal + extraGuestFee + cleaningFee
+  const addonFee = saunaAddon ? SAUNA_ADDON_PRICE : 0
+  const total = subtotal + extraGuestFee + cleaningFee + addonFee
 
-  return { nights, lines, subtotal, extraGuestFee, cleaningFee, total }
+  return { nights, lines, subtotal, extraGuestFee, cleaningFee, addonFee, total }
 }
 
 function formatRub(n: number): string {
@@ -668,7 +673,7 @@ export function BookingModal({ open, onClose }: Props) {
                   {/* Price breakdown */}
                   {(() => {
                     const guestsNum = Number(form.guests) || 1
-                    const price = calculatePrice(form.arrival, form.departure, appSettings, appSettings.price_mode === 'seasonal' ? seasonalPrices : [], guestsNum)
+                    const price = calculatePrice(form.arrival, form.departure, appSettings, appSettings.price_mode === 'seasonal' ? seasonalPrices : [], guestsNum, form.saunaAddon)
                     if (!price) return null
                     return (
                       <div className="rounded-lg border border-border bg-secondary/50 px-4 py-3 text-sm">
@@ -697,6 +702,12 @@ export function BookingModal({ open, onClose }: Props) {
                               <span className="text-foreground">{formatRub(price.cleaningFee)}</span>
                             </div>
                           )}
+                          {price.addonFee > 0 && (
+                            <div className="flex justify-between">
+                              <span>{SAUNA_ADDON_LABEL}</span>
+                              <span className="text-foreground">{formatRub(price.addonFee)}</span>
+                            </div>
+                          )}
                         </div>
                         <div className="mt-2 flex justify-between border-t border-border pt-2 font-semibold text-foreground">
                           <span>Итого за {price.nights} {price.nights === 1 ? "ночь" : price.nights < 5 ? "ночи" : "ночей"}</span>
@@ -705,6 +716,23 @@ export function BookingModal({ open, onClose }: Props) {
                       </div>
                     )
                   })()}
+
+                  {/* Sauna & tub addon */}
+                  <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-background px-4 py-3 text-sm transition hover:border-primary/50">
+                    <input
+                      type="checkbox"
+                      checked={form.saunaAddon}
+                      onChange={(e) => setForm((f) => ({ ...f, saunaAddon: e.target.checked }))}
+                      className="mt-0.5 size-4 shrink-0 accent-primary"
+                    />
+                    <span className="flex-1">
+                      <span className="font-medium text-foreground">{SAUNA_ADDON_LABEL}</span>
+                      <span className="ml-1.5 text-muted-foreground">— {formatRub(SAUNA_ADDON_PRICE)}</span>
+                      <span className="mt-0.5 block text-xs text-muted-foreground">
+                        Разово за топку, независимо от количества ночей
+                      </span>
+                    </span>
+                  </label>
 
                   {/* Guests */}
                   <div className="flex flex-col gap-1.5">
@@ -791,8 +819,13 @@ export function BookingModal({ open, onClose }: Props) {
                       <strong>{formatDate(form.departure)}</strong> · Гостей{" "}
                       <strong>{form.guests}</strong>
                     </div>
+                    {form.saunaAddon && (
+                      <div className="mt-1 text-xs text-muted-foreground">
+                        + {SAUNA_ADDON_LABEL} — {formatRub(SAUNA_ADDON_PRICE)}
+                      </div>
+                    )}
                     {(() => {
-                      const price = calculatePrice(form.arrival, form.departure, appSettings, appSettings.price_mode === 'seasonal' ? seasonalPrices : [], Number(form.guests) || 1)
+                      const price = calculatePrice(form.arrival, form.departure, appSettings, appSettings.price_mode === 'seasonal' ? seasonalPrices : [], Number(form.guests) || 1, form.saunaAddon)
                       if (!price) return null
                       return (
                         <div className="mt-1 border-t border-border/50 pt-1 font-medium text-foreground">

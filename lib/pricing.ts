@@ -37,6 +37,10 @@ export type StayPrice = {
 export const HIGH_SEASON_SINGLE_NIGHT_SURCHARGE = 0.5 // +50%
 export const LOW_SEASON_SINGLE_NIGHT_SURCHARGE = 0.2 // +20%
 
+/** Допуслуга «Баня и чан» — фиксированная плата за топку, не зависит от числа ночей. */
+export const SAUNA_ADDON_PRICE = 7700
+export const SAUNA_ADDON_LABEL = 'Баня и чан (топка)'
+
 /** Пт или Сб — «выходная» ночь для целей ценообразования. */
 export function isWeekendNight(d: Date): boolean {
   const day = d.getDay()
