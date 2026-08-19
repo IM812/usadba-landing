@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { fetchAvitoRanges, rangesOverlap } from '@/lib/ics'
+import { parseDateKey } from '@/lib/date'
+import { calculateStayPrice, type NightPrice, SAUNA_ADDON_PRICE, SAUNA_ADDON_LABEL } from '@/lib/pricing'
 
 function formatDate(iso: string) {
   if (!iso) return '—'
@@ -12,86 +14,22 @@ function formatRub(n: number) {
   return n.toLocaleString('ru-RU') + ' ₽'
 }
 
-type SeasonalPrice = {
-  date_from: string
-  date_to: string
-  base_price: number
-  weekend_price: number
-}
-
-function isWeekend(d: Date) {
-  const day = d.getDay()
-  return day === 5 || day === 6
-}
-
-function seasonWidth(from: string, to: string): number {
-  const [fm, fd] = from.split('-').map(Number)
-  const [tm, td] = to.split('-').map(Number)
-  const fromDay = fm * 31 + fd
-  const toDay = tm * 31 + td
-  return toDay >= fromDay ? toDay - fromDay : (12 * 31 + 31) - fromDay + toDay
-}
-
-function getSeasonalPrice(
-  d: Date,
-  seasons: SeasonalPrice[],
-  fallbackBase: number,
-  fallbackWeekend: number,
-): number {
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  const key = `${mm}-${dd}`
-  const sorted = [...seasons].sort(
-    (a, b) => seasonWidth(a.date_from, a.date_to) - seasonWidth(b.date_from, b.date_to)
-  )
-  for (const s of sorted) {
-    const from = s.date_from
-    const to = s.date_to
-    const inRange = from <= to ? key >= from && key <= to : key >= from || key <= to
-    if (inRange) return isWeekend(d) ? s.weekend_price : s.base_price
-  }
-  return isWeekend(d) ? fallbackWeekend : fallbackBase
-}
-
-type NightInfo = { date: Date; price: number; weekend: boolean }
-
-function calcPrice(
-  arrival: string,
-  departure: string,
-  basePrice: number,
-  weekendPrice: number,
-  seasons: SeasonalPrice[] = [],
-): { total: number; nights: number; nightsList: NightInfo[] } {
-  const start = new Date(arrival)
-  const end = new Date(departure)
-  const nights = Math.round((end.getTime() - start.getTime()) / 86_400_000)
-  let total = 0
-  const nightsList: NightInfo[] = []
-  for (let i = 0; i < nights; i++) {
-    const d = new Date(start)
-    d.setDate(d.getDate() + i)
-    const price = getSeasonalPrice(d, seasons, basePrice, weekendPrice)
-    total += price
-    nightsList.push({ date: d, price, weekend: isWeekend(d) })
-  }
-  return { total, nights, nightsList }
-}
-
 /** Группирует ночи по фактической цене — так разбивка всегда сходится с итогом */
-function buildPriceBreakdown(nightsList: NightInfo[]): string[] {
-  const groups = new Map<string, { price: number; count: number; weekend: boolean }>()
+function buildPriceBreakdown(nightsList: NightPrice[]): string[] {
+  const groups = new Map<string, { price: number; count: number; weekend: boolean; singleNightSurcharge: boolean }>()
   for (const n of nightsList) {
-    const key = `${n.price}|${n.weekend ? 'w' : 'b'}`
+    const key = `${n.price}|${n.weekend ? 'w' : 'b'}|${n.singleNightSurcharge ? 's' : ''}`
     const g = groups.get(key)
     if (g) g.count++
-    else groups.set(key, { price: n.price, count: 1, weekend: n.weekend })
+    else groups.set(key, { price: n.price, count: 1, weekend: n.weekend, singleNightSurcharge: n.singleNightSurcharge })
   }
   return [...groups.values()]
     .sort((a, b) => b.price - a.price)
-    .map(
-      (g) =>
-        `   ${g.weekend ? 'Выходные' : 'Будни'}: ${g.count} н. × ${formatRub(g.price)} = ${formatRub(g.count * g.price)}`,
-    )
+    .map((g) => {
+      const label = g.weekend ? 'Выходные' : 'Будни'
+      const surchargeNote = g.singleNightSurcharge ? ' (надбавка за 1 ночь на выходных)' : ''
+      return `   ${label}${surchargeNote}: ${g.count} н. × ${formatRub(g.price)} = ${formatRub(g.count * g.price)}`
+    })
 }
 
 function nightsWord(n: number) {
@@ -124,7 +62,8 @@ async function sendTelegramMessage(
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { arrival, departure, guests, name, phone, email, comment } = body
+    const { arrival, departure, guests, name, phone, email, comment, saunaAddon } = body
+    const wantsSaunaAddon = saunaAddon === true
 
     if (!arrival || !departure || !name || !phone) {
       return NextResponse.json({ ok: false, error: 'missing_fields' }, { status: 400 })
@@ -192,16 +131,22 @@ export async function POST(req: Request) {
     }
 
     // --- Calculate price ---
-    const { total: accommodationTotal, nights, nightsList } = calcPrice(
-      arrival,
-      departure,
+    const { subtotal: accommodationTotal, nights, nightsList } = calculateStayPrice(
+      parseDateKey(arrival),
+      parseDateKey(departure),
       basePrice,
       weekendPrice,
       priceMode === 'seasonal' ? (seasons ?? []) : [],
     )
     const extraGuests = Math.max(0, guestsCount - baseGuests)
     const extraGuestTotal = extraGuests * extraGuestPrice * nights
-    const total = accommodationTotal + extraGuestTotal
+    const addonTotal = wantsSaunaAddon ? SAUNA_ADDON_PRICE : 0
+    const total = accommodationTotal + extraGuestTotal + addonTotal
+
+    // Допуслуга не имеет своей колонки в БД — фиксируем её в комментарии,
+    // чтобы она была видна в админке и в истории брони.
+    const addonNote = wantsSaunaAddon ? `${SAUNA_ADDON_LABEL}: ${formatRub(SAUNA_ADDON_PRICE)}` : null
+    const fullComment = [comment?.trim() || null, addonNote].filter(Boolean).join(' · ') || null
 
     // --- Save to Supabase ---
     const { data: booking, error: insertError } = await supabase
@@ -214,7 +159,7 @@ export async function POST(req: Request) {
         check_in: arrival,
         check_out: departure,
         total_price: total,
-        comment: comment?.trim() || null,
+        comment: fullComment,
         source: 'site',
         status: 'pending',
       })
@@ -235,6 +180,7 @@ export async function POST(req: Request) {
       extraGuests > 0
         ? `   Доп. гостей: ${extraGuests} × ${formatRub(extraGuestPrice)} × ${nights} н. = ${formatRub(extraGuestTotal)}`
         : null,
+      wantsSaunaAddon ? `   ${SAUNA_ADDON_LABEL}: ${formatRub(SAUNA_ADDON_PRICE)}` : null,
       `   Итого за ${nights} ${nightsWord(nights)}: *${formatRub(total)}*`,
     ].filter(Boolean)
 

@@ -17,7 +17,13 @@ import {
   AlertTriangle,
 } from "lucide-react"
 import type { BusyRange } from "@/app/api/availability/route"
-import { todayKey } from "@/lib/date"
+import { todayKey, parseDateKey } from "@/lib/date"
+import {
+  calculateStayPrice,
+  type SeasonalPrice as SeasonalPriceRule,
+  SAUNA_ADDON_PRICE,
+  SAUNA_ADDON_LABEL,
+} from "@/lib/pricing"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -34,6 +40,7 @@ type FormState = {
   name: string
   phone: string
   email: string
+  saunaAddon: boolean
 }
 
 const emptyForm: FormState = {
@@ -43,6 +50,7 @@ const emptyForm: FormState = {
   name: "",
   phone: "",
   email: "",
+  saunaAddon: false,
 }
 
 // ---------------------------------------------------------------------------
@@ -91,11 +99,7 @@ function selectionOverlapsBusy(arrival: string, departure: string, ranges: BusyR
 // Pricing
 // ---------------------------------------------------------------------------
 
-type SeasonalPrice = {
-  date_from: string  // MM-DD
-  date_to: string    // MM-DD
-  base_price: number
-  weekend_price: number
+type SeasonalPrice = SeasonalPriceRule & {
   active: boolean
 }
 
@@ -110,49 +114,11 @@ type AppSettings = {
   price_mode: string
 }
 
-/** Returns true if the given Date is Fri/Sat (weekend pricing). */
-function isWeekendNight(d: Date): boolean {
-  const day = d.getDay()
-  return day === 5 || day === 6
-}
-
-/** Width of a season in days (for priority: narrower = higher priority) */
-function seasonWidth(from: string, to: string): number {
-  const [fm, fd] = from.split("-").map(Number)
-  const [tm, td] = to.split("-").map(Number)
-  const fromDay = fm * 31 + fd
-  const toDay = tm * 31 + td
-  return toDay >= fromDay ? toDay - fromDay : (12 * 31 + 31) - fromDay + toDay
-}
-
-function getSeasonalNightPrice(
-  d: Date,
-  seasons: SeasonalPrice[],
-  fallbackBase: number,
-  fallbackWeekend: number,
-): number {
-  const mm = String(d.getMonth() + 1).padStart(2, "0")
-  const dd = String(d.getDate()).padStart(2, "0")
-  const key = `${mm}-${dd}`
-
-  // Sort by narrowest range first — most specific season wins
-  const sorted = [...seasons].sort(
-    (a, b) => seasonWidth(a.date_from, a.date_to) - seasonWidth(b.date_from, b.date_to)
-  )
-
-  for (const s of sorted) {
-    const from = s.date_from
-    const to = s.date_to
-    const inRange = from <= to ? key >= from && key <= to : key >= from || key <= to
-    if (inRange) return isWeekendNight(d) ? s.weekend_price : s.base_price
-  }
-  return isWeekendNight(d) ? fallbackWeekend : fallbackBase
-}
-
 interface NightLine {
   label: string
   price: number
   count: number
+  singleNightSurcharge: boolean
 }
 
 interface PriceBreakdown {
@@ -161,6 +127,7 @@ interface PriceBreakdown {
   subtotal: number
   extraGuestFee: number
   cleaningFee: number
+  addonFee: number
   total: number
 }
 
@@ -171,30 +138,26 @@ function calculatePrice(
   settings: AppSettings,
   seasons: SeasonalPrice[],
   guests = 1,
+  saunaAddon = false,
 ): PriceBreakdown | null {
   if (!arrival || !departure || departure <= arrival) return null
-  const start = new Date(arrival)
-  const end = new Date(departure)
-  const nights = Math.round((end.getTime() - start.getTime()) / 86_400_000)
 
-  // Accumulate per-night prices, group into lines
-  const nightPrices: number[] = []
-  for (let i = 0; i < nights; i++) {
-    const d = new Date(start)
-    d.setDate(d.getDate() + i)
-    nightPrices.push(
-      getSeasonalNightPrice(d, seasons, settings.base_price, settings.weekend_price)
-    )
-  }
+  const { nights, subtotal, nightsList } = calculateStayPrice(
+    parseDateKey(arrival),
+    parseDateKey(departure),
+    settings.base_price,
+    settings.weekend_price,
+    seasons,
+  )
 
-  // Group consecutive nights with the same price
+  // Group consecutive nights with the same price into lines
   const lines: NightLine[] = []
-  for (const p of nightPrices) {
+  for (const n of nightsList) {
     const last = lines[lines.length - 1]
-    if (last && last.price === p) {
+    if (last && last.price === n.price && last.singleNightSurcharge === n.singleNightSurcharge) {
       last.count++
     } else {
-      lines.push({ label: "", price: p, count: 1 })
+      lines.push({ label: "", price: n.price, count: 1, singleNightSurcharge: n.singleNightSurcharge })
     }
   }
   // Build human labels
@@ -202,13 +165,13 @@ function calculatePrice(
     l.label = `${l.count} ${l.count === 1 ? "ночь" : l.count < 5 ? "ночи" : "ночей"} × ${formatRub(l.price)}`
   })
 
-  const subtotal = nightPrices.reduce((s, p) => s + p, 0)
   const extraGuests = Math.max(0, guests - (settings.base_guests ?? 8))
   const extraGuestFee = extraGuests * nights * (settings.extra_guest_price ?? 0)
   const cleaningFee = settings.cleaning_fee ?? 0
-  const total = subtotal + extraGuestFee + cleaningFee
+  const addonFee = saunaAddon ? SAUNA_ADDON_PRICE : 0
+  const total = subtotal + extraGuestFee + cleaningFee + addonFee
 
-  return { nights, lines, subtotal, extraGuestFee, cleaningFee, total }
+  return { nights, lines, subtotal, extraGuestFee, cleaningFee, addonFee, total }
 }
 
 function formatRub(n: number): string {
@@ -454,7 +417,7 @@ export function BookingModal({ open, onClose }: Props) {
       if (Array.isArray(data.seasonalPrices)) setSeasonalPrices(data.seasonalPrices)
     } catch {
       setBusyRanges([])
-      setAvailError("Занятые даты временно недоступны — уточните у нас перед бронированием.")
+      setAvailError("Занятые даты временно недоступны — уточните у нас пер��д бронированием.")
     } finally {
       setAvailLoading(false)
     }
@@ -584,7 +547,7 @@ export function BookingModal({ open, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center isolate sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-label="Форма бронирования"
@@ -593,10 +556,10 @@ export function BookingModal({ open, onClose }: Props) {
         type="button"
         aria-label="Закрыть"
         onClick={close}
-        className="absolute inset-0 h-full w-full cursor-default bg-foreground/60 backdrop-blur-sm"
+        className="absolute inset-0 h-full w-full [transform:translateZ(0)] [will-change:backdrop-filter] cursor-default bg-foreground/60 backdrop-blur-sm"
       />
 
-      <div className="relative z-10 w-full max-h-[92dvh] overflow-y-auto rounded-t-2xl bg-card shadow-2xl sm:max-w-lg sm:rounded-2xl">
+      <div className="relative z-10 w-full max-h-[92dvh] overflow-y-auto overscroll-contain [transform:translateZ(0)] rounded-t-2xl bg-card shadow-2xl sm:max-w-lg sm:rounded-2xl">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b border-border bg-primary px-6 py-5 text-primary-foreground">
           <div>
@@ -714,7 +677,7 @@ export function BookingModal({ open, onClose }: Props) {
                   {/* Price breakdown */}
                   {(() => {
                     const guestsNum = Number(form.guests) || 1
-                    const price = calculatePrice(form.arrival, form.departure, appSettings, appSettings.price_mode === 'seasonal' ? seasonalPrices : [], guestsNum)
+                    const price = calculatePrice(form.arrival, form.departure, appSettings, appSettings.price_mode === 'seasonal' ? seasonalPrices : [], guestsNum, form.saunaAddon)
                     if (!price) return null
                     return (
                       <div className="rounded-lg border border-border bg-secondary/50 px-4 py-3 text-sm">
@@ -743,6 +706,12 @@ export function BookingModal({ open, onClose }: Props) {
                               <span className="text-foreground">{formatRub(price.cleaningFee)}</span>
                             </div>
                           )}
+                          {price.addonFee > 0 && (
+                            <div className="flex justify-between">
+                              <span>{SAUNA_ADDON_LABEL}</span>
+                              <span className="text-foreground">{formatRub(price.addonFee)}</span>
+                            </div>
+                          )}
                         </div>
                         <div className="mt-2 flex justify-between border-t border-border pt-2 font-semibold text-foreground">
                           <span>Итого за {price.nights} {price.nights === 1 ? "ночь" : price.nights < 5 ? "ночи" : "ночей"}</span>
@@ -751,6 +720,23 @@ export function BookingModal({ open, onClose }: Props) {
                       </div>
                     )
                   })()}
+
+                  {/* Sauna & tub addon */}
+                  <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-background px-4 py-3 text-sm transition hover:border-primary/50">
+                    <input
+                      type="checkbox"
+                      checked={form.saunaAddon}
+                      onChange={(e) => setForm((f) => ({ ...f, saunaAddon: e.target.checked }))}
+                      className="mt-0.5 size-4 shrink-0 accent-primary"
+                    />
+                    <span className="flex-1">
+                      <span className="font-medium text-foreground">{SAUNA_ADDON_LABEL}</span>
+                      <span className="ml-1.5 text-muted-foreground">— {formatRub(SAUNA_ADDON_PRICE)}</span>
+                      <span className="mt-0.5 block text-xs text-muted-foreground">
+                        Разово за топку, независимо от количества ночей
+                      </span>
+                    </span>
+                  </label>
 
                   {/* Guests */}
                   <div className="flex flex-col gap-1.5">
@@ -837,8 +823,13 @@ export function BookingModal({ open, onClose }: Props) {
                       <strong>{formatDate(form.departure)}</strong> · Гостей{" "}
                       <strong>{form.guests}</strong>
                     </div>
+                    {form.saunaAddon && (
+                      <div className="mt-1 text-xs text-muted-foreground">
+                        + {SAUNA_ADDON_LABEL} — {formatRub(SAUNA_ADDON_PRICE)}
+                      </div>
+                    )}
                     {(() => {
-                      const price = calculatePrice(form.arrival, form.departure, appSettings, seasonalPrices, Number(form.guests) || 1)
+                      const price = calculatePrice(form.arrival, form.departure, appSettings, appSettings.price_mode === 'seasonal' ? seasonalPrices : [], Number(form.guests) || 1, form.saunaAddon)
                       if (!price) return null
                       return (
                         <div className="mt-1 border-t border-border/50 pt-1 font-medium text-foreground">
