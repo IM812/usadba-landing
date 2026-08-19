@@ -670,6 +670,24 @@ export function BookingModal({ open, onClose }: Props) {
                     </div>
                   )}
 
+                  {/* Single-night weekend surcharge notice */}
+                  {(() => {
+                    const guestsNum = Number(form.guests) || 1
+                    const price = calculatePrice(form.arrival, form.departure, appSettings, appSettings.price_mode === 'seasonal' ? seasonalPrices : [], guestsNum, form.saunaAddon)
+                    if (!price || price.nights !== 1) return null
+                    const hasSurcharge = price.lines.some((l) => l.singleNightSurcharge)
+                    if (!hasSurcharge) return null
+                    return (
+                      <div className="flex items-start gap-2 rounded-lg bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400">
+                        <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+                        <span>
+                          <span className="font-medium">Повышающий тариф.</span> За 1 ночь в выходные (пт/сб) действует
+                          надбавка к базовой цене — она уже учтена в расчёте ниже.
+                        </span>
+                      </div>
+                    )
+                  })()}
+
                   {/* Price breakdown */}
                   {(() => {
                     const guestsNum = Number(form.guests) || 1
