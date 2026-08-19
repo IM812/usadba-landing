@@ -23,9 +23,6 @@ import {
   type SeasonalPrice as SeasonalPriceRule,
   SAUNA_ADDON_PRICE,
   SAUNA_ADDON_LABEL,
-  isHighSeason,
-  HIGH_SEASON_SINGLE_NIGHT_SURCHARGE,
-  LOW_SEASON_SINGLE_NIGHT_SURCHARGE,
 } from "@/lib/pricing"
 
 // ---------------------------------------------------------------------------
@@ -165,8 +162,7 @@ function calculatePrice(
   }
   // Build human labels
   lines.forEach((l) => {
-    const base = `${l.count} ${l.count === 1 ? "ночь" : l.count < 5 ? "ночи" : "ночей"} × ${formatRub(l.price)}`
-    l.label = l.singleNightSurcharge ? `${base} (надбавка за 1 ночь на выходных)` : base
+    l.label = `${l.count} ${l.count === 1 ? "ночь" : l.count < 5 ? "ночи" : "ночей"} × ${formatRub(l.price)}`
   })
 
   const extraGuests = Math.max(0, guests - (settings.base_guests ?? 8))
@@ -677,28 +673,6 @@ export function BookingModal({ open, onClose }: Props) {
                       </button>
                     </div>
                   )}
-
-                  {/* Single-night weekend surcharge notice */}
-                  {(() => {
-                    const guestsNum = Number(form.guests) || 1
-                    const price = calculatePrice(form.arrival, form.departure, appSettings, appSettings.price_mode === 'seasonal' ? seasonalPrices : [], guestsNum, form.saunaAddon)
-                    if (!price || price.nights !== 1) return null
-                    const hasSurcharge = price.lines.some((l) => l.singleNightSurcharge)
-                    if (!hasSurcharge || !form.arrival) return null
-                    const arrivalDate = parseDateKey(form.arrival)
-                    const surchargePercent = isHighSeason(arrivalDate)
-                      ? HIGH_SEASON_SINGLE_NIGHT_SURCHARGE * 100
-                      : LOW_SEASON_SINGLE_NIGHT_SURCHARGE * 100
-                    return (
-                      <div className="flex items-start gap-2 rounded-lg bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400">
-                        <AlertTriangle className="mt-0.5 size-4 shrink-0" />
-                        <span>
-                          <span className="font-medium">Повышающий тариф +{surchargePercent}%.</span> За 1 ночь в
-                          выходные (пт/сб) действует надбавка к базовой цене — она уже учтена в расчёте ниже.
-                        </span>
-                      </div>
-                    )
-                  })()}
 
                   {/* Price breakdown */}
                   {(() => {
