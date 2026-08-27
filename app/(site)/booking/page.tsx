@@ -83,8 +83,8 @@ export default async function BookingPage() {
             Проще спросить — ответим лично
           </h2>
           <p className="mx-auto mt-5 max-w-lg text-pretty text-[15px] leading-relaxed text-muted-foreground">
-            Нужен трансфер от вокзала, поздний заезд или праздник на 15 человек? Напишите — почти
-            всегда получается устроить.
+            Остались вопросы о дороге, размещении или дополнительных услугах? Напишите — уточним
+            детали до подтверждения бронирования.
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-6 sm:flex-row sm:gap-10">

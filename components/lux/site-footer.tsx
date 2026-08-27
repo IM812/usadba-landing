@@ -83,7 +83,7 @@ export async function SiteFooter() {
             © {year} {site.name}
           </p>
           <p className="text-pretty">
-            {`Дом сдаётся целиком · Заезд с ${settings.check_in_time}, выезд до ${settings.check_out_time} · Можно с детьми и питомцами`}
+            {`Дом сдаётся целиком · Заезд с ${settings.check_in_time}, выезд до ${settings.check_out_time} · Условия подтверждаем перед бронированием`}
           </p>
         </div>
       </Container>
