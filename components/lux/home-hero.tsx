@@ -11,8 +11,8 @@ export function HomeHero() {
       {/* Кадр усадьбы на весь экран с медленным наездом */}
       <div className="absolute inset-0">
         <Image
-          src="/images/estate/house-facade.jpg"
-          alt="Бревенчатая усадьба в сосновом лесу между двумя озёрами"
+          src="/images/estate/house-lawn.jpg"
+          alt="Бревенчатый дом усадьбы в сосновом бору"
           fill
           priority
           sizes="100vw"
@@ -36,7 +36,7 @@ export function HomeHero() {
         >
           Усадьба между
           <br />
-          двух озёр
+          двумя озёрами
         </h1>
 
         <p
@@ -68,8 +68,8 @@ export function HomeHero() {
           {[
             { k: "Рейтинг", v: site.rating.value, sub: `${site.rating.count} отзыв на Яндекс Картах` },
             { k: "Площадь", v: "250 м²", sub: "4 спальни с санузлом" },
-            { k: "Гостей", v: "до 15", sub: "дом целиком" },
-            { k: "От Москвы", v: "5 часов", sub: "520 км по асфальту" },
+            { k: "Формат", v: "целиком", sub: "только для вашей компании" },
+            { k: "От Москвы", v: "≈ 5 часов", sub: "по трассе М9 через Великие Луки" },
           ].map((f) => (
             <div key={f.k}>
               <dt className="eyebrow text-muted-foreground">{f.k}</dt>

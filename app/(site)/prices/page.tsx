@@ -11,7 +11,7 @@ import { includedInStay, spaSurcharge } from "@/lib/site"
 export const metadata: Metadata = {
   title: "Цены и тарифы",
   description:
-    "Стоимость аренды усадьбы целиком: сезонные тарифы, цена будних и выходных дней, доплата за гостей сверх базового размещения. Баня и чан — 7 000 ₽ за топку, лодка и сапы включены.",
+    "Стоимость аренды усадьбы целиком: актуальные сезонные тарифы, доступные даты и условия бронирования гостевого дома в Антропково.",
 }
 
 export const revalidate = 300
@@ -29,7 +29,7 @@ export default async function PricesPage() {
     { label: "Минимальный срок", value: `${settings.minimum_nights} ${settings.minimum_nights === 1 ? "ночь" : "ночи"}` },
     { label: "Базовое размещение", value: `${settings.base_guests} гостей` },
     { label: "Максимум гостей", value: `${settings.max_guests} гостей` },
-    { label: "Предоплата", value: "30% при бронировании" },
+    { label: "Подтверждение", value: "после согласования" },
   ]
 
   return (
@@ -121,9 +121,8 @@ export default async function PricesPage() {
               />
               <Divider className="mt-10" />
               <p className="mt-6 max-w-md text-[15px] leading-relaxed text-muted-foreground">
-                Доплачивают только за баню с чаном ({spaSurcharge.priceLabel} {spaSurcharge.unit}) и
-                за гостей сверх базового размещения. К вашему приезду всё уже готово: баня
-                протоплена, чан набран, дрова сложены.
+                Условия посещения бани и сибирского чана, а также размещения сверх базового,
+                согласовываются для выбранных дат до подтверждения бронирования.
               </p>
             </div>
 
@@ -154,8 +153,8 @@ export default async function PricesPage() {
             ))}
           </dl>
           <p className="mt-12 max-w-2xl text-pretty text-[15px] leading-relaxed text-muted-foreground">
-            Приезд с детьми и питомцами — обычная история, отдельной платы за это нет. Если нужен
-            поздний заезд или ранний выезд, напишите заранее: почти всегда получается подстроиться.
+            Если планируете приехать с питомцем или вам нужен нестандартный график заезда,
+            сообщите об этом заранее — подтвердим возможность и условия до бронирования.
           </p>
         </Container>
       </Section>

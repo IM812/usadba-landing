@@ -18,7 +18,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Усадьба в Антропково — частная усадьба между двух озёр',
+    default: 'Усадьба в Антропково — гостевой дом между двумя озёрами',
     template: '%s — Усадьба в Антропково',
   },
   description:
@@ -33,10 +33,10 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'ru_RU',
     siteName: 'Усадьба в Антропково',
-    title: 'Усадьба в Антропково — частная усадьба между двух озёр',
+    title: 'Усадьба в Антропково — гостевой дом между двумя озёрами',
     description:
       'Бревенчатый дом 250 м² в сосновом лесу между двумя озёрами. Баня на дровах, сибирский чан, свой причал. Дом сдаётся целиком.',
-    images: [{ url: '/images/estate/house-facade.jpg', width: 1024, height: 768 }],
+    images: [{ url: '/images/estate/house-lawn.jpg', width: 1600, height: 1200 }],
   },
   icons: {
     icon: '/favicon.ico',
