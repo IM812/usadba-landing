@@ -2,7 +2,13 @@ import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { fetchAvitoRanges, rangesOverlap } from '@/lib/ics'
 import { parseDateKey } from '@/lib/date'
-import { calculateStayPrice, type NightPrice, SAUNA_ADDON_PRICE, SAUNA_ADDON_LABEL } from '@/lib/pricing'
+import {
+  calculateStayPrice,
+  getStayMinimumNights,
+  type NightPrice,
+  SAUNA_ADDON_PRICE,
+  SAUNA_ADDON_LABEL,
+} from '@/lib/pricing'
 
 function formatDate(iso: string) {
   if (!iso) return '—'
@@ -75,7 +81,7 @@ export async function POST(req: Request) {
     const [{ data: settings }, { data: seasons }] = await Promise.all([
       supabase
         .from('settings')
-        .select('base_price, weekend_price, price_mode, extra_guest_price, base_guests, max_guests, telegram_bot_token, telegram_chat_id, avito_ics_url, site_url')
+        .select('*')
         .eq('id', 1)
         .single(),
       supabase
@@ -97,6 +103,35 @@ export async function POST(req: Request) {
     if (guestsCount > maxGuests) {
       return NextResponse.json(
         { ok: false, error: 'too_many_guests', max: maxGuests },
+        { status: 400 },
+      )
+    }
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(arrival) || !/^\d{4}-\d{2}-\d{2}$/.test(departure) || departure <= arrival) {
+      return NextResponse.json({ ok: false, error: 'invalid_dates' }, { status: 400 })
+    }
+
+    const arrivalDate = parseDateKey(arrival)
+    const departureDate = parseDateKey(departure)
+    const activeSeasons = priceMode === 'seasonal' ? (seasons ?? []) : []
+    const stayPrice = calculateStayPrice(
+      arrivalDate,
+      departureDate,
+      basePrice,
+      weekendPrice,
+      activeSeasons,
+    )
+    const requiredMinimum = getStayMinimumNights(
+      arrivalDate,
+      departureDate,
+      activeSeasons,
+      settings?.minimum_nights ?? 1,
+      settings?.season_overlap_rule === 'check_in' ? 'check_in' : 'strictest',
+    )
+
+    if (stayPrice.nights < requiredMinimum) {
+      return NextResponse.json(
+        { ok: false, error: 'minimum_nights', minimum: requiredMinimum },
         { status: 400 },
       )
     }
@@ -131,13 +166,7 @@ export async function POST(req: Request) {
     }
 
     // --- Calculate price ---
-    const { subtotal: accommodationTotal, nights, nightsList } = calculateStayPrice(
-      parseDateKey(arrival),
-      parseDateKey(departure),
-      basePrice,
-      weekendPrice,
-      priceMode === 'seasonal' ? (seasons ?? []) : [],
-    )
+    const { subtotal: accommodationTotal, nights, nightsList } = stayPrice
     const extraGuests = Math.max(0, guestsCount - baseGuests)
     const extraGuestTotal = extraGuests * extraGuestPrice * nights
     const addonTotal = wantsSaunaAddon ? SAUNA_ADDON_PRICE : 0

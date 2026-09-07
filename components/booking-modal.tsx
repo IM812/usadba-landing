@@ -17,9 +17,10 @@ import {
   AlertTriangle,
 } from "lucide-react"
 import type { BusyRange } from "@/app/api/availability/route"
-import { todayKey, parseDateKey } from "@/lib/date"
+import { nightsBetween, todayKey, parseDateKey } from "@/lib/date"
 import {
   calculateStayPrice,
+  getStayMinimumNights,
   type SeasonalPrice as SeasonalPriceRule,
   SAUNA_ADDON_PRICE,
   SAUNA_ADDON_LABEL,
@@ -112,6 +113,7 @@ type AppSettings = {
   base_guests: number
   max_guests: number
   price_mode: string
+  season_overlap_rule: 'check_in' | 'strictest'
 }
 
 interface NightLine {
@@ -384,6 +386,7 @@ export function BookingModal({ open, onClose }: Props) {
     base_guests: 8,
     max_guests: 15,
     price_mode: 'base',
+    season_overlap_rule: 'strictest',
   })
   const [seasonalPrices, setSeasonalPrices] = useState<SeasonalPrice[]>([])
 
@@ -471,11 +474,27 @@ export function BookingModal({ open, onClose }: Props) {
     }
   }
 
+  const selectedNights = form.arrival && form.departure
+    ? nightsBetween(parseDateKey(form.arrival), parseDateKey(form.departure))
+    : 0
+  const pricingSeasons = appSettings.price_mode === 'seasonal' ? seasonalPrices : []
+  const requiredMinimumNights = form.arrival && form.departure
+    ? getStayMinimumNights(
+        parseDateKey(form.arrival),
+        parseDateKey(form.departure),
+        pricingSeasons,
+        appSettings.minimum_nights,
+        appSettings.season_overlap_rule,
+      )
+    : appSettings.minimum_nights
+  const minimumNightsSatisfied = selectedNights >= requiredMinimumNights
+
   const step1Valid =
     form.arrival !== "" &&
     form.departure !== "" &&
     form.departure > form.arrival &&
     form.guests !== "" &&
+    minimumNightsSatisfied &&
     !selectionOverlapsBusy(form.arrival, form.departure, busyRanges)
 
   const step2Valid = form.name.trim() !== "" && form.phone.trim().length >= 6
@@ -505,6 +524,14 @@ export function BookingModal({ open, onClose }: Props) {
         setError("Выбранные даты уже заняты. Пожалуйста, выберите другой период.")
         setStep(1)
         return
+      }
+      if (res.status === 400) {
+        const data = await res.json()
+        if (data.error === 'minimum_nights') {
+          setError(`Для выбранных дат минимум ${data.minimum} ноч.`)
+          setStep(1)
+          return
+        }
       }
       if (!res.ok) throw new Error("server_error")
       setSubmitted(true)
@@ -720,6 +747,12 @@ export function BookingModal({ open, onClose }: Props) {
                       </div>
                     )
                   })()}
+
+                  {form.arrival && form.departure && !minimumNightsSatisfied && (
+                    <p className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                      Для выбранных дат минимум {requiredMinimumNights} ноч. Выберите более позднюю дату выезда.
+                    </p>
+                  )}
 
                   {/* Sauna & tub addon */}
                   <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-background px-4 py-3 text-sm transition hover:border-primary/50">

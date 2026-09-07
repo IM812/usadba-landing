@@ -6,7 +6,8 @@ import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Booking } from '@/lib/types'
 import type { BusyRange } from '@/lib/ics'
-import { todayKey } from '@/lib/date'
+import { parseDateKey, todayKey } from '@/lib/date'
+import { getSeasonalNightPrice, type SeasonalPrice } from '@/lib/pricing'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -34,6 +35,10 @@ export function AdminCalendar() {
 
   const { data: bookingsRes } = useSWR('/api/admin/bookings', fetcher, { refreshInterval: 30000 })
   const { data: availRes } = useSWR('/api/availability', fetcher, { refreshInterval: 300000 })
+  const priceSettings = availRes?.settings
+  const calendarSeasons: SeasonalPrice[] = priceSettings?.price_mode === 'seasonal'
+    ? (availRes?.seasonalPrices ?? [])
+    : []
 
   const bookings: Booking[] = (bookingsRes?.data ?? []).filter(
     (b: Booking) => b.status !== 'cancelled',
@@ -89,7 +94,7 @@ export function AdminCalendar() {
     <div className="p-6 max-w-5xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-foreground">Календарь</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Все бронирования и занятость</p>
+        <p className="text-sm text-muted-foreground mt-0.5">Бронирования, занятость и цена каждой ночи</p>
       </div>
 
       {/* Legend */}
@@ -142,6 +147,14 @@ export function AdminCalendar() {
             const isPast = iso < today
             const checkIn = isCheckIn(iso)
             const checkOut = isCheckOut(iso)
+            const nightlyPrice = priceSettings
+              ? getSeasonalNightPrice(
+                  parseDateKey(iso),
+                  calendarSeasons,
+                  Number(priceSettings.base_price),
+                  Number(priceSettings.weekend_price),
+                )
+              : null
 
             const bgClass = booking
               ? booking.status === 'confirmed'
@@ -156,7 +169,7 @@ export function AdminCalendar() {
                 key={iso}
                 onClick={() => booking && setSelected(booking)}
                 className={cn(
-                  'min-h-[72px] p-1.5 border-b border-r border-border/50 text-left transition-colors',
+                  'min-h-24 p-1.5 border-b border-r border-border/50 text-left transition-colors',
                   (i + 1) % 7 === 0 && 'border-r-0',
                   booking && 'cursor-pointer hover:brightness-95',
                   !booking && !isAvito && 'cursor-default',
@@ -186,6 +199,11 @@ export function AdminCalendar() {
                 {isAvito && !booking && (
                   <span className="block text-[10px] leading-tight text-blue-600 font-medium">
                     Avito
+                  </span>
+                )}
+                {nightlyPrice !== null && (
+                  <span className="mt-1 block text-[10px] font-semibold leading-tight text-foreground">
+                    {formatRub(nightlyPrice)}
                   </span>
                 )}
               </button>

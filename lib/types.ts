@@ -23,6 +23,7 @@ export interface Settings {
   weekend_price: number
   extra_guest_price: number
   minimum_nights: number
+  season_overlap_rule: 'check_in' | 'strictest'
   cleaning_fee: number
   check_in_time: string
   check_out_time: string

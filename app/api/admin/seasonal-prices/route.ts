@@ -26,10 +26,20 @@ export async function POST(req: NextRequest) {
 
   const supabase = createServiceClient()
   const raw = await req.json()
+  const minimumNights = Number(raw.minimum_nights)
+  if (!Number.isInteger(minimumNights) || minimumNights < 1 || minimumNights > 365) {
+    return NextResponse.json({ ok: false, error: 'Минимум ночей должен быть от 1 до 365' }, { status: 400 })
+  }
+
   const body = {
-    ...raw,
-    ...(raw.date_from !== undefined && { date_from: normalizeMmDd(raw.date_from) }),
-    ...(raw.date_to !== undefined && { date_to: normalizeMmDd(raw.date_to) }),
+    name: String(raw.name ?? '').trim(),
+    date_from: normalizeMmDd(raw.date_from),
+    date_to: normalizeMmDd(raw.date_to),
+    base_price: Number(raw.base_price),
+    weekend_price: Number(raw.weekend_price),
+    minimum_nights: minimumNights,
+    active: raw.active !== false,
+    sort_order: Number(raw.sort_order) || 0,
   }
   const { data, error } = await supabase.from('seasonal_prices').insert(body).select().single()
   if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 })
