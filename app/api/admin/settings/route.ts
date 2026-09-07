@@ -25,6 +25,13 @@ export async function PATCH(req: NextRequest) {
   const supabase = createServiceClient()
   const body = await req.json()
 
+  if (
+    body.season_overlap_rule !== undefined &&
+    !['check_in', 'strictest'].includes(body.season_overlap_rule)
+  ) {
+    return NextResponse.json({ ok: false, error: 'Некорректное правило стыка сезонов' }, { status: 400 })
+  }
+
   // Never allow overwriting the primary key
   const { id: _omit, ...updates } = body
 

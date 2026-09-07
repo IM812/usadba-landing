@@ -13,7 +13,10 @@ export type SeasonalPrice = {
   date_to: string // MM-DD
   base_price: number
   weekend_price: number
+  minimum_nights?: number
 }
+
+export type SeasonOverlapRule = 'check_in' | 'strictest'
 
 export type NightPrice = {
   date: Date
@@ -62,6 +65,21 @@ function seasonWidth(from: string, to: string): number {
   return toDay >= fromDay ? toDay - fromDay : (12 * 31 + 31) - fromDay + toDay
 }
 
+function getMatchingSeason(d: Date, seasons: SeasonalPrice[]): SeasonalPrice | undefined {
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  const key = `${mm}-${dd}`
+
+  return [...seasons]
+    .sort(
+      (a, b) => seasonWidth(a.date_from, a.date_to) - seasonWidth(b.date_from, b.date_to),
+    )
+    .find((season) => {
+      const { date_from: from, date_to: to } = season
+      return from <= to ? key >= from && key <= to : key >= from || key <= to
+    })
+}
+
 /** Базовая цена ночи (без коэффициента за одну ночь на выходных). */
 export function getSeasonalNightPrice(
   d: Date,
@@ -69,22 +87,37 @@ export function getSeasonalNightPrice(
   fallbackBase: number,
   fallbackWeekend: number,
 ): number {
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  const key = `${mm}-${dd}`
-
-  // Самый узкий совпадающий диапазон побеждает — конкретный сезон важнее общего
-  const sorted = [...seasons].sort(
-    (a, b) => seasonWidth(a.date_from, a.date_to) - seasonWidth(b.date_from, b.date_to),
-  )
-
-  for (const s of sorted) {
-    const from = s.date_from
-    const to = s.date_to
-    const inRange = from <= to ? key >= from && key <= to : key >= from || key <= to
-    if (inRange) return isWeekendNight(d) ? s.weekend_price : s.base_price
-  }
+  const season = getMatchingSeason(d, seasons)
+  if (season) return isWeekendNight(d) ? season.weekend_price : season.base_price
   return isWeekendNight(d) ? fallbackWeekend : fallbackBase
+}
+
+/** Минимальная длительность для выбранного периода с учётом правила стыка сезонов. */
+export function getStayMinimumNights(
+  checkIn: Date,
+  checkOut: Date,
+  seasons: SeasonalPrice[],
+  fallbackMinimum: number,
+  overlapRule: SeasonOverlapRule = 'strictest',
+): number {
+  const fallback = Math.max(1, Math.trunc(fallbackMinimum || 1))
+  const nights = Math.max(0, nightsBetween(checkIn, checkOut))
+  if (nights === 0 || seasons.length === 0) return fallback
+
+  const minimumForDate = (date: Date) => {
+    const seasonMinimum = getMatchingSeason(date, seasons)?.minimum_nights
+    return Math.max(1, Math.trunc(seasonMinimum || fallback))
+  }
+
+  if (overlapRule === 'check_in') return minimumForDate(checkIn)
+
+  let required = fallback
+  for (let i = 0; i < nights; i++) {
+    const date = new Date(checkIn)
+    date.setDate(date.getDate() + i)
+    required = Math.max(required, minimumForDate(date))
+  }
+  return required
 }
 
 /**

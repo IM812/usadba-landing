@@ -15,6 +15,7 @@ export function PricesSettings() {
     base_price: '', weekend_price: '', extra_guest_price: '',
     minimum_nights: '', cleaning_fee: '', check_in_time: '', check_out_time: '',
     base_guests: '', max_guests: '',
+    season_overlap_rule: 'strictest' as 'check_in' | 'strictest',
   })
   const [priceMode, setPriceMode] = useState<'base' | 'seasonal'>('base')
 
@@ -30,6 +31,7 @@ export function PricesSettings() {
         check_out_time: s.check_out_time ?? '12:00',
         base_guests: String(s.base_guests ?? '8'),
         max_guests: String(s.max_guests ?? '15'),
+        season_overlap_rule: s.season_overlap_rule === 'check_in' ? 'check_in' : 'strictest',
       })
       setPriceMode(s.price_mode === 'seasonal' ? 'seasonal' : 'base')
     }
@@ -52,6 +54,7 @@ export function PricesSettings() {
         price_mode: priceMode,
         base_guests: parseInt(form.base_guests) || 8,
         max_guests: parseInt(form.max_guests) || 15,
+        season_overlap_rule: form.season_overlap_rule,
       }),
     })
     const json = await res.json()
@@ -136,8 +139,21 @@ export function PricesSettings() {
         <FieldRow label="Стоимость уборки" hint="Фиксированная сумма, ₽">
           <TextInput type="number" value={form.cleaning_fee} onChange={(v) => update('cleaning_fee', v)} />
         </FieldRow>
-        <FieldRow label="Минимум ночей">
-          <TextInput type="number" value={form.minimum_nights} onChange={(v) => update('minimum_nights', v)} />
+        <FieldRow label="Минимум ночей" hint="Действует вне сезонных диапазонов">
+          <TextInput type="number" value={form.minimum_nights} onChange={(v) => update('minimum_nights', v)} min="1" max="365" />
+        </FieldRow>
+        <FieldRow label="Бронь на стыке сезонов" hint="Как определить минимальное количество ночей">
+          <select
+            value={form.season_overlap_rule}
+            onChange={(event) => setForm((current) => ({
+              ...current,
+              season_overlap_rule: event.target.value as 'check_in' | 'strictest',
+            }))}
+            className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            <option value="strictest">Самый строгий минимум за весь период</option>
+            <option value="check_in">Минимум сезона в день заезда</option>
+          </select>
         </FieldRow>
         <FieldRow label="Время заезда">
           <TextInput type="time" value={form.check_in_time} onChange={(v) => update('check_in_time', v)} />

@@ -28,7 +28,7 @@ export async function GET() {
     const [{ data: settings }, { data: seasonalPrices }] = await Promise.all([
       supabase
         .from('settings')
-        .select('avito_ics_url, base_price, weekend_price, extra_guest_price, cleaning_fee, minimum_nights, base_guests, max_guests, price_mode')
+        .select('*')
         .eq('id', 1)
         .single(),
       supabase
@@ -62,6 +62,7 @@ export async function GET() {
         base_guests: settings?.base_guests ?? 8,
         max_guests: settings?.max_guests ?? 15,
         price_mode: settings?.price_mode ?? 'base',
+        season_overlap_rule: settings?.season_overlap_rule ?? 'strictest',
       },
       seasonalPrices: seasonalPrices ?? [],
     })

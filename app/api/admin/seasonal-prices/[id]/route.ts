@@ -18,10 +18,22 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params
   const supabase = createServiceClient()
   const raw = await req.json()
+  if (
+    raw.minimum_nights !== undefined &&
+    (!Number.isInteger(Number(raw.minimum_nights)) || Number(raw.minimum_nights) < 1 || Number(raw.minimum_nights) > 365)
+  ) {
+    return NextResponse.json({ ok: false, error: 'Минимум ночей должен быть от 1 до 365' }, { status: 400 })
+  }
+
   const body = {
-    ...raw,
+    ...(raw.name !== undefined && { name: String(raw.name).trim() }),
     ...(raw.date_from !== undefined && { date_from: normalizeMmDd(raw.date_from) }),
     ...(raw.date_to !== undefined && { date_to: normalizeMmDd(raw.date_to) }),
+    ...(raw.base_price !== undefined && { base_price: Number(raw.base_price) }),
+    ...(raw.weekend_price !== undefined && { weekend_price: Number(raw.weekend_price) }),
+    ...(raw.minimum_nights !== undefined && { minimum_nights: Number(raw.minimum_nights) }),
+    ...(raw.active !== undefined && { active: Boolean(raw.active) }),
+    ...(raw.sort_order !== undefined && { sort_order: Number(raw.sort_order) }),
   }
   const { data, error } = await supabase
     .from('seasonal_prices')
